@@ -54,7 +54,7 @@ hr {
     float: left;
 }
 
-.navbar-menu-left-side239 .fa-headphones::after {
+.navbar-menu-left-side239 .fa-pencil::after {
     content: "|";
     color: #2f3239;
     float: left;
@@ -1453,6 +1453,7 @@ h5:hover {
 .ask-question-input-part032 {
     background-color: #FFFFFF;
     padding: 15px;
+    margin-bottom: 50px;
     margin-top: 70px;
     -webkit-box-shadow: 0px 0px 13px -3px;
             box-shadow: 0px 0px 13px -3px;
@@ -1522,11 +1523,11 @@ h5:hover {
     font-weight: bold;
 }
 
-.categori49 {
+/* .categori49 {
     margin-top: 30px;
-}
+} */
 
-.list-category53 {
+/* .list-category53 {
     width: 100%;
     height: 40px;
     background-color: #F3F3F3;
@@ -1535,7 +1536,7 @@ h5:hover {
     padding: 10px;
     border-radius: 3px;
     border: 1px solid #fd6371;
-}
+} */
 
 .form-description4342 {
     margin-right: 90px;
@@ -1544,16 +1545,16 @@ h5:hover {
     font-weight: bold;
 }
 
-.categori49 > label {
+/* .categori49 > label {
     margin-right: 100px;
-}
+} */
 
-.form-description43305 {
+/* .form-description43305 {
     margin-right: 117px;
     color: #fd7362;
     font-family: fontawesome;
     font-weight: bold;
-}
+} */
 
 .form-description433 {
     float: left;
@@ -2331,4 +2332,41 @@ h5:hover {
 
 .category2781 {
     margin-top: 70px;
+}
+#textarea {
+    width: 100%; /* Full width, responsive */
+    height: 264px; /* Fixed height */
+    resize: none; /* Prevent resizing */
+    box-sizing: border-box; /* Include padding in the width/height calculation */
+}
+/* Category Grid Styling */
+/* Apply flexbox grid for two-column layout */
+.category-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px; /* Adjust spacing between checkboxes */
+    margin-top: 10px;
+}
+
+/* Individual checkbox styling */
+.category-checkbox {
+    display: flex;
+    align-items: center;
+    flex-basis: calc(50% - 10px); /* Two columns with spacing */
+    padding: 8px;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd; /* Light border for distinction */
+    font-size: 15px;
+    color: #333;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+.category-checkbox:hover {
+    background-color: #e9e9e9;
+    border-color: #ccc; /* Light border and background on hover */
+}
+
+.category-checkbox input[type="checkbox"] {
+    margin-right: 8px; /* Space between checkbox and label */
 }

@@ -29,6 +29,7 @@ func (s *AuthService) Register(username, email, password string) error {
 }
 func (s *AuthService) Login(email, password string) (*models.User, error) {
     // Retrieve the user by email
+		
     user, err := s.UserRepo.FindByEmail(email)
     if err != nil {
         return nil, err // Return error if user is not found

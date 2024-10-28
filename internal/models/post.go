@@ -17,5 +17,16 @@ type Post struct {
 
 type PostCategory struct {
 	PostID     uuid.UUID `json:"post_id"`
-	CategoryID uuid.UUID `json:"category_id"`
+	CategoryID string `json:"category_id"`
+}
+
+type PostWithUser struct {
+    PostID    uuid.UUID `json:"post_id"`
+    Title     string    `json:"title"`
+    Content   string    `json:"content"`
+    CreatedAt time.Time `json:"created_at"`
+    UserID    uuid.UUID `json:"user_id"`
+    Username  string    `json:"username"`
+    Email     string    `json:"email"`
+	FormattedDate string  `json:"formatted_date"` // Add this line
 }

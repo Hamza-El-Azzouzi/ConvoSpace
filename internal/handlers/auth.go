@@ -1,12 +1,10 @@
 package handlers
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"time"
 
-	"forum/internal/models"
 	"forum/internal/services"
 	"forum/internal/utils"
 
@@ -16,37 +14,37 @@ import (
 type AuthHandler struct {
 	AuthService *services.AuthService
 }
+
 func (h *AuthHandler) LogoutHandle(w http.ResponseWriter, r *http.Request) {
-    // Retrieve the session cookie
-    cookie, err := r.Cookie("session_id")
-    if err != nil {
-        // If no session cookie exists, just redirect to home
-        http.Redirect(w, r, "/", http.StatusSeeOther)
-        return
-    }
+	// Retrieve the session cookie
+	cookie, err := r.Cookie("session_id")
+	if err != nil {
+		// If no session cookie exists, just redirect to home
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
+	}
 
-    sessionID := cookie.Value
+	sessionID := cookie.Value
 
-    // Delete the session from the database
-    _, err = h.AuthService.UserRepo.DB.Exec("DELETE FROM sessions WHERE session_id = ?", sessionID)
-    if err != nil {
-        http.Error(w, "Unable to log out", http.StatusInternalServerError)
-        return
-    }
+	// Delete the session from the database
+	_, err = h.AuthService.UserRepo.DB.Exec("DELETE FROM sessions WHERE session_id = ?", sessionID)
+	if err != nil {
+		http.Error(w, "Unable to log out", http.StatusInternalServerError)
+		return
+	}
 
-    // Remove the session cookie
-    http.SetCookie(w, &http.Cookie{
-        Name:     "session_id",
-        Value:    "",
-        Path:     "/",
-        Expires:  time.Now().Add(-1 * time.Hour), // Set expiration to past to delete the cookie
-        HttpOnly: true,
-    })
+	// Remove the session cookie
+	http.SetCookie(w, &http.Cookie{
+		Name:     "session_id",
+		Value:    "",
+		Path:     "/",
+		Expires:  time.Now().Add(-1 * time.Hour), // Set expiration to past to delete the cookie
+		HttpOnly: true,
+	})
 
-    // Redirect to the homepage or login page after logging out
-    http.Redirect(w, r, "/", http.StatusSeeOther)
+	// Redirect to the homepage or login page after logging out
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
-
 
 func (h *AuthHandler) LoginHandle(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodGet {
@@ -104,7 +102,7 @@ func (h *AuthHandler) LoginHandle(w http.ResponseWriter, r *http.Request) {
 
 		// Redirect to home page after successful registration
 		http.Redirect(w, r, "/", http.StatusSeeOther) // Use StatusSeeOther for redirect after POST
-	}else{
+	} else {
 		utils.OpenHtml("login.html", w, r)
 	}
 }
@@ -155,42 +153,42 @@ func (h *AuthHandler) RegisterHandle(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
-	var user models.User
-	err := json.NewDecoder(r.Body).Decode(&user)
-	if err != nil {
-		http.Error(w, "Invalid request body", http.StatusBadRequest)
-		return
-	}
+// func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
+// 	var user models.User
+// 	err := json.NewDecoder(r.Body).Decode(&user)
+// 	if err != nil {
+// 		http.Error(w, "Invalid request body", http.StatusBadRequest)
+// 		return
+// 	}
 
-	err = h.AuthService.Register(user.Username, user.Email, user.PasswordHash)
-	if err != nil {
-		http.Error(w, "Error registering user", http.StatusInternalServerError)
-		return
-	}
+// 	err = h.AuthService.Register(user.Username, user.Email, user.PasswordHash)
+// 	if err != nil {
+// 		http.Error(w, "Error registering user", http.StatusInternalServerError)
+// 		return
+// 	}
 
-	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(map[string]string{"message": "User registered successfully"})
-}
+// 	w.WriteHeader(http.StatusCreated)
+// 	json.NewEncoder(w).Encode(map[string]string{"message": "User registered successfully"})
+// }
 
-func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
-	var credentials struct {
-		Username string `json:"username"`
-		Password string `json:"password"`
-	}
-	err := json.NewDecoder(r.Body).Decode(&credentials)
-	if err != nil {
-		http.Error(w, "Invalid request body", http.StatusBadRequest)
-		return
-	}
+// func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
+// 	var credentials struct {
+// 		Username string `json:"username"`
+// 		Password string `json:"password"`
+// 	}
+// 	err := json.NewDecoder(r.Body).Decode(&credentials)
+// 	if err != nil {
+// 		http.Error(w, "Invalid request body", http.StatusBadRequest)
+// 		return
+// 	}
 
-	// token, err := h.Login(credentials.Username, credentials.Password)
+// 	// token, err := h.Login(credentials.Username, credentials.Password)
 
-	// if err != nil {
-	// 	http.Error(w, "Invalid credentials", http.StatusUnauthorized)
-	// 	return
-	// }
+// 	// if err != nil {
+// 	// 	http.Error(w, "Invalid credentials", http.StatusUnauthorized)
+// 	// 	return
+// 	// }
 
-	w.WriteHeader(http.StatusOK)
-	// json.NewEncoder(w).Encode(map[string]string{"token": token})
-}
+// 	w.WriteHeader(http.StatusOK)
+// 	// json.NewEncoder(w).Encode(map[string]string{"token": token})
+// }

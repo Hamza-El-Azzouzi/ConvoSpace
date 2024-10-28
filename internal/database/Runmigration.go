@@ -5,19 +5,21 @@ import (
 	"fmt"
 	"io/ioutil"
 	"strings"
+
+	"github.com/gofrs/uuid/v5"
 )
 
 func RunMigrations(db *sql.DB) error {
 	// Check if tables already exist
+
 	tables := []string{"users", "posts", "comments", "categories", "post_categories", "likes"}
 	for _, table := range tables {
 		if tableExists(db, table) {
-			return fmt.Errorf("table %s already exists", table)
+			fmt.Printf("table %s already exists\n", table)
 		}
 	}
-
 	// If no tables exist, proceed with migrations
-	migrationSQL, err := ioutil.ReadFile("internal/database/migrations/001_initial_schema.sql")
+	migrationSQL, err := ioutil.ReadFile("../../internal/database/migrations/001_initial_schema.sql")
 	if err != nil {
 		return err
 	}
@@ -45,4 +47,43 @@ func tableExists(db *sql.DB, tableName string) bool {
 	var name string
 	err := db.QueryRow(query, tableName).Scan(&name)
 	return err == nil
+}
+
+func InsertDefaultCategories(db *sql.DB) error {
+	// Check and insert each category
+	categories := []string{
+		"Announcements",
+		"General Discussion",
+		"Q&A and Help",
+		"Web Development",
+		"Mobile App Development",
+		"Game Development",
+		"Cybersecurity",
+		"Technology & Gadgets",
+		"Coding Challenges & Projects",
+		"Design and UI/UX",
+		"Career Advice and Freelancing",
+		"Feedback and Suggestions",
+		"Off-Topic Lounge",
+		"Events and Meetups",
+	}
+
+	for _, category := range categories {
+		ID := uuid.Must(uuid.NewV4())
+		// Check if category exists
+		var exists int
+		err := db.QueryRow("SELECT COUNT(*) FROM categories WHERE name = ?", category).Scan(&exists)
+		if err != nil {
+			return fmt.Errorf("error checking category %s: %v", category, err)
+		}
+
+		// Insert only if it doesn't exist
+		if exists == 0 {
+			_, err := db.Exec("INSERT INTO categories (ID , name) VALUES (?,?)",ID, category)
+			if err != nil {
+				return fmt.Errorf("error inserting category %s: %v", category, err)
+			}
+		}
+	}
+	return nil
 }

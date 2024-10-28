@@ -1,6 +1,6 @@
 -- Users table
 CREATE TABLE users( 
-    id TEXT PRIMARY KEY,
+    id TEXT  PRIMARY KEY ,
     username TEXT NOT NULL UNIQUE,
     email TEXT NOT NULL UNIQUE,
     password_hash TEXT NOT NULL,
@@ -9,7 +9,7 @@ CREATE TABLE users(
 
 -- Posts table
 CREATE TABLE posts(
-    id TEXT PRIMARY KEY,
+    id TEXT PRIMARY KEY ,
     user_id TEXT NOT NULL,
     title TEXT NOT NULL,
     content TEXT NOT NULL,
@@ -19,7 +19,7 @@ CREATE TABLE posts(
 
 -- Comments table
 CREATE TABLE comments(
-    id TEXT PRIMARY KEY,
+    id TEXT PRIMARY KEY ,
     user_id TEXT NOT NULL,
     post_id TEXT NOT NULL,
     content TEXT NOT NULL,
@@ -30,7 +30,7 @@ CREATE TABLE comments(
 
 -- Categories table
 CREATE TABLE categories(
-    id TEXT PRIMARY KEY,
+    id TEXT PRIMARY KEY ,
     name TEXT NOT NULL UNIQUE
 );
 
@@ -45,7 +45,7 @@ CREATE TABLE post_categories(
 
 -- Likes table
 CREATE TABLE likes(
-    id TEXT PRIMARY KEY,
+    id TEXT AUTO_INCREMEN PRIMARY KEY,
     user_id TEXT NOT NULL,
     post_id TEXT,
     comment_id TEXT,
