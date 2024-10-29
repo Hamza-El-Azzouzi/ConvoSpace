@@ -24,19 +24,27 @@ func main() {
 		fmt.Printf("Error running migrations: %v", err)
 	}
 	if err := database.InsertDefaultCategories(db); err != nil {
-		 fmt.Printf("error inserting default categories: %v", err)
+		fmt.Printf("error inserting default categories: %v", err)
 	}
 
 	defer db.Close()
 	userRepo := &repositories.UserRepository{DB: db}
 	categorieRepo := &repositories.CategoryRepository{DB: db}
 	postRepo := &repositories.PostRepository{DB: db}
-	postServices :=&services.PostService{PostRepo: postRepo}
-	categorieServices := &services.CategoryService{CategorieRepo:categorieRepo}
+	commentRepo := &repositories.CommentRepositorie{DB: db}
+
+	postServices := &services.PostService{PostRepo: postRepo}
+	categorieServices := &services.CategoryService{CategorieRepo: categorieRepo}
+	commentService := &services.CommentService{CommentRepo: commentRepo}
 	authService := &services.AuthService{UserRepo: userRepo}
 	authHandler := &handlers.AuthHandler{AuthService: authService}
-	postHandler := &handlers.PostHandler{AuthService: authService, CategoryService:categorieServices, PostService: postServices}
-	
+	postHandler := &handlers.PostHandler{
+		AuthService:     authService,
+		CategoryService: categorieServices,
+		PostService:     postServices,
+		CommentService:  commentService,
+	}
+
 	// postHandler := &handlers.PostHandler{AuthService: authService}
 
 	fmt.Println("Starting the forum server...")
@@ -44,9 +52,12 @@ func main() {
 	http.HandleFunc("/", postHandler.HomeHandle)
 	http.HandleFunc("/create", postHandler.PostCreation)
 	http.HandleFunc("/createPost", postHandler.PostSaver)
+	http.HandleFunc("/sendcomment/", postHandler.CommentSaver)
+
 	http.HandleFunc("/logout", authHandler.LogoutHandle)
 	http.HandleFunc("/login", authHandler.LoginHandle)
 	http.HandleFunc("/register", authHandler.RegisterHandle)
+	http.HandleFunc("/detailsPost/", postHandler.DetailsPost)
 
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }

@@ -99,7 +99,7 @@
                                 {{ if .LoggedIn }}
                                 <button type="submit" class="publis1291">Publish your Question</button>
                                 {{ else }}
-                                <button type="button" disabled class="publis1291">You should Be Logged in </button>
+                                <button type="button" onclick="clickToRegister()" class="publis1291">You should Be Logged in </button>
                                 {{ end }}
                             </div>
     
@@ -147,8 +147,9 @@
     <script src="/static/js/jquery-3.1.1.js"></script>
     <script src="/static/js/bootstrap.js"></script>
     <script>
-        const textarea = document.querySelector('#textarea')
-        textarea.ariaSetSize()
+        const clickToRegister =()=>{
+            window.location.replace('/register')
+        }
     </script>
 
 </body>

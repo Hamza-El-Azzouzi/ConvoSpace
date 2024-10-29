@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="title" content="Forum01">
     <meta name="robots" content="index, nofollow">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="language" content="English">
     <title>Forum01</title>
     <link href="/static/css/bootstrap.css" rel="stylesheet" type="text/css">
@@ -16,7 +17,6 @@
 </head>
 
 <body>
-    <!--======== Navbar =======-->
     <div class="top-bar">
         <div class="container">
             <div class="row">
@@ -37,9 +37,11 @@
                     <div class="navbar-serch-right-side">
                         <form class="navbar-form" role="search">
                             <div class="input-group add-on">
-                                <input class="form-control form-control222" placeholder="Search" id="srch-term" type="text">
+                                <input class="form-control form-control222" placeholder="Search" id="srch-term"
+                                    type="text">
                                 <div class="input-group-btn">
-                                    <button class="btn btn-default btn-default2913" type="button"><i class="glyphicon glyphicon-search"></i></button>
+                                    <button class="btn btn-default btn-default2913" type="button"><i
+                                            class="glyphicon glyphicon-search"></i></button>
                                 </div>
                             </div>
                         </form>
@@ -48,33 +50,32 @@
             </div>
         </div>
     </div>
-
-    <!-- ==========header mega navbar=======-->
     <div class="top-menu-bottom932">
         <nav class="navbar navbar-default">
             <div class="container">
                 <div class="navbar-header">
-                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false"> 
-                        <span class="sr-only">Toggle navigation</span> 
-                        <span class="icon-bar"></span> 
-                        <span class="icon-bar"></span> 
-                        <span class="icon-bar"></span> 
-                    </button>
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                        data-target="#bs-example-navbar-collapse-1" aria-expanded="false"> <span class="sr-only">Toggle
+                            navigation</span> <span class="icon-bar"></span> <span class="icon-bar"></span> <span
+                            class="icon-bar"></span> </button>
                     <a class="navbar-brand" href="/"><img src="image/logo.png" alt="Logo"></a>
                 </div>
                 <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                     <ul class="nav navbar-nav"> </ul>
                 </div>
+
             </div>
         </nav>
     </div>
 
-    <!--======= welcome section on top background=====-->
     <section class="welcome-part-one">
         <div class="container">
             <div class="welcome-demop102 text-center">
-                <h2>Welcome to Forum01, Awesome Questions</h2>
-                <p>Duis dapibus aliquam mi, eget euismod sem scelerisque ut. Vivamus at elit quis urna adipiscing iaculis. Curabitur vitae velit in neque dictum blandit.</p>
+                <h2>Welcome to Forum01, Awesome Questions </h2>
+                <p>Duis dapibus aliquam mi, eget euismod sem scelerisque ut. Vivamus at elit quis urna adipiscing
+                    iaculis. Curabitur vitae velit in neque dictum blandit. Proin in iaculis neque. Pellentesque
+                    <br> habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Curabitur
+                    vitae velit in neque dictum blandit</p>
                 {{ if .LoggedIn }}
                 {{ else }}
                 <div class="button0239-item">
@@ -84,84 +85,61 @@
                 </div>
                 {{ end }}
                 <div class="form-style8292">
-                    <div class="input-group"> 
-                        <span class="input-group-addon"><i class="fa fa-pencil-square" aria-hidden="true"></i></span>
-                        <input type="text" class="form-control form-control8392" placeholder="Search"> 
-                        <span class="input-group-addon"><a href="#">Ask Now</a></span> 
-                    </div>
+                    <div class="input-group"> <span class="input-group-addon"><i class="fa fa-pencil-square"
+                                aria-hidden="true"></i></span>
+                        <input type="text" class="form-control form-control8392" placeholder="Search"> <span
+                            class="input-group-addon"><a href="#">Ask Now</a></span> </div>
                 </div>
             </div>
         </div>
     </section>
-
-    <!-- ======content section/body=====-->
     <section class="main-content920">
         <div class="container">
             <div class="row">
                 <div class="col-md-9">
                     <div id="main">
-                        <input id="tab1" type="radio" name="tabs" checked>
-                        <section id="content1">
-                            {{ range .posts }}
-                            <div class="question-type2033">
-                                <div class="row">
-                                    <div class="col-md-1">
-                                        <div class="left-user12923 left-user12923-repeat">
-                                            <!-- <a href="#"><img src="image/images.png" alt="User Image"> </a>  -->
-                                            <a href="#"><i class="fa fa-check" aria-hidden="true"></i></a> 
-                                        </div>
+                        {{ range .posts }}
+                        <div class="question-type2033">
+                            <div class="row">
+                                <div class="col-md-1">
+                                    <div class="left-user12923 left-user12923-repeat">
+                                        <a href="#"><i class="fa fa-check" aria-hidden="true"></i></a>
                                     </div>
-                                    <div class="col-md-9">
-                                        <div class="right-description893">
-                                            <div id="que-hedder2983">
-                                                <h3><a href="post-deatils.html" target="_blank">{{ .Title }}</a></h3>
-                                            </div>
-                                            <div class="ques-details10018">
-                                                <p>{{ .Content }}</p>
-                                            </div>
-                                            <hr>
-                                            <div class="ques-icon-info3293"> 
-                                                <i class="fa fa-user" aria-hidden="true"> {{ .Username }}</i>
-                                                <a href="#"><i class="fa fa-folder" aria-hidden="true"> wordpress</i></a> 
-                                                <a href="#"><i class="fa fa-clock-o" aria-hidden="true"> {{ .FormattedDate }}</i></a> 
-                                                <a href="#"><i class="fa fa-question-circle-o" aria-hidden="true"> Question</i></a> 
-                                                <a href="#"><i class="fa fa-bug" aria-hidden="true"> Report</i></a> 
-                                            </div>
+                                </div>
+                                <div class="col-md-9">
+                                    <div class="right-description893">
+                                        <div id="que-hedder2983">
+                                            <h3><a href="post-deatils.html" target="_blank">{{ .Title }}</a></h3>
                                         </div>
-                                    </div>
-                                    <div class="col-md-2">
-                                        <div class="ques-type302">
-                                            <a href="#">
-                                                <button type="button" class="q-type238"><i class="fa fa-comment" aria-hidden="true"> 333335 answer</i></button>
-                                            </a>
-                                            <a href="#">
-                                                <button type="button" class="q-type23 button-ques2973"> <i class="fa fa-user-circle-o" aria-hidden="true"> 70 view</i>
-                                                </button>
-                                            </a>
+                                        <div class="ques-details10018">
+                                            <p>{{ .Content }}</p>
+                                        </div>
+                                        <hr>
+                                        <div class="ques-icon-info3293">
+                                            <i class="	fa fa-user" aria-hidden="true"> {{ .Username }} </i>
+                                    
+                                            <i class="fa fa-clock-o" aria-hidden="true"> {{ .FormattedDate }}</i>
+
+                                            <i class="fa fa-hashtag" aria-hidden="true"> {{ .CategoryName }}</i>
                                         </div>
                                     </div>
                                 </div>
+                                <div class="col-md-2">
+                                    <div class="ques-type302">
+                                        <a href='detailsPost/{{ .PostID }}'>
+                                            <button type="button" class="q-type238"><i class="fa fa-comment"
+                                                    aria-hidden="true"> {{ .CommentCount }} answer</i></button>
+                                        </a>
+                                    </div>
+                                </div>
                             </div>
-                            {{ end }}
-                            <nav aria-label="Page navigation">
-                                <ul class="pagination">
-                                    <li><a href="#" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>
-                                    <li><a href="#">1</a></li>
-                                    <li><a href="#">2</a></li>
-                                    <li><a href="#">3</a></li>
-                                    <li><a href="#">4</a></li>
-                                    <li><a href="#">5</a></li>
-                                    <li><a href="#" aria-label="Next"><span aria-hidden="true">&raquo;</span></a></li>
-                                </ul>
-                            </nav>
-                        </section>
+                        </div>
+                        {{ end }}
                     </div>
                 </div>
             </div>
         </div>
     </section>
-
-    <!--    footer -->
     <section class="footer-part">
         <div class="container">
         </div>
@@ -169,6 +147,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <script src="/static/js/jquery-3.1.1.js"></script>
     <script src="/static/js/bootstrap.js"></script>
+
 </body>
 
 </html>

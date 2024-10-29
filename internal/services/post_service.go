@@ -15,6 +15,7 @@ type PostService struct {
 
 func (p *PostService) PostSave(userId uuid.UUID, title, content string, category []string) error {
 	postId := uuid.Must(uuid.NewV4())
+
 	post := &models.Post{
 		ID:      postId,
 		UserID:  userId,
@@ -37,7 +38,14 @@ func (p *PostService) PostSave(userId uuid.UUID, title, content string, category
 func (p *PostService)  AllPosts ()([]models.PostWithUser ,error){
 	posts , err := p.PostRepo.AllPosts()
 	if err != nil {
-		return nil,fmt.Errorf("error Kayn f All Post service")
+		return nil,fmt.Errorf("error Kayn f All Post service : %v", err)
+	}
+	return posts,nil
+}
+func (p *PostService)  GetPost (PostID string)(models.PostDetails ,error){
+	posts , err := p.PostRepo.GetPostById(PostID)
+	if err != nil {
+		return models.PostDetails{},fmt.Errorf("error Kayn f one Post service : %v", err)
 	}
 	return posts,nil
 }
