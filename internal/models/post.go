@@ -28,31 +28,35 @@ type PostWithUser struct {
 	Username      string    `json:"username"`
 	Email         string    `json:"email"`
 	FormattedDate string    `json:"formatted_date"`
-	CategoryName  string    // Add this line
-	CommentCount int		`json:"comment_count"`
+	CategoryName  string    `json:"category_names"`
+	CommentCount  int       `json:"comment_count"`
 }
 
-// PostDetails represents the details of a post including its categories and comments.
-
 type PostDetails struct {
-	PostID        uuid.UUID       `json:"post_id"`
-	Title         string          `json:"title"`
-	Content       string          `json:"content"`
-	CreatedAt     time.Time       `json:"created_at"`
-	UserID        uuid.UUID       `json:"user_id"`
-	Username      string          `json:"username"`
-	Email         string          `json:"email"`
-	FormattedDate string          `json:"formatted_date"`
-	CategoryNames string          `json:"category_names"`
-	Comments      []CommentDetails `json:"comments"` // Slice of comments associated with the post
+	PostID        uuid.UUID        `json:"post_id"`
+	Title         string           `json:"title"`
+	Content       string           `json:"content"`
+	CreatedAt     time.Time        `json:"created_at"`
+	UserID        uuid.UUID        `json:"user_id"`
+	Username      string           `json:"username"`
+	Email         string           `json:"email"`
+	FormattedDate string           `json:"formatted_date"`
+	CategoryNames string           `json:"category_names"`
+	CommentCount  int              `json:"comment_count"`
+	LikeCount     int              `json:"likes_count"`
+	DisLikeCount  int              `json:"dislike_count"`
+	Comments      []CommentDetails `json:"comments"`
 }
 
 type CommentDetails struct {
-	CommentID       uuid.UUID `json:"comment_id"`
-	Content         string    `json:"content"`
-	CreatedAt       time.Time `json:"created_at"`
-	UserID          uuid.UUID `json:"user_id"`
-	Username        string    `json:"username"`
-	Email           string    `json:"email"`
-	FormattedDate   string    `json:"formatted_date"`
+	CommentID           uuid.UUID `json:"comment_id"`
+	PostIDcomment           uuid.UUID `json:"post_id"`
+	Content             string    `json:"content"`
+	CreatedAt           time.Time `json:"created_at"`
+	UserID              uuid.UUID `json:"user_id"`
+	Username            string    `json:"username"`
+	Email               string    `json:"email"`
+	FormattedDate       string    `json:"formatted_date"`
+	LikeCountComment    int64     `json:"likes_count_comment"`
+	DisLikeCountComment int64     `json:"dislike_count_comment"`
 }

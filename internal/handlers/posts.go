@@ -129,6 +129,7 @@ func (p *PostHandler) DetailsPost(w http.ResponseWriter, r *http.Request) {
 	}
 	if err != nil {
 		fmt.Println(err)
+
 	}
 	cookie, err := r.Cookie("session_id")
 	if err == nil && cookie != nil {
@@ -146,7 +147,7 @@ func (p *PostHandler) DetailsPost(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	fmt.Println(posts)
+	// fmt.Println(posts)
 
 	utils.OpenHtml("post-deatils.html", w, data)
 }

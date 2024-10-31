@@ -49,7 +49,7 @@ CREATE TABLE likes(
     user_id TEXT NOT NULL,
     post_id TEXT,
     comment_id TEXT,
-    is_like BOOLEAN NOT NULL,
+    react_type TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id),
     FOREIGN KEY (post_id) REFERENCES posts(id),
@@ -61,9 +61,12 @@ CREATE TABLE sessions (
     user_id TEXT NOT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
+
+ALTER TABLE likes ADD CONSTRAINT unique_user_post_comment UNIQUE (user_id, post_id, comment_id);
+
 -- Index for faster querying
 CREATE INDEX idx_user_id_session ON sessions(user_id);
 CREATE INDEX idx_post_categories_post_id ON post_categories(post_id);
 CREATE INDEX idx_post_categories_category_id ON post_categories(category_id);
 CREATE INDEX idx_likes_post_id ON likes(post_id);
-CREATE INDEX idx_likes_comment_id ON likes(comment_id);go get github.com/mattn/go-sqlite3
+CREATE INDEX idx_likes_comment_id ON likes(comment_id);

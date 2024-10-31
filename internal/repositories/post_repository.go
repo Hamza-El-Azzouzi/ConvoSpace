@@ -92,6 +92,7 @@ ORDER BY
 
 	return posts, nil
 }
+
 func (r *PostRepository) GetPostById(PostId string) (models.PostDetails, error) {
 	query := `SELECT 
 	    posts.id AS post_id,
@@ -102,12 +103,18 @@ func (r *PostRepository) GetPostById(PostId string) (models.PostDetails, error) 
 	    post_user.username AS post_username,
 	    post_user.email AS post_email,
 	    GROUP_CONCAT(DISTINCT categories.name) AS category_names,
+		(SELECT COUNT(*) FROM comments WHERE comments.post_id = posts.id) AS comment_count,
+		(SELECT COUNT(*) FROM likes WHERE likes.post_id = posts.id AND likes.react_type = "like") AS likes_count,
+		(SELECT COUNT(*) FROM likes WHERE likes.post_id = posts.id AND likes.react_type = "dislike") AS dislike_count,
 	    comments.id AS comment_id,
+		comments.post_id as post_id,
 	    comments.content AS comment_content,
 	    comments.created_at AS comment_created_at,
 	    comment_user.id AS comment_user_id,
 	    comment_user.username AS comment_username,
-	    comment_user.email AS comment_email
+	    comment_user.email AS comment_email,
+		(SELECT COUNT(*) FROM likes WHERE likes.comment_id = comments.id AND likes.react_type = "like") AS comment_likes_count,
+	    (SELECT COUNT(*) FROM likes WHERE likes.comment_id = comments.id AND likes.react_type = "dislike") AS comment_dislike_count
 	FROM 
 	    posts
 	JOIN 
@@ -129,7 +136,7 @@ func (r *PostRepository) GetPostById(PostId string) (models.PostDetails, error) 
 
 	rows, err := r.DB.Query(query, PostId)
 	if err != nil {
-		return models.PostDetails{}, err
+		return models.PostDetails{}, fmt.Errorf("error f query : %v", err)
 	}
 	defer rows.Close()
 
@@ -138,20 +145,26 @@ func (r *PostRepository) GetPostById(PostId string) (models.PostDetails, error) 
 
 	for rows.Next() {
 		var (
-			postID         uuid.UUID
-			title          string
-			content        string
-			createdAt      time.Time
-			userID         uuid.UUID
-			username       string
-			email          string
-			categoryNames  string
-			commentID      sql.NullString
-			commentContent sql.NullString
-			commentCreated sql.NullTime
-			commentUserID  sql.NullString
-			commentUsername sql.NullString
-			commentEmail    sql.NullString
+			postID              uuid.UUID
+			title               string
+			content             string
+			createdAt           time.Time
+			userID              uuid.UUID
+			username            string
+			email               string
+			categoryNames       string
+			commentCount        int
+			likeCount           int
+			disLikeCount        int
+			commentID           sql.NullString
+			postIDcomment       sql.NullString
+			commentContent      sql.NullString
+			commentCreated      sql.NullTime
+			commentUserID       sql.NullString
+			commentUsername     sql.NullString
+			commentEmail        sql.NullString
+			commentLikesCount   sql.NullInt64
+			commentDislikeCount sql.NullInt64
 		)
 
 		err := rows.Scan(
@@ -163,15 +176,21 @@ func (r *PostRepository) GetPostById(PostId string) (models.PostDetails, error) 
 			&username,
 			&email,
 			&categoryNames,
+			&commentCount,
+			&likeCount,
+			&disLikeCount,
 			&commentID,
+			&postIDcomment,
 			&commentContent,
 			&commentCreated,
 			&commentUserID,
 			&commentUsername,
 			&commentEmail,
+			&commentLikesCount,
+			&commentDislikeCount,
 		)
 		if err != nil {
-			return models.PostDetails{}, err
+			return models.PostDetails{}, fmt.Errorf("error f row scan : %v", err)
 		}
 
 		if postDetails.PostID == uuid.Nil {
@@ -185,33 +204,43 @@ func (r *PostRepository) GetPostById(PostId string) (models.PostDetails, error) 
 				Email:         email,
 				FormattedDate: createdAt.Format("January 2, 2006"),
 				CategoryNames: categoryNames,
+				CommentCount:  commentCount,
+				LikeCount:     likeCount,
+				DisLikeCount:  disLikeCount,
 			}
 		}
 
 		if commentID.Valid {
 			parsedCommentID, err := uuid.FromString(commentID.String)
 			if err != nil {
-				return models.PostDetails{}, err
+				return models.PostDetails{}, fmt.Errorf("error f parse com id : %v", err)
+			}
+			parsedposttID, err := uuid.FromString(postIDcomment.String)
+			if err != nil {
+				return models.PostDetails{}, fmt.Errorf("error f parse com id : %v", err)
 			}
 			parsedUserIDComment, err := uuid.FromString(commentUserID.String)
 			if err != nil {
-				return models.PostDetails{}, err
+				return models.PostDetails{}, fmt.Errorf("error f parse : %v", err)
 			}
 			comment := models.CommentDetails{
-				CommentID:     parsedCommentID,
-				Content:       commentContent.String,
-				CreatedAt:     commentCreated.Time,
-				UserID:        parsedUserIDComment,
-				Username:      commentUsername.String,
-				Email:         commentEmail.String,
-				FormattedDate: commentCreated.Time.Format("January 2, 2006"),
+				CommentID:           parsedCommentID,
+				PostIDcomment:       parsedposttID,
+				Content:             commentContent.String,
+				CreatedAt:           commentCreated.Time,
+				UserID:              parsedUserIDComment,
+				Username:            commentUsername.String,
+				Email:               commentEmail.String,
+				FormattedDate:       commentCreated.Time.Format("January 2, 2006"),
+				LikeCountComment:    commentLikesCount.Int64,
+				DisLikeCountComment: commentDislikeCount.Int64,
 			}
 			postDetails.Comments = append(postDetails.Comments, comment)
 		}
 	}
 
 	if err = rows.Err(); err != nil {
-		return models.PostDetails{}, err
+		return models.PostDetails{}, fmt.Errorf("error f row.errr : %v", err)
 	}
 
 	return postDetails, nil

@@ -77,7 +77,7 @@
             <h3>Post Details</h3>
             <ol class="breadcrumb breadcrumb839">
                 <li><a href="/">Home</a></li>
-                <li><a href="#">Post Details</a></li>
+                <li><a href="{{ .posts.PostID }}">Post Details</a></li>
                 <li class="active">{{ .posts.Title }}</li>
 
             </ol>
@@ -96,9 +96,8 @@
                                     </div>
                                 </div>
                                 <div class="col-md-4">
-                                    <div class="post-que-rep-rihght320"> <a href="#"><i class="fa fa-question-circle"
-                                                aria-hidden="true"></i> Question</a> <a href="#"
-                                            class="r-clor10">Report</a> </div>
+                                    <div class="post-que-rep-rihght320">
+                                        <a href="#" class="r-clor10">Comments : {{ .posts.CommentCount }}</a> </div>
                                 </div>
                             </div>
                         </div>
@@ -113,13 +112,30 @@
                                     <i class="fa fa-hashtag" aria-hidden="true"> {{ .posts.CategoryNames }}</i>
                                 </div>
                                 <div class="l-rightside39">
+                                    {{ if .LoggedIn }}
+                                    <a href="/like/{{ .posts.PostID }}">
+                                        <button type="button" class="tolltip-button thumbs-up2" data-toggle="tooltip"
+                                            data-placement="bottom" title="Like"><i class="fa fa-thumbs-o-up "
+                                                aria-hidden="true"></i></button><span
+                                            class="single-question-vote-result">{{ .posts.LikeCount }}</span>
+                                    </a>
+                                    <a href="/disLike/{{ .posts.PostID }}">
+                                        <button type="button" class="tolltip-button thumbs-down2" data-toggle="tooltip"
+                                            data-placement="bottom" title="Dislike"><i class="fa fa-thumbs-o-down"
+                                                aria-hidden="true"></i></button> <span
+                                            class="single-question-vote-result">{{ .posts.DisLikeCount }}</span>
+                                    </a>
+                                    {{ else }}
                                     <button type="button" class="tolltip-button thumbs-up2" data-toggle="tooltip"
                                         data-placement="bottom" title="Like"><i class="fa fa-thumbs-o-up "
-                                            aria-hidden="true"></i></button>
-                                    <button type="button" class="tolltip-button  thumbs-down2" data-toggle="tooltip"
+                                            aria-hidden="true"></i></button><span
+                                        class="single-question-vote-result">{{ .posts.LikeCount }}</span>
+                                    <button type="button" class="tolltip-button thumbs-down2" data-toggle="tooltip"
                                         data-placement="bottom" title="Dislike"><i class="fa fa-thumbs-o-down"
                                             aria-hidden="true"></i></button> <span
-                                        class="single-question-vote-result">+22</span> </div>
+                                        class="single-question-vote-result">{{ .posts.DisLikeCount }}</span>
+                                    {{ end }}
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -137,22 +153,38 @@
                                             <div class="comment-box">
                                                 <div class="comment-head">
                                                     <h6 class="comment-name"><a href="#">{{ .Username }}</a></h6>
-                                                    <i class="fa fa-clock-o" aria-hidden="true">{{ .FormattedDate }}</i> 
-                                                    <i class="fa fa-reply"></i>
-                                                    <i class="fa fa-heart"></i>
+                                                    <i class="fa fa-clock-o" aria-hidden="true">{{ .FormattedDate }}</i>
+
                                                 </div>
                                                 <div class="comment-content"> {{ .Content }}
                                                 </div>
                                                 <div class="post-footer29032">
                                                     <div class="l-side2023">
-                                                        <i class="fa fa-clock-o clock2" aria-hidden="true"> {{ .FormattedDate }}</i>
+                                                        <i class="fa fa-clock-o clock2" aria-hidden="true">
+                                                            {{ .FormattedDate }}</i>
                                                     </div>
                                                 </div>
+                                                <div class="l-rightside39">
+                                                    <a href="/likeComment/{{ .PostIDcomment }}/{{ .CommentID }}">
+                                                        <button type="button" class="tolltip-button thumbs-up2"
+                                                            data-toggle="tooltip" data-placement="bottom"
+                                                            title="Like"><i class="fa fa-thumbs-o-up "
+                                                                aria-hidden="true"></i></button><span
+                                                            class="single-question-vote-result">{{ .LikeCountComment }}</span>
+                                                    </a>
+                                                    <a href="/disLikeComment/{{ .PostIDcomment }}/{{ .CommentID }}">
+                                                        <button type="button" class="tolltip-button thumbs-down2"
+                                                            data-toggle="tooltip" data-placement="bottom"
+                                                            title="Dislike"><i class="fa fa-thumbs-o-down"
+                                                                aria-hidden="true"></i></button> <span
+                                                            class="single-question-vote-result">{{ .DisLikeCountComment }}</span>
+                                                    </a>
+                                                </div>
                                             </div>
-                                           
+
                                         </div>
                                     </ul>
-                                    
+
                                 </div>
                                 {{ end }}
                             </div>

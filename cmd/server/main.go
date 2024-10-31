@@ -32,10 +32,13 @@ func main() {
 	categorieRepo := &repositories.CategoryRepository{DB: db}
 	postRepo := &repositories.PostRepository{DB: db}
 	commentRepo := &repositories.CommentRepositorie{DB: db}
+	likeRepo := &repositories.LikeReposetorie{DB: db}
+
 
 	postServices := &services.PostService{PostRepo: postRepo}
 	categorieServices := &services.CategoryService{CategorieRepo: categorieRepo}
 	commentService := &services.CommentService{CommentRepo: commentRepo}
+	likeService := &services.LikeService{LikeRepo: likeRepo}
 	authService := &services.AuthService{UserRepo: userRepo}
 	authHandler := &handlers.AuthHandler{AuthService: authService}
 	postHandler := &handlers.PostHandler{
@@ -44,6 +47,8 @@ func main() {
 		PostService:     postServices,
 		CommentService:  commentService,
 	}
+	likeHandler :=  &handlers.LikeHandler{LikeService : likeService ,AuthService: authService}
+
 
 	// postHandler := &handlers.PostHandler{AuthService: authService}
 
@@ -58,6 +63,12 @@ func main() {
 	http.HandleFunc("/login", authHandler.LoginHandle)
 	http.HandleFunc("/register", authHandler.RegisterHandle)
 	http.HandleFunc("/detailsPost/", postHandler.DetailsPost)
+
+	http.HandleFunc("/like/",likeHandler.LikePost)
+	http.HandleFunc("/disLike/",likeHandler.DisLikePost)
+
+	http.HandleFunc("/likeComment/",likeHandler.LikeComment)
+	http.HandleFunc("/disLikeComment/",likeHandler.DisLikeComment)
 
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
