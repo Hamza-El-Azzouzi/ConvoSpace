@@ -45,7 +45,7 @@ CREATE TABLE post_categories(
 
 -- Likes table
 CREATE TABLE likes(
-    id TEXT AUTO_INCREMEN PRIMARY KEY,
+    id TEXT PRIMARY KEY,
     user_id TEXT NOT NULL,
     post_id TEXT,
     comment_id TEXT,

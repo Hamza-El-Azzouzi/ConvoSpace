@@ -70,5 +70,5 @@ func main() {
 	http.HandleFunc("/likeComment/",likeHandler.LikeComment)
 	http.HandleFunc("/disLikeComment/",likeHandler.DisLikeComment)
 
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	log.Fatal(http.ListenAndServe("0.0.0.0:8080", nil))
 }

@@ -142,6 +142,7 @@
                     <div class="comment-list12993">
                         <div class="container">
                             <div class="row">
+                                {{ if .LoggedIn }}
                                 {{ range .posts.Comments }}
                                 <div class="comments-container">
                                     <ul id="comments-list" class="comments-list">
@@ -186,6 +187,50 @@
                                     </ul>
 
                                 </div>
+                                {{ end }}
+                                {{ else }}
+                                {{ range .posts.Comments }}
+                                <div class="comments-container">
+                                    <ul id="comments-list" class="comments-list">
+
+                                        <div class="comment-main-level">
+                                            <!-- Avatar -->
+
+                                            <!-- Contenedor del Comentario -->
+                                            <div class="comment-box">
+                                                <div class="comment-head">
+                                                    <h6 class="comment-name"><a href="#">{{ .Username }}</a></h6>
+                                                    <i class="fa fa-clock-o" aria-hidden="true">{{ .FormattedDate }}</i>
+
+                                                </div>
+                                                <div class="comment-content"> {{ .Content }}
+                                                </div>
+                                                <div class="post-footer29032">
+                                                    <div class="l-side2023">
+                                                        <i class="fa fa-clock-o clock2" aria-hidden="true">
+                                                            {{ .FormattedDate }}</i>
+                                                    </div>
+                                                </div>
+                                                <div class="l-rightside39">
+                                                        <button type="button" class="tolltip-button thumbs-up2"
+                                                            data-toggle="tooltip" data-placement="bottom"
+                                                            title="Like"><i class="fa fa-thumbs-o-up "
+                                                                aria-hidden="true"></i></button><span
+                                                            class="single-question-vote-result">{{ .LikeCountComment }}</span>
+                                                   
+                                                        <button type="button" class="tolltip-button thumbs-down2"
+                                                            data-toggle="tooltip" data-placement="bottom"
+                                                            title="Dislike"><i class="fa fa-thumbs-o-down"
+                                                                aria-hidden="true"></i></button> <span
+                                                            class="single-question-vote-result">{{ .DisLikeCountComment }}</span>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </ul>
+
+                                </div>
+                                {{ end }}
                                 {{ end }}
                             </div>
                         </div>
@@ -255,10 +300,6 @@
         <div class="container">
         </div>
     </section>
-
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-    <script src="/static/js/jquery-3.1.1.js"></script>
-    <script src="/static/js/bootstrap.js"></script>
     <script>
         const clickToRegister = (event) => {
             window.location.replace('/register')

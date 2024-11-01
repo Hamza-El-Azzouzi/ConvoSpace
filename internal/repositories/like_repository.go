@@ -61,8 +61,8 @@ func (l *LikeReposetorie) CreateForComment(like *models.Like) error {
 	var existingReactType string
 
 	err := l.DB.QueryRow(
-		"SELECT id, react_type FROM likes WHERE user_id = ? AND post_id = ?",
-		like.UserID, like.PostID,
+		"SELECT id, react_type FROM likes WHERE user_id = ? AND comment_id = ?",
+		like.UserID,like.CommentID,
 	).Scan(&existingID, &existingReactType)
 
 	if err == nil {

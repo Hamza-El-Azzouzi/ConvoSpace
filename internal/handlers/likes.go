@@ -16,9 +16,7 @@ type LikeHandler struct {
 }
 
 func (l *LikeHandler) LikePost(w http.ResponseWriter, r *http.Request) {
-	data := map[string]interface{}{
-		"LoggedIn": true,
-	}
+
 	var userID uuid.UUID
 	pathParts := strings.Split(r.URL.Path, "/")
 
@@ -27,16 +25,13 @@ func (l *LikeHandler) LikePost(w http.ResponseWriter, r *http.Request) {
 	}
 	postID := pathParts[2]
 	cookie, err := r.Cookie("session_id")
-	if err != nil {
-		data["LoggedIn"] = false
-	}
 
 	if err == nil && cookie != nil {
 		sessionId := cookie.Value
 		user, err := l.AuthService.UserRepo.GetUserBySessionID(sessionId)
 		if err == nil && user != nil {
 			userID = user.ID
-			l.LikeService.Create(userID,postID,"","like")
+			l.LikeService.Create(userID,postID,"","like",false)
 			http.Redirect(w, r, fmt.Sprintf("http://localhost:8080/detailsPost/%v", postID), http.StatusSeeOther)
 		} else {
 			fmt.Printf("Error fetching user: %v", err)
@@ -64,7 +59,7 @@ func (l *LikeHandler) DisLikePost(w http.ResponseWriter, r *http.Request) {
 		user, err := l.AuthService.UserRepo.GetUserBySessionID(sessionId)
 		if err == nil && user != nil {
 			userID = user.ID
-			l.LikeService.Create(userID,postID,"","dislike")
+			l.LikeService.Create(userID,postID,"","dislike", false)
 			http.Redirect(w, r, fmt.Sprintf("http://localhost:8080/detailsPost/%v", postID), http.StatusSeeOther)
 		} else {
 			fmt.Printf("Error fetching user: %v", err)
@@ -76,9 +71,7 @@ func (l *LikeHandler) DisLikePost(w http.ResponseWriter, r *http.Request) {
 
 
 func (l *LikeHandler) LikeComment(w http.ResponseWriter, r *http.Request) {
-	data := map[string]interface{}{
-		"LoggedIn": true,
-	}
+
 	var userID uuid.UUID
 	pathParts := strings.Split(r.URL.Path, "/")
 
@@ -89,26 +82,21 @@ func (l *LikeHandler) LikeComment(w http.ResponseWriter, r *http.Request) {
 	postID := pathParts[2]
 	commentID := pathParts[3]
 	cookie, err := r.Cookie("session_id")
-	if err != nil {
-		data["LoggedIn"] = false
-	}
 
 	if err == nil && cookie != nil {
 		sessionId := cookie.Value
 		user, err := l.AuthService.UserRepo.GetUserBySessionID(sessionId)
 		if err == nil && user != nil {
 			userID = user.ID
-			l.LikeService.Create(userID,postID,commentID,"like")
-			http.Redirect(w, r, fmt.Sprintf("http://localhost:8080/detailsPost/%v", postID), http.StatusSeeOther)
+			err = l.LikeService.Create(userID,"",commentID,"like",true)
+			fmt.Printf("err kayn f like comment : %v",err)
+			http.Redirect(w, r, fmt.Sprintf("http://10.1.2.1:8080/detailsPost/%v", postID), http.StatusSeeOther)
 		} else {
 			fmt.Printf("Error fetching user: %v", err)
 		}
 	}
 }
 func (l *LikeHandler) DisLikeComment(w http.ResponseWriter, r *http.Request) {
-	data := map[string]interface{}{
-		"LoggedIn": true,
-	}
 	var userID uuid.UUID
 	pathParts := strings.Split(r.URL.Path, "/")
 
@@ -119,17 +107,15 @@ func (l *LikeHandler) DisLikeComment(w http.ResponseWriter, r *http.Request) {
 	postID := pathParts[2]
 	commentID := pathParts[3]
 	cookie, err := r.Cookie("session_id")
-	if err != nil {
-		data["LoggedIn"] = false
-	}
 
 	if err == nil && cookie != nil {
 		sessionId := cookie.Value
 		user, err := l.AuthService.UserRepo.GetUserBySessionID(sessionId)
 		if err == nil && user != nil {
 			userID = user.ID
-			l.LikeService.Create(userID,postID,commentID,"dislike")
-			http.Redirect(w, r, fmt.Sprintf("http://localhost:8080/detailsPost/%v", postID), http.StatusSeeOther)
+			err = l.LikeService.Create(userID,"",commentID,"dislike",true)
+			fmt.Printf("err kayn f like comment : %v",err)
+			http.Redirect(w, r, fmt.Sprintf("http://10.1.2.1:8080/detailsPost/%v", postID), http.StatusSeeOther)
 		} else {
 			fmt.Printf("Error fetching user: %v", err)
 		}

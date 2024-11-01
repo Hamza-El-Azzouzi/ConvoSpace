@@ -11,7 +11,7 @@ type LikeService struct {
 	LikeRepo *repositories.LikeReposetorie
 }
 
-func (l *LikeService) Create(userID uuid.UUID, postID, commentID, reactType string) error {
+func (l *LikeService) Create(userID uuid.UUID, postID, commentID, reactType string , isComment bool) error {
 	likeID := uuid.Must(uuid.NewV4())
 	var postIDPtr, commentIDPtr *string
 	if postID != "" {
@@ -26,6 +26,9 @@ func (l *LikeService) Create(userID uuid.UUID, postID, commentID, reactType stri
 		PostID:    postIDPtr,
 		CommentID: commentIDPtr,
 		ReactType: reactType,
+	}
+	if isComment{
+		return l.LikeRepo.CreateForComment(like)
 	}
 	return l.LikeRepo.CreateForPost(like)
 }
