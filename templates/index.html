@@ -109,15 +109,15 @@
                                 <div class="col-md-9">
                                     <div class="right-description893">
                                         <div id="que-hedder2983">
-                                            <h3><a href="post-deatils.html" target="_blank">{{ .Title }}</a></h3>
+                                            <h3><a href="post-deatils.html" target="_blank" id="title">{{ .Title }}</a></h3>
                                         </div>
                                         <div class="ques-details10018">
-                                            <p>{{ .Content }}</p>
+                                            <p id="content">{{ .Content }}</p>
                                         </div>
                                         <hr>
                                         <div class="ques-icon-info3293">
                                             <i class="	fa fa-user" aria-hidden="true"> {{ .Username }} </i>
-                                    
+
                                             <i class="fa fa-clock-o" aria-hidden="true"> {{ .FormattedDate }}</i>
 
                                             <i class="fa fa-hashtag" aria-hidden="true"> {{ .CategoryName }}</i>
@@ -137,6 +137,66 @@
                         {{ end }}
                     </div>
                 </div>
+                <aside class="col-md-3 sidebar97239">
+                    <div class="login-part2389">
+                        {{ if .LoggedIn }}
+                        <h4>Welcome, {{ .Username }}</h4>
+                        <a href="/logout"><button type="button" class="userlogin320">Log Out</button></a>
+                        {{ else }}
+                        <h4>Login</h4>
+                        <div class="input-group300">
+                            <form action="/login" method="post">
+                                <span><i class="fa fa-user" aria-hidden="true"></i></span>
+                                <input type="email" name="email" class="namein309" placeholder="email" required />
+                        </div>
+                        <div class="input-group300">
+                            <span><i class="fa fa-lock" aria-hidden="true"></i></span>
+                            <input type="password" class="passin309" name="password" placeholder="password" required />
+
+                        </div>
+                        <button type="submit" class="userlogin320">LOG IN</button>
+                        </form>
+                        {{ end }}
+                    </div>
+                    <div class="categori-part329">
+                        <h4>Created Posts</h4>
+                        <ul>
+                            <label>
+                                <input type="radio" name="post" value="desc" id="index-checkbox" />
+                                <span class="custom-checkbox">Recent Posts</span>
+                            </label>
+                            <label>
+                                <input type="radio" name="post" value="asc" id="index-checkbox" />
+                                <span class="custom-checkbox">Oldest Posts</span>
+                            </label>
+                        </ul>
+                    </div>
+                    <div class="categori-part329">
+                        <h4>Liked Posts</h4>
+                        <ul>
+                            <label>
+                                <input type="radio" name="liked" value="desc" id="index-checkbox" />
+                                <span class="custom-checkbox">Most Liked Posts</span>
+                            </label>
+                            <label>
+                                <input type="radio" name="liked" value="asc" id="index-checkbox" />
+                                <span class="custom-checkbox">Less Liked Posts</span>
+                            </label>
+                        </ul>
+                    </div>
+                    <div class="categori-part329">
+                        <h4>Category</h4>
+                        <ul>
+                            {{ range .categories }}
+                            <label>
+                                <input type="checkbox" value="{{ .ID }}" name="categorie" id="index-checkbox" />
+                                <span class="custom-checkbox">{{ .Name }}</span>
+                            </label>
+                            {{ end }}
+
+                        </ul>
+                    </div>
+                </aside>
             </div>
         </div>
     </section>
@@ -144,10 +204,99 @@
         <div class="container">
         </div>
     </section>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-    <script src="/static/js/jquery-3.1.1.js"></script>
-    <script src="/static/js/bootstrap.js"></script>
-
 </body>
+<script>
+    document.body.addEventListener("change", () => {
+        const post = document.querySelector('input[name="post"]:checked')
+        const like = document.querySelector('input[name="liked"]:checked')
+        var categorie = document.querySelectorAll('input[name="categorie"]:checked')
+        const categoryValues = Array.from(categorie).map(category => category.value);
+        var postVal = post ? post.value : ""
+        var likeVal = like ? like.value : ""
+
+        var queryParams = new URLSearchParams({
+            posts: postVal,
+            likes: likeVal,
+            categories: categoryValues.join(",")
+
+        });
+        console.log(queryParams.toString())
+        fetch('/filters?' + queryParams.toString(), {
+        method: 'GET',
+    })
+    .then(response => response.json()) 
+    .then(data => {
+        console.log(data)
+        updateData(data)
+        
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+    })
+    const updateData = (data) => {
+    const mainDiv = document.getElementById("main");
+    mainDiv.innerHTML = ""; // Clear existing content
+
+    if (data=== null) {
+        // Display a "No Results Found" message
+        const noResultsDiv = document.createElement("div");
+        noResultsDiv.classList.add("no-results");
+        noResultsDiv.textContent = "No Results Found.";
+        mainDiv.appendChild(noResultsDiv);
+        return; // Exit the function if no data
+    }
+
+    // Loop through and create elements for each post if there is data
+    data.forEach(post => {
+        const postDiv = document.createElement("div");
+        postDiv.classList.add("question-type2033");
+
+        const rowDiv = document.createElement("div");
+        rowDiv.classList.add("row");
+
+        const col1 = document.createElement("div");
+        col1.classList.add("col-md-1");
+        col1.innerHTML = `
+            <div class="left-user12923 left-user12923-repeat">
+                <a href="#"><i class="fa fa-check" aria-hidden="true"></i></a>
+            </div>`;
+
+        const col9 = document.createElement("div");
+        col9.classList.add("col-md-9");
+        col9.innerHTML = `
+            <div class="right-description893">
+                <div id="que-hedder2983">
+                    <h3><a href="post-deatils.html" target="_blank" id="title">${post.title}</a></h3>
+                </div>
+                <div class="ques-details10018">
+                    <p id="content">${post.content}</p>
+                </div>
+                <hr>
+                <div class="ques-icon-info3293">
+                    <i class="fa fa-user" aria-hidden="true"> ${post.username}</i>
+                    <i class="fa fa-clock-o" aria-hidden="true"> ${post.formatted_date}</i>
+                    <i class="fa fa-hashtag" aria-hidden="true"> ${post.category_names}</i>
+                </div>
+            </div>`;
+
+        const col2 = document.createElement("div");
+        col2.classList.add("col-md-2");
+        col2.innerHTML = `
+            <div class="ques-type302">
+                <a href='detailsPost/${post.post_id}'>
+                    <button type="button" class="q-type238"><i class="fa fa-comment"
+                        aria-hidden="true"> ${post.comment_count} Comments</i></button>
+                </a>
+            </div>`;
+
+        rowDiv.appendChild(col1);
+        rowDiv.appendChild(col9);
+        rowDiv.appendChild(col2);
+        postDiv.appendChild(rowDiv);
+        mainDiv.appendChild(postDiv);
+    });
+};
+</script>
 
 </html>

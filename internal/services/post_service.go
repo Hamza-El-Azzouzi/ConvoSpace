@@ -2,6 +2,7 @@ package services
 
 import (
 	"fmt"
+
 	"forum/internal/models"
 	"forum/internal/repositories"
 
@@ -9,7 +10,7 @@ import (
 )
 
 type PostService struct {
-	PostRepo *repositories.PostRepository
+	PostRepo     *repositories.PostRepository
 	CategotyRepo *repositories.CategoryRepository
 }
 
@@ -22,30 +23,37 @@ func (p *PostService) PostSave(userId uuid.UUID, title, content string, category
 		Title:   title,
 		Content: content,
 	}
-	for _,id :=  range category{
+	for _, id := range category {
 		postCategory := &models.PostCategory{
-			PostID: postId,
+			PostID:     postId,
 			CategoryID: id,
 		}
 		err := p.PostRepo.PostCatgorie(postCategory)
-		if err != nil{
-			return fmt.Errorf("error F categorie : %v ",err)
+		if err != nil {
+			return fmt.Errorf("error F categorie : %v ", err)
 		}
 	}
 
-	return p.PostRepo.Create(post) 
+	return p.PostRepo.Create(post)
 }
-func (p *PostService)  AllPosts ()([]models.PostWithUser ,error){
-	posts , err := p.PostRepo.AllPosts()
+
+func (p *PostService) AllPosts() ([]models.PostWithUser, error) {
+	posts, err := p.PostRepo.AllPosts()
 	if err != nil {
-		return nil,fmt.Errorf("error Kayn f All Post service : %v", err)
+		return nil, fmt.Errorf("error Kayn f All Post service : %v", err)
 	}
-	return posts,nil
+	return posts, nil
 }
-func (p *PostService)  GetPost (PostID string)(models.PostDetails ,error){
-	posts , err := p.PostRepo.GetPostById(PostID)
+
+func (p *PostService) GetPost(PostID string) (models.PostDetails, error) {
+	posts, err := p.PostRepo.GetPostById(PostID)
 	if err != nil {
-		return models.PostDetails{},fmt.Errorf("error Kayn f one Post service : %v", err)
+		return models.PostDetails{}, fmt.Errorf("error Kayn f one Post service : %v", err)
 	}
-	return posts,nil
+	return posts, nil
+}
+
+func (p *PostService) FilterPost(post, like string, categorie []string) ([]models.PostWithUser, error) {
+	fmt.Printf("slice f service : %v  hada len : %v \n" ,categorie,len(categorie))
+	return p.PostRepo.FilterPost(post,like,categorie)
 }

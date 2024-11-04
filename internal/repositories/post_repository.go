@@ -57,9 +57,7 @@ LEFT JOIN
 LEFT JOIN 
     comments ON posts.id = comments.post_id
 GROUP BY 
-    posts.id
-ORDER BY 
-    posts.created_at DESC;`
+    posts.id;`
 	rows, err := r.DB.Query(query)
 	if err != nil {
 		return nil, fmt.Errorf("error querying posts with user info: %v", err)
@@ -244,4 +242,92 @@ func (r *PostRepository) GetPostById(PostId string) (models.PostDetails, error) 
 	}
 
 	return postDetails, nil
+}
+
+func (r *PostRepository) FilterPost(post, like string, categorie []string) ([]models.PostWithUser, error) {
+	baseQuery := `SELECT 
+    posts.id AS post_id,
+    posts.title,
+    posts.content,
+    posts.created_at,
+    users.id AS user_id,
+    users.username,
+    users.email,
+	(SELECT COUNT(*) FROM likes WHERE likes.post_id = posts.id AND react_type = "like") AS like_count,
+    IFNULL(GROUP_CONCAT(categories.name, ', '), '') AS category_names,
+    COUNT(comments.id) AS comment_count
+	FROM 
+    	posts
+	JOIN 
+    	users ON posts.user_id = users.id
+	LEFT JOIN 
+    	post_categories ON posts.id = post_categories.post_id
+	LEFT JOIN 
+    	categories ON post_categories.category_id = categories.id
+	LEFT JOIN 
+    	comments ON posts.id = comments.post_id`
+	groupQuery := " GROUP BY posts.id"
+	var categoryFilter string
+	args := []interface{}{}
+	fmt.Printf("slice f repo : %v  hada len : %v \n" ,categorie,len(categorie))
+	if len(categorie) > 0 {
+		categoryFilter = " WHERE post_categories.category_id IN ("
+		for i, id := range categorie {
+			if i > 0 {
+				categoryFilter += ", "
+			}
+			categoryFilter += "?"
+			args = append(args, id)
+		}
+		categoryFilter += ")"
+	}
+	orderClause := ""
+	if post != "" || like != "" {
+		orderClause = " ORDER BY"
+	}
+	if post == "asc" {
+		orderClause += " posts.created_at ASC" 
+	} else if post == "desc" {
+		orderClause += " posts.created_at DESC"
+	}
+	if post != "" && like != ""{
+		orderClause += ","
+	}
+	if like == "asc" {
+		orderClause += " like_count ASC" 
+	} else if like == "desc" {
+		orderClause += " like_count DESC"
+	}
+
+	finalQuery := baseQuery + categoryFilter + groupQuery+orderClause
+	fmt.Println(finalQuery)
+	fmt.Println(args...)
+	rows, err := r.DB.Query(finalQuery, args...)
+	if err != nil {
+		return nil, fmt.Errorf("failed to execute query in filter: %w", err)
+	}
+	defer rows.Close()
+
+	var posts []models.PostWithUser
+	for rows.Next() {
+		var post models.PostWithUser
+		if err := rows.Scan(
+			&post.PostID,
+			&post.Title,
+			&post.Content,
+			&post.CreatedAt,
+			&post.UserID,
+			&post.Username,
+			&post.Email,
+			&post.LikeCount,
+			&post.CategoryName,
+			&post.CommentCount,
+		); err != nil {
+			return nil, fmt.Errorf("error scanning post with user info filter: %v", err)
+		}
+		post.FormattedDate = post.CreatedAt.Format("January 2, 2006")
+		posts = append(posts, post)
+	}
+
+	return posts, nil
 }

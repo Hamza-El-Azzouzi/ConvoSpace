@@ -32,7 +32,7 @@ func (l *LikeHandler) LikePost(w http.ResponseWriter, r *http.Request) {
 		if err == nil && user != nil {
 			userID = user.ID
 			l.LikeService.Create(userID,postID,"","like",false)
-			http.Redirect(w, r, fmt.Sprintf("http://localhost:8080/detailsPost/%v", postID), http.StatusSeeOther)
+			http.Redirect(w, r, fmt.Sprintf("http://10.1.2.1:8080/detailsPost/%v", postID), http.StatusSeeOther)
 		} else {
 			fmt.Printf("Error fetching user: %v", err)
 		}
@@ -60,7 +60,7 @@ func (l *LikeHandler) DisLikePost(w http.ResponseWriter, r *http.Request) {
 		if err == nil && user != nil {
 			userID = user.ID
 			l.LikeService.Create(userID,postID,"","dislike", false)
-			http.Redirect(w, r, fmt.Sprintf("http://localhost:8080/detailsPost/%v", postID), http.StatusSeeOther)
+			http.Redirect(w, r, fmt.Sprintf("http://10.1.2.1:8080/detailsPost/%v", postID), http.StatusSeeOther)
 		} else {
 			fmt.Printf("Error fetching user: %v", err)
 		}

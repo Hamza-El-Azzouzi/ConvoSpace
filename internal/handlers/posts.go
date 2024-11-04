@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"strings"
@@ -20,13 +21,18 @@ type PostHandler struct {
 
 func (p *PostHandler) HomeHandle(w http.ResponseWriter, r *http.Request) {
 	posts, err := p.PostService.AllPosts()
+	categories, errCat := p.CategoryService.GetAllCategories()
+	if errCat != nil {
+		fmt.Printf("error kayn f categories getter : %v\n", err)
+	}
 	// fmt.Println(posts)
 	if err != nil {
 		fmt.Printf("error kayn f service POSt all : %v", err)
 	}
 	data := map[string]interface{}{
-		"LoggedIn": true,
-		"posts":    posts,
+		"LoggedIn":   true,
+		"posts":      posts,
+		"categories": categories,
 	}
 	cookie, err := r.Cookie("session_id")
 	if err != nil {
@@ -34,9 +40,18 @@ func (p *PostHandler) HomeHandle(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if cookie != nil {
-		data["LoggedIn"] = true
+		sessionId := cookie.Value
+		user, err := p.AuthService.UserRepo.GetUserBySessionID(sessionId)
+		if err == nil && user != nil {
+
+			data["LoggedIn"] = true
+			data["Username"] = user.Username
+
+		} else {
+			fmt.Printf("Error fetching user: %v", err)
+		}
 	}
-	// Retrieve user from database using userID
+
 	utils.OpenHtml("index.html", w, data)
 }
 
@@ -45,10 +60,6 @@ func (p *PostHandler) PostCreation(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Printf("error kayn f categories getter : %v\n", err)
 	}
-	// if len(categories) != 0 {
-	// fmt.Println(categories)
-	// }
-
 	data := map[string]any{
 		"LoggedIn":   false,
 		"categories": categories,
@@ -59,19 +70,15 @@ func (p *PostHandler) PostCreation(w http.ResponseWriter, r *http.Request) {
 	if err == nil && cookie != nil {
 		sessionId := cookie.Value
 
-		// Attempt to get user from session ID
-
 		user, err := p.AuthService.UserRepo.GetUserBySessionID(sessionId)
 		if err == nil && user != nil {
 			data["LoggedIn"] = true
-			data["Username"] = user.Username // Assign username to "Username" key
+			data["Username"] = user.Username
 
 		} else {
 			fmt.Printf("Error fetching user: %v", err)
 		}
 	}
-
-	// Render the template with user data
 	utils.OpenHtml("ask_question.html", w, data)
 }
 
@@ -87,12 +94,9 @@ func (p *PostHandler) PostSaver(w http.ResponseWriter, r *http.Request) {
 	categories := r.Form["category"]
 	subject := r.Form.Get("textarea")
 	contentWithBreaks := strings.ReplaceAll(subject, "\n", "<br>")
-	// Check if session_id cookie exists
 	cookie, err := r.Cookie("session_id")
 	if err == nil && cookie != nil {
 		sessionId := cookie.Value
-
-		// Attempt to get user from session ID
 
 		user, err := p.AuthService.UserRepo.GetUserBySessionID(sessionId)
 		if err == nil && user != nil {
@@ -111,13 +115,11 @@ func (p *PostHandler) PostSaver(w http.ResponseWriter, r *http.Request) {
 
 	}
 
-	// Render the template with user data
 	utils.OpenHtml("index.html", w, data)
 }
 
 func (p *PostHandler) DetailsPost(w http.ResponseWriter, r *http.Request) {
 	pathParts := strings.Split(r.URL.Path, "/")
-
 	if len(pathParts) != 3 {
 		http.Error(w, "Invalid URL", http.StatusBadRequest)
 	}
@@ -129,13 +131,10 @@ func (p *PostHandler) DetailsPost(w http.ResponseWriter, r *http.Request) {
 	}
 	if err != nil {
 		fmt.Println(err)
-
 	}
 	cookie, err := r.Cookie("session_id")
 	if err == nil && cookie != nil {
 		sessionId := cookie.Value
-
-		// Attempt to get user from session ID
 
 		user, err := p.AuthService.UserRepo.GetUserBySessionID(sessionId)
 		if err == nil && user != nil {
@@ -146,8 +145,6 @@ func (p *PostHandler) DetailsPost(w http.ResponseWriter, r *http.Request) {
 			fmt.Printf("Error fetching user: %v", err)
 		}
 	}
-
-	// fmt.Println(posts)
 
 	utils.OpenHtml("post-deatils.html", w, data)
 }
@@ -169,10 +166,8 @@ func (p *PostHandler) CommentSaver(w http.ResponseWriter, r *http.Request) {
 	if err == nil && cookie != nil {
 		sessionId := cookie.Value
 
-		// Attempt to get user from session ID
-
 		user, err := p.AuthService.UserRepo.GetUserBySessionID(sessionId)
-		if err!= nil{
+		if err != nil {
 			fmt.Printf("error fetch user : %v", err)
 		}
 		if len(commetContentWithNewLines) != 5 {
@@ -184,5 +179,25 @@ func (p *PostHandler) CommentSaver(w http.ResponseWriter, r *http.Request) {
 
 	}
 
-	http.Redirect(w,r,fmt.Sprintf("/detailsPost/%v",postID),http.StatusSeeOther)
+	http.Redirect(w, r, fmt.Sprintf("/detailsPost/%v", postID), http.StatusSeeOther)
+}
+
+func (p *PostHandler) PostFilter(w http.ResponseWriter, r *http.Request) {
+	post := r.URL.Query().Get("posts")
+	like := r.URL.Query().Get("likes")
+	categories := strings.Split(r.URL.Query().Get("categories"), ",")
+	fmt.Println(post)
+	fmt.Println(like)
+	fmt.Println(categories)
+	if categories[0] == "" {
+		categories = []string{}
+	}
+	fmt.Printf("slice f handle : %v  hada len : %v \n", categories, len(categories))
+	posts, err := p.PostService.FilterPost(post, like, categories)
+	if err != nil {
+		fmt.Printf("error kayn f filter : %v\n ", err)
+	}
+	fmt.Println(posts)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(posts)
 }

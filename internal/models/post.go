@@ -30,6 +30,7 @@ type PostWithUser struct {
 	FormattedDate string    `json:"formatted_date"`
 	CategoryName  string    `json:"category_names"`
 	CommentCount  int       `json:"comment_count"`
+	LikeCount     int       `json:"likes_count"`
 }
 
 type PostDetails struct {
@@ -50,7 +51,7 @@ type PostDetails struct {
 
 type CommentDetails struct {
 	CommentID           uuid.UUID `json:"comment_id"`
-	PostIDcomment           uuid.UUID `json:"post_id"`
+	PostIDcomment       uuid.UUID `json:"post_id"`
 	Content             string    `json:"content"`
 	CreatedAt           time.Time `json:"created_at"`
 	UserID              uuid.UUID `json:"user_id"`
