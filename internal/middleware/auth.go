@@ -2,16 +2,17 @@ package middleware
 
 import (
 	"net/http"
+	"regexp"
 
 	"forum/internal/models"
 	"forum/internal/services"
 )
 
-type AuthHandler struct {
+type AuthMidlaware struct {
 	AuthService *services.AuthService
 }
 
-func (h *AuthHandler) IsUserLoggedIn(w http.ResponseWriter, r *http.Request) (bool, *models.User) {
+func (h *AuthMidlaware) IsUserLoggedIn(w http.ResponseWriter, r *http.Request) (bool, *models.User) {
 	cookie, err := r.Cookie("session_id")
 	if err != nil {
 		return false, nil
@@ -33,4 +34,19 @@ func (h *AuthHandler) IsUserLoggedIn(w http.ResponseWriter, r *http.Request) (bo
 	}
 
 	return true, user
+}
+
+func (h *AuthMidlaware) IsValidEmail(email string) bool {
+	// Basic email validation using regex
+	regex := `^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`
+	re := regexp.MustCompile(regex)
+	return re.MatchString(email)
+}
+
+// Helper function to validate password
+func (h *AuthMidlaware) IsValidPassword(password string) bool {
+	// Check for a minimum of 8 characters
+	regex := `^([a-z0-9A-Z]).{7,}$`
+	re := regexp.MustCompile(regex)
+	return re.MatchString(password)
 }

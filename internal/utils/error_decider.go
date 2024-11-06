@@ -18,7 +18,7 @@ func Error(response http.ResponseWriter, status int) {
 		429: {"Too Many Requests", "You have sent too many requests in a given amount of time. Please try again later."},
 	}
 	var errorData ErrorStruct
-	// response.WriteHeader(status)
+	response.WriteHeader(status)
 	for key, value := range errorMap {
 		if key == status {
 			errorData.Err = key

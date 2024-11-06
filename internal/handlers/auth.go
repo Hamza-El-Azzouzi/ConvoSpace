@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"time"
 
+	"forum/internal/middleware"
 	"forum/internal/services"
 	"forum/internal/utils"
 
@@ -12,7 +13,8 @@ import (
 )
 
 type AuthHandler struct {
-	AuthService *services.AuthService
+	AuthService   *services.AuthService
+	AuthMidlaware *middleware.AuthMidlaware
 }
 
 func (h *AuthHandler) LogoutHandle(w http.ResponseWriter, r *http.Request) {
@@ -26,14 +28,14 @@ func (h *AuthHandler) LogoutHandle(w http.ResponseWriter, r *http.Request) {
 
 	_, err = h.AuthService.UserRepo.DB.Exec("DELETE FROM sessions WHERE session_id = ?", sessionID)
 	if err != nil {
-		utils.Error(w,500)
+		utils.Error(w, 500)
 	}
 
 	http.SetCookie(w, &http.Cookie{
 		Name:     "session_id",
 		Value:    "",
 		Path:     "/",
-		Expires:  time.Now().Add(-1 * time.Hour), 
+		Expires:  time.Now().Add(-1 * time.Hour),
 		HttpOnly: true,
 	})
 
@@ -42,32 +44,42 @@ func (h *AuthHandler) LogoutHandle(w http.ResponseWriter, r *http.Request) {
 
 func (h *AuthHandler) LoginHandle(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodGet {
-		utils.OpenHtml("login.html", w, r)
+		utils.OpenHtml("login.html", w, nil)
 		return
 	}
-
+	errFrom := make(map[string]string)
 	if r.Method == http.MethodPost {
 		err := r.ParseForm()
 		if err != nil {
-			utils.Error(w,500)
+			utils.Error(w, 500)
 		}
 
 		email := r.Form.Get("email")
 		password := r.Form.Get("password")
 
 		if email == "" || password == "" {
-			utils.Error(w,400)
+			errFrom["password"] = "They can't be Empty"
+			utils.OpenHtml("login.html", w, errFrom)
+			return
 		}
 
+		if !h.AuthMidlaware.IsValidEmail(email) {
+			errFrom["email"] = "Invalid email"
+		}
+		if len(errFrom) == 1 {
+			utils.OpenHtml("login.html", w, errFrom)
+			return
+		}
 		user, loginError := h.AuthService.Login(email, password)
 		if user == nil {
-			fmt.Fprintln(w, "Invalid email or password")
+			errFrom["password"] = "Invalid email or password"
+			utils.OpenHtml("login.html", w, errFrom)
 			return
 		}
 		sessionID := uuid.Must(uuid.NewV4()).String()
 		_, err = h.AuthService.UserRepo.DB.Exec("INSERT INTO sessions (session_id, user_id) VALUES (?, ?)", sessionID, user.ID)
 		if err != nil {
-			utils.Error(w,500)
+			utils.Error(w, 500)
 		}
 		http.SetCookie(w, &http.Cookie{
 			Name:     "session_id",
@@ -76,29 +88,25 @@ func (h *AuthHandler) LoginHandle(w http.ResponseWriter, r *http.Request) {
 			Expires:  time.Now().Add(24 * time.Hour),
 			HttpOnly: true,
 		})
-
-		fmt.Println(user)
 		if loginError != nil {
-			utils.Error(w,500)
+			utils.Error(w, 500)
 		}
-		fmt.Println("User loged successfully!")
-
-		http.Redirect(w, r, "/", http.StatusSeeOther) 
+		http.Redirect(w, r, "/", http.StatusSeeOther)
 	} else {
-		utils.OpenHtml("login.html", w, r)
+		utils.Error(w, http.StatusMethodNotAllowed)
 	}
 }
 
 func (h *AuthHandler) RegisterHandle(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodGet {
-		utils.OpenHtml("signup.html", w, r)
+		utils.OpenHtml("signup.html", w, nil)
 		return
 	}
-
+	errFrom := make(map[string]string)
 	if r.Method == http.MethodPost {
 		err := r.ParseForm()
 		if err != nil {
-			utils.Error(w,500)
+			utils.Error(w, 500)
 		}
 
 		userName := r.Form.Get("Username")
@@ -107,20 +115,28 @@ func (h *AuthHandler) RegisterHandle(w http.ResponseWriter, r *http.Request) {
 		confirmPassword := r.Form.Get("Confirm-Password")
 
 		if password != confirmPassword {
-			fmt.Fprintln(w, "Passwords do not match!")
+			errFrom["conPassowrd"] = "Passwords do not match!"
+		}
+		if !h.AuthMidlaware.IsValidEmail(email) {
+			errFrom["email"] = "Invalid email"
+		}
+		if !h.AuthMidlaware.IsValidPassword(password) {
+			errFrom["password"] = "Invalid Password, At least 8 charachters"
+		}
+		if userName == "" || email == "" || password == "" {
+			errFrom["empty"] = "The Fields can't be Empty"
+		}
+		if len(errFrom) > 0 {
+			utils.OpenHtml("signup.html", w, errFrom)
 			return
 		}
-
-		if userName == "" || email == "" || password == "" {
-			utils.Error(w,405)
-		}
-
 		registrError := h.AuthService.Register(userName, email, password)
 		if registrError != nil {
-			utils.Error(w,500)
+			fmt.Println(registrError)
+			errFrom["alreadyExist"] = "The Email Already Exist"
+			utils.OpenHtml("signup.html", w, errFrom)
+			
+			return
 		}
-		fmt.Println("User registered successfully!")
-
-		http.Redirect(w, r, "/", http.StatusSeeOther)
 	}
 }

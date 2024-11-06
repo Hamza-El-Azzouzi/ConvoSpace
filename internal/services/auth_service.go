@@ -17,33 +17,26 @@ func (s *AuthService) Register(username, email, password string) error {
 	if err != nil {
 		return err
 	}
-
 	user := &models.User{
 		ID:           uuid.Must(uuid.NewV4()),
 		Username:     username,
 		Email:        email,
 		PasswordHash: string(hashedPassword),
 	}
-
+	
 	return s.UserRepo.Create(user)
 }
+
 func (s *AuthService) Login(email, password string) (*models.User, error) {
-    // Retrieve the user by email
-		
-    user, err := s.UserRepo.FindByEmail(email)
-    if err != nil {
-        return nil, err // Return error if user is not found
-    }
+	user, err := s.UserRepo.FindByEmail(email)
+	if err != nil {
+		return nil, err
+	}
 
-    // Compare the provided password with the stored hashed password
-    err = bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(password))
-    if err != nil {
-        return nil, err // Return error if password does not match
-    }
+	err = bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(password))
+	if err != nil {
+		return nil, err
+	}
 
-    return user, nil // Return the user if authentication is successful
+	return user, nil
 }
-
-
-
-// Implement other auth-related functions...

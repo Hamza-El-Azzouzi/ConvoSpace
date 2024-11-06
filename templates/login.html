@@ -19,8 +19,10 @@
         <div class="title">Log In</div>
         <div class="description">Hello there, Log In</div>
         <form action="/login" method="post">
-          <input type="email" name="email" placeholder="email" required />
-          <input type="password" name="password" placeholder="password" required />
+          <input type="email" name="email" placeholder="email" id="email" required />
+          <span class="errorMsg">{{ .email }}</span>
+          <input type="password" name="password" placeholder="password" id="password" required />
+          <span class="errorMsg">{{ .password }}</span>
           <div class="text-center">
             <button type="submit" class="button">LOG IN</button>
             <a href="/register">
@@ -34,5 +36,6 @@
     </div>
   </div>
 </body>
+
 
 </html>

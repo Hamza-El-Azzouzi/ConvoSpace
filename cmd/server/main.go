@@ -7,6 +7,7 @@ import (
 
 	"forum/internal/database"
 	"forum/internal/handlers"
+	"forum/internal/middleware"
 	"forum/internal/repositories"
 	"forum/internal/services"
 	"forum/internal/utils"
@@ -34,13 +35,16 @@ func main() {
 	commentRepo := &repositories.CommentRepositorie{DB: db}
 	likeRepo := &repositories.LikeReposetorie{DB: db}
 
-
+	
 	postServices := &services.PostService{PostRepo: postRepo}
 	categorieServices := &services.CategoryService{CategorieRepo: categorieRepo}
 	commentService := &services.CommentService{CommentRepo: commentRepo}
 	likeService := &services.LikeService{LikeRepo: likeRepo}
 	authService := &services.AuthService{UserRepo: userRepo}
-	authHandler := &handlers.AuthHandler{AuthService: authService}
+
+	authMidlware := &middleware.AuthMidlaware{AuthService: authService}
+
+	authHandler := &handlers.AuthHandler{AuthService: authService,AuthMidlaware:authMidlware}
 	postHandler := &handlers.PostHandler{
 		AuthService:     authService,
 		CategoryService: categorieServices,
