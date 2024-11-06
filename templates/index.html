@@ -10,293 +10,242 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="language" content="English">
     <title>Forum01</title>
-    <link href="/static/css/bootstrap.css" rel="stylesheet" type="text/css">
-    <link href="/static/css/style.css" rel="stylesheet" type="text/css">
-    <link href="/static/css/animate.css" rel="stylesheet" type="text/css">
-    <link href="/static/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href="/static/css/mystyle.css" rel="stylesheet" type="text/css">
 </head>
 
 <body>
     <div class="top-bar">
         <div class="container">
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="navbar-menu-left-side239">
-                        <ul>
-                            <li><a href="#"><i class="fa fa-envelope-o" aria-hidden="true"></i>Contact</a></li>
-                            <li><a href="/create"><i class="fa fa-pencil" aria-hidden="true"></i>Create A Post</a></li>
-                            {{ if .LoggedIn }}
-                            <li><a href="/logout"><i class="fa fa-user" aria-hidden="true"></i>Log Out</a></li>
-                            {{ else }}
-                            <li><a href="/login"><i class="fa fa-user" aria-hidden="true"></i>Login Area</a></li>
-                            {{ end }}
-                        </ul>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="navbar-serch-right-side">
-                        <form class="navbar-form" role="search">
-                            <div class="input-group add-on">
-                                <input class="form-control form-control222" placeholder="Search" id="srch-term"
-                                    type="text">
-                                <div class="input-group-btn">
-                                    <button class="btn btn-default btn-default2913" type="button"><i
-                                            class="glyphicon glyphicon-search"></i></button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
+            <div class="navbar-menu-left-side239">
+                <ul>
+                    <li><a href="/"><i aria-hidden="true"></i> Home</a></li>
+                    <li><a href="/create"><i aria-hidden="true"></i> Create A Post</a></li>
+                    {{ if .LoggedIn }}
+                    <li><a href="/logout"><i aria-hidden="true"></i> Log Out</a></li>
+                    {{ else }}
+                    <li><a href="/login"><i aria-hidden="true"></i> Login Area</a></li>
+                    {{ end }}
+                </ul>
             </div>
         </div>
     </div>
-    <div class="top-menu-bottom932">
-        <nav class="navbar navbar-default">
-            <div class="container">
-                <div class="navbar-header">
-                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
-                        data-target="#bs-example-navbar-collapse-1" aria-expanded="false"> <span class="sr-only">Toggle
-                            navigation</span> <span class="icon-bar"></span> <span class="icon-bar"></span> <span
-                            class="icon-bar"></span> </button>
-                    <a class="navbar-brand" href="/"><img src="image/logo.png" alt="Logo"></a>
-                </div>
-                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-                    <ul class="nav navbar-nav"> </ul>
-                </div>
-
-            </div>
-        </nav>
-    </div>
-
     <section class="welcome-part-one">
         <div class="container">
-            <div class="welcome-demop102 text-center">
-                <h2>Welcome to Forum01, Awesome Questions </h2>
-                <p>Duis dapibus aliquam mi, eget euismod sem scelerisque ut. Vivamus at elit quis urna adipiscing
-                    iaculis. Curabitur vitae velit in neque dictum blandit. Proin in iaculis neque. Pellentesque
-                    <br> habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Curabitur
-                    vitae velit in neque dictum blandit</p>
+            <h2>Welcome to Forum01, Your Hub for Insightful Discussions</h2>
+            <p>Have questions that need answers? Or perhaps an idea worth sharing? Forum01 is the perfect place to
+                exchange knowledge, get inspired, and explore new perspectives.</p>
+            {{ if .LoggedIn }}
+            {{ else }}
+            <div class="button0239-item">
+                <a href="/register">
+                    <button class="join92">Join Now</button>
+                </a>
+            </div>
+            {{ end }}
+        </div>
+    </section>
+    <section class="main-content920 container">
+        <div id="main">
+            {{ range .posts }}
+            <div class="question-type2033">
+                <div class="row">
+                    
+                    <div class="right-description893">
+                        <h3><a href="detailsPost/{{ .PostID }}" target="_blank">{{ .Title }}</a></h3>
+                        <p>{{ .Content }}</p>
+                        <hr>
+                        <div class="ques-icon-info3293">
+                            <i class="fa fa-user" aria-hidden="true"> {{ .Username }} </i>
+                            <i class="fa fa-clock-o" aria-hidden="true"> {{ .FormattedDate }}</i>
+                            <i class="fa fa-hashtag" aria-hidden="true"> {{ .CategoryName }}</i>
+                        </div>
+                    </div>
+                    <div class="ques-type302">
+                        <a href='detailsPost/{{ .PostID }}'>
+                            <button><i class="fa fa-comment" aria-hidden="true"></i> {{ .CommentCount }} Comments</button>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {{ end }}
+        </div>
+        <aside class="sidebar97239">
+            <div class="login-part2389">
                 {{ if .LoggedIn }}
+                <h4>Welcome, {{ .Username }}</h4>
+                <a href="/logout"><button type="button" class="userlogin320">Log Out</button></a>
                 {{ else }}
-                <div class="button0239-item">
-                    <a href="/register">
-                        <button type="button" class="join92">Join Now</button>
-                    </a>
+                <h4>Login</h4>
+                <div class="input-group300">
+                    <form action="/login" method="post">
+                        <span><i class="fa fa-user" aria-hidden="true"></i></span>
+                        <input type="email" name="email" class="namein309" placeholder="email" required />
                 </div>
+                <div class="input-group300">
+                    <span><i class="fa fa-lock" aria-hidden="true"></i></span>
+                    <input type="password" class="passin309" name="password" placeholder="password" required />
+
+                </div>
+                <button type="submit" class="userlogin320">LOG IN</button>
+                </form>
                 {{ end }}
-                <div class="form-style8292">
-                    <div class="input-group"> <span class="input-group-addon"><i class="fa fa-pencil-square"
-                                aria-hidden="true"></i></span>
-                        <input type="text" class="form-control form-control8392" placeholder="Search"> <span
-                            class="input-group-addon"><a href="#">Ask Now</a></span> </div>
-                </div>
             </div>
-        </div>
-    </section>
-    <section class="main-content920">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-9">
-                    <div id="main">
-                        {{ range .posts }}
-                        <div class="question-type2033">
-                            <div class="row">
-                                <div class="col-md-1">
-                                    <div class="left-user12923 left-user12923-repeat">
-                                        <a href="#"><i class="fa fa-check" aria-hidden="true"></i></a>
-                                    </div>
-                                </div>
-                                <div class="col-md-9">
-                                    <div class="right-description893">
-                                        <div id="que-hedder2983">
-                                            <h3><a href="post-deatils.html" target="_blank" id="title">{{ .Title }}</a></h3>
-                                        </div>
-                                        <div class="ques-details10018">
-                                            <p id="content">{{ .Content }}</p>
-                                        </div>
-                                        <hr>
-                                        <div class="ques-icon-info3293">
-                                            <i class="	fa fa-user" aria-hidden="true"> {{ .Username }} </i>
-
-                                            <i class="fa fa-clock-o" aria-hidden="true"> {{ .FormattedDate }}</i>
-
-                                            <i class="fa fa-hashtag" aria-hidden="true"> {{ .CategoryName }}</i>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-2">
-                                    <div class="ques-type302">
-                                        <a href='detailsPost/{{ .PostID }}'>
-                                            <button type="button" class="q-type238"><i class="fa fa-comment"
-                                                    aria-hidden="true"> {{ .CommentCount }} Comments</i></button>
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        {{ end }}
-                    </div>
-                </div>
-                <aside class="col-md-3 sidebar97239">
-                    <div class="login-part2389">
-                        {{ if .LoggedIn }}
-                        <h4>Welcome, {{ .Username }}</h4>
-                        <a href="/logout"><button type="button" class="userlogin320">Log Out</button></a>
-                        {{ else }}
-                        <h4>Login</h4>
-                        <div class="input-group300">
-                            <form action="/login" method="post">
-                                <span><i class="fa fa-user" aria-hidden="true"></i></span>
-                                <input type="email" name="email" class="namein309" placeholder="email" required />
-                        </div>
-                        <div class="input-group300">
-                            <span><i class="fa fa-lock" aria-hidden="true"></i></span>
-                            <input type="password" class="passin309" name="password" placeholder="password" required />
-
-                        </div>
-                        <button type="submit" class="userlogin320">LOG IN</button>
-                        </form>
-                        {{ end }}
-                    </div>
-                    <div class="categori-part329">
-                        <h4>Created Posts</h4>
-                        <ul>
-                            <label>
-                                <input type="radio" name="post" value="desc" id="index-checkbox" />
-                                <span class="custom-checkbox">Recent Posts</span>
-                            </label>
-                            <label>
-                                <input type="radio" name="post" value="asc" id="index-checkbox" />
-                                <span class="custom-checkbox">Oldest Posts</span>
-                            </label>
-                        </ul>
-                    </div>
-                    <div class="categori-part329">
-                        <h4>Liked Posts</h4>
-                        <ul>
-                            <label>
-                                <input type="radio" name="liked" value="desc" id="index-checkbox" />
-                                <span class="custom-checkbox">Most Liked Posts</span>
-                            </label>
-                            <label>
-                                <input type="radio" name="liked" value="asc" id="index-checkbox" />
-                                <span class="custom-checkbox">Less Liked Posts</span>
-                            </label>
-                        </ul>
-                    </div>
-                    <div class="categori-part329">
-                        <h4>Category</h4>
-                        <ul>
-                            {{ range .categories }}
-                            <label>
-                                <input type="checkbox" value="{{ .ID }}" name="categorie" id="index-checkbox" />
-                                <span class="custom-checkbox">{{ .Name }}</span>
-                            </label>
-                            {{ end }}
-
-                        </ul>
-                    </div>
-                </aside>
+            {{ if .LoggedIn }}
+            <div class="categori-part329">
+                <h4>Created Posts</h4>
+                <ul>
+                    <label>
+                        <input type="radio" name="post" value="desc" id="index-checkbox" />
+                        <span class="custom-checkbox">Recent Posts</span>
+                    </label>
+                    <label>
+                        <input type="radio" name="post" value="asc" id="index-checkbox" />
+                        <span class="custom-checkbox">Oldest Posts</span>
+                    </label>
+                </ul>
             </div>
-        </div>
+            <div class="categori-part329">
+                <h4>Liked Posts</h4>
+                <ul>
+                    <label>
+                        <input type="radio" name="liked" value="desc" id="index-checkbox" />
+                        <span class="custom-checkbox">Most Liked Posts</span>
+                    </label>
+                    <label>
+                        <input type="radio" name="liked" value="asc" id="index-checkbox" />
+                        <span class="custom-checkbox">Less Liked Posts</span>
+                    </label>
+                </ul>
+            </div>
+            {{ end }}
+            <div class="categori-part329">
+                <h4>Category</h4>
+                <ul>
+                    {{ range .categories }}
+                    <label>
+                        <input type="checkbox" value="{{ .ID }}" name="categorie" id="index-checkbox" />
+                        <span class="custom-checkbox">{{ .Name }}</span>
+                    </label>
+                    <br>
+                    {{ end }}
+                </ul>
+            </div>
+        </aside>
     </section>
+
     <section class="footer-part">
         <div class="container">
+            <p>&copy; 2024 Forum01. All Rights Reserved.</p>
         </div>
     </section>
 </body>
 <script>
-    document.body.addEventListener("change", () => {
-        const post = document.querySelector('input[name="post"]:checked')
-        const like = document.querySelector('input[name="liked"]:checked')
-        var categorie = document.querySelectorAll('input[name="categorie"]:checked')
-        const categoryValues = Array.from(categorie).map(category => category.value);
-        var postVal = post ? post.value : ""
-        var likeVal = like ? like.value : ""
+    function debounce(func, wait) {
+        let timeout;
+        return function(...args) {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => func.apply(this, args), wait);
+        };
+    }
 
-        var queryParams = new URLSearchParams({
+    // Main function to handle changes and make the fetch call
+    function handleFilterChange() {
+        const post = document.querySelector('input[name="post"]:checked');
+        const like = document.querySelector('input[name="liked"]:checked');
+        const categorie = document.querySelectorAll('input[name="categorie"]:checked');
+
+        const categoryValues = Array.from(categorie).map(category => category.value);
+        const postVal = post ? post.value : "";
+        const likeVal = like ? like.value : "";
+
+        const queryParams = new URLSearchParams({
             posts: postVal,
             likes: likeVal,
             categories: categoryValues.join(",")
-
         });
-        console.log(queryParams.toString())
-        fetch('/filters?' + queryParams.toString(), {
-        method: 'GET',
-    })
-    .then(response => response.json()) 
-    .then(data => {
-        console.log(data)
-        updateData(data)
-        
-    })
-    .catch(error => {
-        console.error('Error:', error);
-    });
-    })
-    const updateData = (data) => {
-    const mainDiv = document.getElementById("main");
-    mainDiv.innerHTML = ""; // Clear existing content
 
-    if (data=== null) {
-        // Display a "No Results Found" message
-        const noResultsDiv = document.createElement("div");
-        noResultsDiv.classList.add("no-results");
-        noResultsDiv.textContent = "No Results Found.";
-        mainDiv.appendChild(noResultsDiv);
-        return; // Exit the function if no data
+        console.log(queryParams.toString());
+
+        fetch('/filters?' + queryParams.toString(), { method: 'GET' })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                updateData(data);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
     }
 
-    // Loop through and create elements for each post if there is data
-    data.forEach(post => {
-        const postDiv = document.createElement("div");
-        postDiv.classList.add("question-type2033");
+    // Debounce the change event to prevent too many requests
+    document.body.addEventListener("change", debounce(handleFilterChange, 300));
 
-        const rowDiv = document.createElement("div");
-        rowDiv.classList.add("row");
+    // Function to update the DOM with new data
+    const updateData = (data) => {
+        const mainDiv = document.getElementById("main");
+        mainDiv.innerHTML = ""; // Clear existing content
 
-        const col1 = document.createElement("div");
-        col1.classList.add("col-md-1");
-        col1.innerHTML = `
-            <div class="left-user12923 left-user12923-repeat">
-                <a href="#"><i class="fa fa-check" aria-hidden="true"></i></a>
-            </div>`;
+        if (!data || data.length === 0) {
+            // Display a "No Results Found" message if no data
+            const noResultsDiv = document.createElement("div");
+            noResultsDiv.classList.add("no-results");
+            noResultsDiv.textContent = "No Results Found.";
+            mainDiv.appendChild(noResultsDiv);
+            return;
+        }
 
-        const col9 = document.createElement("div");
-        col9.classList.add("col-md-9");
-        col9.innerHTML = `
-            <div class="right-description893">
-                <div id="que-hedder2983">
-                    <h3><a href="post-deatils.html" target="_blank" id="title">${post.title}</a></h3>
-                </div>
-                <div class="ques-details10018">
-                    <p id="content">${post.content}</p>
-                </div>
-                <hr>
-                <div class="ques-icon-info3293">
-                    <i class="fa fa-user" aria-hidden="true"> ${post.username}</i>
-                    <i class="fa fa-clock-o" aria-hidden="true"> ${post.formatted_date}</i>
-                    <i class="fa fa-hashtag" aria-hidden="true"> ${post.category_names}</i>
-                </div>
-            </div>`;
+        // Loop through and create elements for each post
+        data.forEach(post => {
+            const postDiv = document.createElement("div");
+            postDiv.classList.add("question-type2033");
 
-        const col2 = document.createElement("div");
-        col2.classList.add("col-md-2");
-        col2.innerHTML = `
-            <div class="ques-type302">
-                <a href='detailsPost/${post.post_id}'>
-                    <button type="button" class="q-type238"><i class="fa fa-comment"
-                        aria-hidden="true"> ${post.comment_count} Comments</i></button>
-                </a>
-            </div>`;
+            const rowDiv = document.createElement("div");
+            rowDiv.classList.add("row");
 
-        rowDiv.appendChild(col1);
-        rowDiv.appendChild(col9);
-        rowDiv.appendChild(col2);
-        postDiv.appendChild(rowDiv);
-        mainDiv.appendChild(postDiv);
-    });
-};
+            const col1 = document.createElement("div");
+            col1.classList.add("col-md-1");
+            col1.innerHTML = `
+                <div class="left-user12923 left-user12923-repeat">
+                    <a href="#"><i class="fa fa-check" aria-hidden="true"></i></a>
+                </div>`;
+
+            const col9 = document.createElement("div");
+            col9.classList.add("col-md-9");
+            col9.innerHTML = `
+                <div class="right-description893">
+                    <div id="que-hedder2983">
+                        <h3><a href='detailsPost/${post.post_id}' target="_blank" id="title">${post.title}</a></h3>
+                    </div>
+                    <div class="ques-details10018">
+                        <p id="content">${post.content}</p>
+                    </div>
+                    <hr>
+                    <div class="ques-icon-info3293">
+                        <i class="fa fa-user" aria-hidden="true"> ${post.username}</i>
+                        <i class="fa fa-clock-o" aria-hidden="true"> ${post.formatted_date}</i>
+                        <i class="fa fa-hashtag" aria-hidden="true"> ${post.category_names}</i>
+                    </div>
+                </div>`;
+
+            const col2 = document.createElement("div");
+            col2.classList.add("col-md-2");
+            col2.innerHTML = `
+                <div class="ques-type302">
+                    <a href='detailsPost/${post.post_id}'>
+                        <button type="button" class="q-type238">
+                            <i class="fa fa-comment" aria-hidden="true"> ${post.comment_count} Comments</i>
+                        </button>
+                    </a>
+                </div>`;
+
+            rowDiv.appendChild(col1);
+            rowDiv.appendChild(col9);
+            rowDiv.appendChild(col2);
+            postDiv.appendChild(rowDiv);
+            mainDiv.appendChild(postDiv);
+        });
+    };
 </script>
+
 
 </html>

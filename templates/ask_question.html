@@ -5,150 +5,84 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="title" content="Ask online Form">
-    <meta name="description"
-        content="The Ask is a bootstrap design help desk, support forum website template coded and designed with bootstrap Design, Bootstrap, HTML5 and CSS. Ask ideal for wiki sites, knowledge base sites, support forum sites">
-    <meta name="keywords"
-        content="HTML, CSS, JavaScript,Bootstrap,js,Forum,webstagram ,webdesign ,website ,web ,webdesigner ,webdevelopment">
-    <meta name="robots" content="index, nofollow">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="language" content="English">
-    <link href="/static/css/bootstrap.css" rel="stylesheet" type="text/css">
-    <link href="/static/css/style.css" rel="stylesheet" type="text/css">
-    <link href="/static/css/editor.css" rel="stylesheet" type="text/css">
-    <!-- <link href="css/animate.css" rel="stylesheet" type="text/css"> -->
-    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
-    <link href="/static/css/font-awesome.min.css" rel="stylesheet" type="text/css">
-    <link href="/static/css/responsive.css" rel="stylesheet" type="text/css">
+    <link href="/static/css/mystyle.css" rel="stylesheet" type="text/css">
 </head>
 
 <body>
     <div class="top-bar">
         <div class="container">
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="navbar-menu-left-side239">
-                        <ul>
-                            <li><a href="#"><i class="fa fa-envelope-o" aria-hidden="true"></i>Contact</a></li>
-                            <li><a href="/create"><i class="fa fa-pencil" aria-hidden="true"></i>Create A Post</a></li>
-                            {{ if .LoggedIn }}
-                            <li><a href="/logout"><i class="fa fa-user" aria-hidden="true"></i>Log Out</a></li>
-                            {{ else }}
-                            <li><a href="/login"><i class="fa fa-user" aria-hidden="true"></i>Login Area</a></li>
-                            {{ end }}
-                        </ul>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="navbar-serch-right-side">
-                        <form class="navbar-form" role="search">
-                            <div class="input-group add-on">
-                                <input class="form-control form-control222" placeholder="Search" id="srch-term"
-                                    type="text">
-                                <div class="input-group-btn">
-                                    <button class="btn btn-default btn-default2913" type="button"><i
-                                            class="glyphicon glyphicon-search"></i></button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
+            <div class="navbar-menu-left-side239">
+                <ul>
+                    <li><a href="/"><i class="fa fa-home" aria-hidden="true"></i> Home</a></li>
+                    <li><a href="/create"><i class="fa fa-pencil" aria-hidden="true"></i> Create A Post</a></li>
+                    {{ if .LoggedIn }}
+                    <li><a href="/logout"><i class="fa fa-user" aria-hidden="true"></i> Log Out</a></li>
+                    {{ else }}
+                    <li><a href="/login"><i class="fa fa-user" aria-hidden="true"></i> Login Area</a></li>
+                    {{ end }}
+                </ul>
             </div>
         </div>
     </div>
 
-    <section class="header-descriptin329">
+    <section class="welcome-part-one">
         <div class="container">
-            <h3>Ask Question</h3>
-            <ol class="breadcrumb breadcrumb839">
-                <li><a href="/">Home</a></li>
-                <li class="active">Ask Question</li>
-            </ol>
+            <h2>Ask Your Question</h2>
+            <p>Have a question that needs answers? Fill out the form below to get help from the community.</p>
         </div>
     </section>
-    <section class="main-content920">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-9">
-                    <div class="ask-question-input-part032">
-                        <h4>Ask Question</h4>
-                        <hr>
-                        <form action="/createPost" method="post">
-                            <div class="question-title39">
-                                <span class="form-description433">Question-Title* </span><input type="text" name="title"
-                                    class="question-ttile32" placeholder="Write Your Question Title">
-                            </div>
 
-                            <div class="categori49">
-                                <span class="form-description43305">Category*</span>                    
-                                <div class="category-grid">
-                                    {{ range .categories }}
-                                        <label class="category-checkbox">
-                                            <input type="checkbox" name="category" id="CreatePost" value="{{ .ID }}"> {{ .Name }}
-                                        </label>
-                                    {{ end }}
-                                </div>
-                            </div>
-                            <div class="details2-239">
-                                <div class="col-md-12 nopadding">
-                                    <textarea name="textarea" id="textarea"></textarea>
-                                </div>
-                            </div>
-                            <div id="display-container"></div>
-                            <div class="publish-button2389">
-                                {{ if .LoggedIn }}
-                                <button type="submit" class="publis1291">Publish your Question</button>
-                                {{ else }}
-                                <button type="button" onclick="clickToRegister()" class="publis1291">You should Be Logged in </button>
-                                {{ end }}
-                            </div>
-    
-                        </form>
-                       
+    <section class="container">
+        <div class="main-content">
+            <div class="question-type2033">
+                <h4>Ask Question</h4>
+                <hr>
+                <form action="/createPost" method="post">
+                    <div class="input-group300">
+                        <input type="text" name="title" class="namein309" placeholder="Write Your Question Title">
                     </div>
 
+                    <div class="categori-part329">
+                        <span>Category*</span>
+                        <div class="category-grid">
+                            {{ range .categories }}
+                            <label>
+                                <input type="checkbox" name="category" value="{{ .ID }}" id="index-checkbox" />
+                                <span class="custom-checkbox">{{ .Name }}</span>
+                            </label><br>
+                            {{ end }}
+                        </div>
+                    </div>
 
-                </div>
-                <aside class="col-md-3 sidebar97239">
-                    <div class="login-part2389">
+                    <div class="input-group300">
+                        <textarea name="textarea" id="textarea" class="passin309" rows="5" placeholder="Describe your question in detail"></textarea>
+                    </div>
+
+                    <div class="button0239-item">
                         {{ if .LoggedIn }}
-                        <h4>Welcome, {{ .Username }}</h4>
-                        <a href="/logout"><button type="button" class="userlogin320">Log Out</button></a>
+                        <button type="submit" class="userlogin320">Publish your Question</button>
                         {{ else }}
-                        <h4>Login</h4>
-                        <div class="input-group300">
-                            <form action="/login" method="post">
-                                <span><i class="fa fa-user" aria-hidden="true"></i></span>
-                                <input type="email" name="email" class="namein309" placeholder="email" required />
-                        </div>
-                        <div class="input-group300">
-                            <span><i class="fa fa-lock" aria-hidden="true"></i></span>
-                            <input type="password" class="passin309" name="password" placeholder="password" required />
-
-                        </div>
-                        <button type="submit" class="userlogin320">LOG IN</button>
-                        </form>
+                        <button type="button" onclick="clickToRegister()" class="userlogin320">You should be logged in</button>
                         {{ end }}
                     </div>
-                </aside>
-
+                </form>
             </div>
         </div>
     </section>
 
-    <!--    footer -->
-
-
     <section class="footer-part">
         <div class="container">
+            <p>&copy; 2024 Forum01. All Rights Reserved.</p>
         </div>
     </section>
+
     <script>
-        const clickToRegister =()=>{
-            window.location.replace('/register')
+        const clickToRegister = () => {
+            window.location.replace('/register');
         }
     </script>
-
 </body>
 
 </html>

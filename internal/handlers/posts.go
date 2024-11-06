@@ -24,10 +24,12 @@ func (p *PostHandler) HomeHandle(w http.ResponseWriter, r *http.Request) {
 	categories, errCat := p.CategoryService.GetAllCategories()
 	if errCat != nil {
 		fmt.Printf("error kayn f categories getter : %v\n", err)
+		utils.Error(w,500)
 	}
 	// fmt.Println(posts)
 	if err != nil {
 		fmt.Printf("error kayn f service POSt all : %v", err)
+		utils.Error(w,500)
 	}
 	data := map[string]interface{}{
 		"LoggedIn":   true,
@@ -49,6 +51,7 @@ func (p *PostHandler) HomeHandle(w http.ResponseWriter, r *http.Request) {
 
 		} else {
 			fmt.Printf("Error fetching user: %v", err)
+			utils.Error(w,500)
 		}
 	}
 
@@ -59,6 +62,7 @@ func (p *PostHandler) PostCreation(w http.ResponseWriter, r *http.Request) {
 	categories, err := p.CategoryService.GetAllCategories()
 	if err != nil {
 		fmt.Printf("error kayn f categories getter : %v\n", err)
+		utils.Error(w,500)
 	}
 	data := map[string]any{
 		"LoggedIn":   false,
@@ -77,6 +81,7 @@ func (p *PostHandler) PostCreation(w http.ResponseWriter, r *http.Request) {
 
 		} else {
 			fmt.Printf("Error fetching user: %v", err)
+			utils.Error(w,500)
 		}
 	}
 	utils.OpenHtml("ask_question.html", w, data)
@@ -89,6 +94,7 @@ func (p *PostHandler) PostSaver(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseForm()
 	if err != nil {
 		fmt.Printf("error kayn fl form : %v", err)
+		utils.Error(w,500)
 	}
 	title := r.Form.Get("title")
 	categories := r.Form["category"]
@@ -105,10 +111,12 @@ func (p *PostHandler) PostSaver(w http.ResponseWriter, r *http.Request) {
 
 		} else {
 			fmt.Printf("Error fetching user: %v", err)
+			utils.Error(w,500)
 		}
 		err = p.PostService.PostSave(user.ID, title, contentWithBreaks, categories)
 		if err != nil {
 			fmt.Printf("error kayn ftsrad dyal post : %v\n ", err)
+			utils.Error(w,500)
 		} else {
 			http.Redirect(w, r, "/", http.StatusSeeOther)
 		}
@@ -121,7 +129,8 @@ func (p *PostHandler) PostSaver(w http.ResponseWriter, r *http.Request) {
 func (p *PostHandler) DetailsPost(w http.ResponseWriter, r *http.Request) {
 	pathParts := strings.Split(r.URL.Path, "/")
 	if len(pathParts) != 3 {
-		http.Error(w, "Invalid URL", http.StatusBadRequest)
+		utils.Error(w,404)
+		return
 	}
 	postID := pathParts[2]
 	posts, err := p.PostService.GetPost(postID)
@@ -129,8 +138,10 @@ func (p *PostHandler) DetailsPost(w http.ResponseWriter, r *http.Request) {
 		"LoggedIn": false,
 		"posts":    posts,
 	}
-	if err != nil {
+	if err != nil || posts.Username == "" {
 		fmt.Println(err)
+		utils.Error(w,404)
+		return
 	}
 	cookie, err := r.Cookie("session_id")
 	if err == nil && cookie != nil {
@@ -143,6 +154,7 @@ func (p *PostHandler) DetailsPost(w http.ResponseWriter, r *http.Request) {
 
 		} else {
 			fmt.Printf("Error fetching user: %v", err)
+			utils.Error(w,500)
 		}
 	}
 
@@ -153,12 +165,12 @@ func (p *PostHandler) CommentSaver(w http.ResponseWriter, r *http.Request) {
 	pathParts := strings.Split(r.URL.Path, "/")
 
 	if len(pathParts) != 3 {
-		http.Error(w, "Invalid URL", 404)
+		utils.Error(w,404)
 	}
 	postID := pathParts[2]
 	err := r.ParseForm()
 	if err != nil {
-		fmt.Printf("error kayn fl form dyal comment : %v", err)
+		utils.Error(w,500)
 	}
 	commetContent := r.Form.Get("textarea")
 	commetContentWithNewLines := strings.ReplaceAll(commetContent, "\n", "<br>")
@@ -169,11 +181,13 @@ func (p *PostHandler) CommentSaver(w http.ResponseWriter, r *http.Request) {
 		user, err := p.AuthService.UserRepo.GetUserBySessionID(sessionId)
 		if err != nil {
 			fmt.Printf("error fetch user : %v", err)
+			utils.Error(w,500)
 		}
 		if len(commetContentWithNewLines) != 5 {
 			err = p.CommentService.SaveComment(user.ID, postID, commetContentWithNewLines)
 			if err != nil {
 				fmt.Printf("error kayn ftsrad dyal comment : %v\n ", err)
+				utils.Error(w,500)
 			}
 		}
 
@@ -192,10 +206,10 @@ func (p *PostHandler) PostFilter(w http.ResponseWriter, r *http.Request) {
 	if categories[0] == "" {
 		categories = []string{}
 	}
-	fmt.Printf("slice f handle : %v  hada len : %v \n", categories, len(categories))
 	posts, err := p.PostService.FilterPost(post, like, categories)
 	if err != nil {
 		fmt.Printf("error kayn f filter : %v\n ", err)
+		utils.Error(w,500)
 	}
 	fmt.Println(posts)
 	w.Header().Set("Content-Type", "application/json")

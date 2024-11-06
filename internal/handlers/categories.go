@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"forum/internal/services"
+	"forum/internal/utils"
 )
 
 type CategoryHandler struct {
@@ -18,8 +19,7 @@ func NewCategoryHandler(service *services.CategoryService) *CategoryHandler {
 func (h *CategoryHandler) GetCategories(w http.ResponseWriter, r *http.Request) {
 	categories, err := h.service.GetAllCategories()
 	if err != nil {
-		http.Error(w, "Failed to get categories", http.StatusInternalServerError)
-		return
+		utils.Error(w, 500)
 	}
 
 	json.NewEncoder(w).Encode(categories)

@@ -240,7 +240,6 @@ func (r *PostRepository) GetPostById(PostId string) (models.PostDetails, error) 
 	if err = rows.Err(); err != nil {
 		return models.PostDetails{}, fmt.Errorf("error f row.errr : %v", err)
 	}
-
 	return postDetails, nil
 }
 

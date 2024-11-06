@@ -2,296 +2,152 @@
 <html lang="en">
 
 <head>
-    <meta charset="utf-8">
+    <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="title" content="Ask online Form">
-    <meta name="description"
-        content="The Ask is a bootstrap design help desk, support forum website template coded and designed with bootstrap Design, Bootstrap, HTML5 and CSS. Ask ideal for wiki sites, knowledge base sites, support forum sites">
-    <meta name="keywords"
-        content="HTML, CSS, JavaScript,Bootstrap,js,Forum,webstagram ,webdesign ,website ,web ,webdesigner ,webdevelopment">
-    <meta name="robots" content="index, nofollow">
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <meta name="language" content="English">
-    <link href="/static/css/bootstrap.css" rel="stylesheet" type="text/css">
-    <link href="/static/css/style.css" rel="stylesheet" type="text/css">
-    <!-- <link href="css/animate.css" rel="stylesheet" type="text/css"> -->
-    <link href="/static/css/font-awesome.min.css" rel="stylesheet" type="text/css">
-    <link href="/static/css/responsive.css" rel="stylesheet" type="text/css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="/static/css/mystyle.css" rel="stylesheet" type="text/css">
+    <title>Forum01 - Post Details</title>
+
 </head>
 
 <body>
-    <div class="top-bar">
+     <div class="top-bar">
         <div class="container">
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="navbar-menu-left-side239">
-                        <ul>
-                            <li><a href="#"><i class="fa fa-envelope-o" aria-hidden="true"></i>Contact</a></li>
-                            <li><a href="/create"><i class="fa fa-pencil" aria-hidden="true"></i>Create A Post</a></li>
-                            {{ if .LoggedIn }}
-                            <li><a href="/logout"><i class="fa fa-user" aria-hidden="true"></i>Log Out</a></li>
-                            {{ else }}
-                            <li><a href="/login"><i class="fa fa-user" aria-hidden="true"></i>Login Area</a></li>
-                            {{ end }}
-                        </ul>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="navbar-serch-right-side">
-                        <form class="navbar-form" role="search">
-                            <div class="input-group add-on">
-                                <input class="form-control form-control222" placeholder="Search" name="srch-term"
-                                    id="srch-term" type="text">
-                                <div class="input-group-btn">
-                                    <button class="btn btn-default btn-default2913" type="submit"><i
-                                            class="glyphicon glyphicon-search"></i></button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
+            <div class="navbar-menu-left-side239">
+                <ul>
+                    <li><a href="/"><i class="fa fa-home" aria-hidden="true"></i> Home</a></li>
+                    <li><a href="/create"><i class="fa fa-pencil" aria-hidden="true"></i> Create A Post</a></li>
+                    {{ if .LoggedIn }}
+                    <li><a href="/logout"><i class="fa fa-user" aria-hidden="true"></i> Log Out</a></li>
+                    {{ else }}
+                    <li><a href="/login"><i class="fa fa-user" aria-hidden="true"></i> Login Area</a></li>
+                    {{ end }}
+                </ul>
             </div>
         </div>
     </div>
-    <div class="top-menu-bottom932">
-        <nav class="navbar navbar-default">
-            <div class="container">
-                <div class="navbar-header">
-                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
-                        data-target="#bs-example-navbar-collapse-1" aria-expanded="false"> <span class="sr-only">Toggle
-                            navigation</span> <span class="icon-bar"></span> <span class="icon-bar"></span> <span
-                            class="icon-bar"></span> </button>
-                    <a class="navbar-brand" href="/"><img src="image/logo.png" alt="Logo"></a>
-                </div>
-                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-                    <ul class="nav navbar-nav"> </ul>
-                </div>
-
-            </div>
-            <!-- /.container-fluid -->
-        </nav>
-    </div>
-    <section class="header-descriptin329">
-        <div class="container">
-            <h3>Post Details</h3>
-            <ol class="breadcrumb breadcrumb839">
-                <li><a href="/">Home</a></li>
-                <li><a href="{{ .posts.PostID }}">Post Details</a></li>
-                <li class="active">{{ .posts.Title }}</li>
-
-            </ol>
-        </div>
-    </section>
-    <section class="main-content920">
+    <section class="main-content">
         <div class="container">
             <div class="row">
                 <div class="col-md-9">
                     <div class="post-details">
-                        <div class="details-header923">
+                        <div class="details-header">
                             <div class="row">
                                 <div class="col-md-8">
-                                    <div class="post-title-left129">
-                                        <h3>{{ .posts.Title }}</h3>
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="post-que-rep-rihght320">
-                                        <a href="#" class="r-clor10">Comments : {{ .posts.CommentCount }}</a> </div>
+                                    <h3>{{ .posts.Title }}</h3>
                                 </div>
                             </div>
                         </div>
-                        <div class="post-details-info1982">
+                        <div class="post-details-content">
                             <p>{{ .posts.Content }}</p>
-
-                            <hr>
-                            <div class="post-footer29032">
-                                <div class="l-side2023">
-                                    <i class="fa fa-user" aria-hidden="true"> {{ .posts.Username }}</i>
-                                    <i class="fa fa-clock-o clock2" aria-hidden="true"> {{ .posts.FormattedDate }}</i>
-                                    <i class="fa fa-hashtag" aria-hidden="true"> {{ .posts.CategoryNames }}</i>
+                            <div class="post-footer">
+                                <div class="left-section">
+                                    <i class="fa fa-user"> {{ .posts.Username }} </i>
+                                    <i class="fa fa-clock-o"> {{ .posts.FormattedDate }} </i>
+                                    <i class="fa fa-hashtag"> {{ .posts.CategoryNames }} </i>
                                 </div>
-                                <div class="l-rightside39">
+                                <div class="right-section">
                                     {{ if .LoggedIn }}
                                     <a href="/like/{{ .posts.PostID }}">
-                                        <button type="button" class="tolltip-button thumbs-up2" data-toggle="tooltip"
-                                            data-placement="bottom" title="Like"><i class="fa fa-thumbs-o-up "
-                                                aria-hidden="true"></i></button><span
-                                            class="single-question-vote-result">{{ .posts.LikeCount }}</span>
+                                        <button class="btn-like" title="Like"><i class="fa fa-thumbs-o-up"></i></button>
+                                        <span>{{ .posts.LikeCount }}</span>
                                     </a>
-                                    <a href="/disLike/{{ .posts.PostID }}">
-                                        <button type="button" class="tolltip-button thumbs-down2" data-toggle="tooltip"
-                                            data-placement="bottom" title="Dislike"><i class="fa fa-thumbs-o-down"
-                                                aria-hidden="true"></i></button> <span
-                                            class="single-question-vote-result">{{ .posts.DisLikeCount }}</span>
+                                    <a href="/dislike/{{ .posts.PostID }}">
+                                        <button class="btn-dislike" title="Dislike"><i class="fa fa-thumbs-o-down"></i></button>
+                                        <span>{{ .posts.DisLikeCount }}</span>
                                     </a>
                                     {{ else }}
-                                    <button type="button" class="tolltip-button thumbs-up2" data-toggle="tooltip"
-                                        data-placement="bottom" title="Like"><i class="fa fa-thumbs-o-up "
-                                            aria-hidden="true"></i></button><span
-                                        class="single-question-vote-result">{{ .posts.LikeCount }}</span>
-                                    <button type="button" class="tolltip-button thumbs-down2" data-toggle="tooltip"
-                                        data-placement="bottom" title="Dislike"><i class="fa fa-thumbs-o-down"
-                                            aria-hidden="true"></i></button> <span
-                                        class="single-question-vote-result">{{ .posts.DisLikeCount }}</span>
+                                    <button class="btn-like" title="Like"><i class="fa fa-thumbs-o-up"></i></button>
+                                    <span>{{ .posts.LikeCount }}</span>
+                                    <button class="btn-dislike" title="Dislike"><i class="fa fa-thumbs-o-down"></i></button>
+                                    <span>{{ .posts.DisLikeCount }}</span>
                                     {{ end }}
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="comment-list12993">
-                        <div class="container">
-                            <div class="row">
-                                {{ if .LoggedIn }}
-                                {{ range .posts.Comments }}
-                                <div class="comments-container">
-                                    <ul id="comments-list" class="comments-list">
-
-                                        <div class="comment-main-level">
-                                            <!-- Avatar -->
-
-                                            <!-- Contenedor del Comentario -->
-                                            <div class="comment-box">
-                                                <div class="comment-head">
-                                                    <h6 class="comment-name"><a href="#">{{ .Username }}</a></h6>
-                                                    <i class="fa fa-clock-o" aria-hidden="true">{{ .FormattedDate }}</i>
-
-                                                </div>
-                                                <div class="comment-content"> {{ .Content }}
-                                                </div>
-                                                <div class="post-footer29032">
-                                                    <div class="l-side2023">
-                                                        <i class="fa fa-clock-o clock2" aria-hidden="true">
-                                                            {{ .FormattedDate }}</i>
-                                                    </div>
-                                                </div>
-                                                <div class="l-rightside39">
-                                                    <a href="/likeComment/{{ .PostIDcomment }}/{{ .CommentID }}">
-                                                        <button type="button" class="tolltip-button thumbs-up2"
-                                                            data-toggle="tooltip" data-placement="bottom"
-                                                            title="Like"><i class="fa fa-thumbs-o-up "
-                                                                aria-hidden="true"></i></button><span
-                                                            class="single-question-vote-result">{{ .LikeCountComment }}</span>
-                                                    </a>
-                                                    <a href="/disLikeComment/{{ .PostIDcomment }}/{{ .CommentID }}">
-                                                        <button type="button" class="tolltip-button thumbs-down2"
-                                                            data-toggle="tooltip" data-placement="bottom"
-                                                            title="Dislike"><i class="fa fa-thumbs-o-down"
-                                                                aria-hidden="true"></i></button> <span
-                                                            class="single-question-vote-result">{{ .DisLikeCountComment }}</span>
-                                                    </a>
-                                                </div>
-                                            </div>
-
-                                        </div>
-                                    </ul>
-
-                                </div>
-                                {{ end }}
-                                {{ else }}
-                                {{ range .posts.Comments }}
-                                <div class="comments-container">
-                                    <ul id="comments-list" class="comments-list">
-
-                                        <div class="comment-main-level">
-                                            <!-- Avatar -->
-
-                                            <!-- Contenedor del Comentario -->
-                                            <div class="comment-box">
-                                                <div class="comment-head">
-                                                    <h6 class="comment-name"><a href="#">{{ .Username }}</a></h6>
-                                                    <i class="fa fa-clock-o" aria-hidden="true">{{ .FormattedDate }}</i>
-
-                                                </div>
-                                                <div class="comment-content"> {{ .Content }}
-                                                </div>
-                                                <div class="post-footer29032">
-                                                    <div class="l-side2023">
-                                                        <i class="fa fa-clock-o clock2" aria-hidden="true">
-                                                            {{ .FormattedDate }}</i>
-                                                    </div>
-                                                </div>
-                                                <div class="l-rightside39">
-                                                    <button type="button" class="tolltip-button thumbs-up2"
-                                                        data-toggle="tooltip" data-placement="bottom" title="Like"><i
-                                                            class="fa fa-thumbs-o-up "
-                                                            aria-hidden="true"></i></button><span
-                                                        class="single-question-vote-result">{{ .LikeCountComment }}</span>
-
-                                                    <button type="button" class="tolltip-button thumbs-down2"
-                                                        data-toggle="tooltip" data-placement="bottom" title="Dislike"><i
-                                                            class="fa fa-thumbs-o-down" aria-hidden="true"></i></button>
-                                                    <span
-                                                        class="single-question-vote-result">{{ .DisLikeCountComment }}</span>
-                                                </div>
-                                            </div>
-
-                                        </div>
-                                    </ul>
-
-                                </div>
-                                {{ end }}
-                                {{ end }}
-                            </div>
-                        </div>
-                    </div>
-                    <div class="comment289-box">
-                        <h3>Leave A Reply</h3>
-                        <hr>
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div class="post9320-box">
-                                    <form action="/sendcomment/{{ .posts.PostID }}" method="post">
-                                        <textarea name="textarea" placeholder="Enter Your Post"
-                                            class="comment-input219882" id="textarea"></textarea>
-                                        {{ if .LoggedIn }}
-                                        <button type="submit" class="publis1291">Publish your Comment</button>
-                                        {{ else }}
-                                        <button type="button" onclick="clickToRegister(event)" class="publis1291">You
-                                            should
-                                            Be Logged in </button>
-                                        {{ end }}
-                                    </form>
-
-                                </div>
-
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
-                <aside class="col-md-3 sidebar97239">
-                    <div class="login-part2389">
+                    <hr>
+                    <div class="comment-section">
                         {{ if .LoggedIn }}
-                        <h4>Welcome, {{ .Username }}</h4>
-                        <a href="/logout"><button type="button" class="userlogin320">Log Out</button></a>
+                        {{ if not .posts.Comments }}
+                        <div class="no-comments">
+                            <p>No comments yet. Be the first to comment!</p>
+                        </div>
                         {{ else }}
-                        <h4>Login</h4>
-                        <div class="input-group300">
-                            <form action="/login" method="post">
-                                <span><i class="fa fa-user" aria-hidden="true"></i></span>
-                                <input type="email" name="email" class="namein309" placeholder="email" required />
+                        {{ range .posts.Comments }}
+                        <div class="comment">
+                            <div class="comment-header">
+                                <h6>{{ .Username }}</h6>
+                                <i class="fa fa-clock-o">{{ .FormattedDate }}</i>
+                            </div>
+                            <div class="comment-body">{{ .Content }}</div>
+                            <div class="comment-footer">
+                                <a href="/likeComment/{{ .PostIDcomment }}/{{ .CommentID }}">
+                                    <button class="btn-like" title="Like"><i class="fa fa-thumbs-o-up"></i></button>
+                                    <span>{{ .LikeCountComment }}</span>
+                                </a>
+                                <a href="/dislikeComment/{{ .PostIDcomment }}/{{ .CommentID }}">
+                                    <button class="btn-dislike" title="Dislike"><i class="fa fa-thumbs-o-down"></i></button>
+                                    <span>{{ .DisLikeCountComment }}</span>
+                                </a>
+                            </div>
                         </div>
-                        <div class="input-group300">
-                            <span><i class="fa fa-lock" aria-hidden="true"></i></span>
-                            <input type="password" class="passin309" name="password" placeholder="password" required />
-
+                        {{ end }}
+                        {{ end }}
+                        {{ else }}
+                        {{ if not .posts.Comments }}
+                        <div class="no-comments">
+                            <p>No comments yet. Be the first to comment!</p>
                         </div>
-                        <button type="submit" class="userlogin320">LOG IN</button>
-                        </form>
+                        {{ else }}
+                        {{ range .posts.Comments }}
+                        <div class="comment">
+                            <div class="comment-header">
+                                <h6>{{ .Username }}</h6>
+                                <i class="fa fa-clock-o">{{ .FormattedDate }}</i>
+                            </div>
+                            <div class="comment-body">{{ .Content }}</div>
+                            <div class="comment-footer">
+                                <button class="btn-like" title="Like"><i class="fa fa-thumbs-o-up"></i></button>
+                                <span>{{ .LikeCountComment }}</span>
+                                <button class="btn-dislike" title="Dislike"><i class="fa fa-thumbs-o-down"></i></button>
+                                <span>{{ .DisLikeCountComment }}</span>
+                            </div>
+                        </div>
+                        {{ end }}
+                        {{ end }}
                         {{ end }}
                     </div>
-                </aside>
+
+                   <hr>
+                    <div class="comment-form">
+                        <h3>Leave A Reply</h3>
+                        <form action="/sendcomment/{{ .posts.PostID }}" method="post">
+                            <textarea name="textarea" placeholder="Enter Your Post" class="comment-textarea" id="textarea"></textarea>
+                            {{ if .LoggedIn }}
+                            <button type="submit" class="btn-publish">Publish your Comment</button>
+                            {{ else }}
+                            <button type="button" onclick="clickToRegister(event)" class="btn-publish">You should Be Logged in</button>
+                            {{ end }}
+                        </form>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
+
+
+    <!-- Footer -->
     <section class="footer-part">
         <div class="container">
+            <p>&copy; 2024 Forum01. All Rights Reserved.</p>
         </div>
     </section>
+
     <script>
+        // Redirect to register page
         const clickToRegister = (event) => {
-            window.location.replace('/register')
+            window.location.replace('/register');
         }
     </script>
 </body>

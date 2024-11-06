@@ -1,23 +1,24 @@
 package utils
 
 import (
-	"log"
+	"fmt"
 	"net/http"
 	"os"
 	"text/template"
 )
 
-func OpenHtml(fileName string, response http.ResponseWriter, data any) {
+func OpenHtml(fileName string, w http.ResponseWriter, data any) {
 	temp, err := template.ParseFiles("../../templates/" + fileName)
 	if err != nil {
-		log.Printf("error parsing template file: %v", err)
-		http.Error(response, "Internal Server Error", http.StatusInternalServerError)
+		fmt.Printf("error parsing template file: %v", err)
+		Error(w, 500)
 		return
 	}
-
-	if err := temp.Execute(response, data); err != nil {
-		log.Printf("error executing template: %v", err)
-		http.Error(response, "Internal Server Error", http.StatusInternalServerError)
+	err = temp.Execute(w, data)
+	if err != nil {
+		fmt.Printf("error executing template: %v", err)
+		Error(w, 500)
+		return
 	}
 }
 

@@ -49,28 +49,37 @@ func main() {
 	}
 	likeHandler :=  &handlers.LikeHandler{LikeService : likeService ,AuthService: authService}
 
-
-	// postHandler := &handlers.PostHandler{AuthService: authService}
+	mux := http.NewServeMux()
 
 	fmt.Println("Starting the forum server...")
-	http.HandleFunc("/static/", utils.SetupStaticFilesHandlers)
-	http.HandleFunc("/", postHandler.HomeHandle)
-	http.HandleFunc("/create", postHandler.PostCreation)
-	http.HandleFunc("/createPost", postHandler.PostSaver)
-	http.HandleFunc("/sendcomment/", postHandler.CommentSaver)
+	mux.HandleFunc("/static/", utils.SetupStaticFilesHandlers)
+	mux.HandleFunc("/", postHandler.HomeHandle)
+	mux.HandleFunc("/create", postHandler.PostCreation)
+	mux.HandleFunc("/createPost", postHandler.PostSaver)
+	mux.HandleFunc("/sendcomment/", postHandler.CommentSaver)
 
-	http.HandleFunc("/logout", authHandler.LogoutHandle)
-	http.HandleFunc("/login", authHandler.LoginHandle)
-	http.HandleFunc("/register", authHandler.RegisterHandle)
-	http.HandleFunc("/detailsPost/", postHandler.DetailsPost)
+	mux.HandleFunc("/logout", authHandler.LogoutHandle)
+	mux.HandleFunc("/login", authHandler.LoginHandle)
+	mux.HandleFunc("/register", authHandler.RegisterHandle)
+	mux.HandleFunc("/detailsPost/", postHandler.DetailsPost)
 
-	http.HandleFunc("/like/",likeHandler.LikePost)
-	http.HandleFunc("/disLike/",likeHandler.DisLikePost)
+	mux.HandleFunc("/like/",likeHandler.LikePost)
+	mux.HandleFunc("/disLike/",likeHandler.DisLikePost)
 
-	http.HandleFunc("/likeComment/",likeHandler.LikeComment)
-	http.HandleFunc("/disLikeComment/",likeHandler.DisLikeComment)
+	mux.HandleFunc("/likeComment/",likeHandler.LikeComment)
+	mux.HandleFunc("/disLikeComment/",likeHandler.DisLikeComment)
 
-	http.HandleFunc("/filters" ,postHandler.PostFilter)
+	mux.HandleFunc("/filters" ,postHandler.PostFilter)
+
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+
+		handler, pattern := mux.Handler(r)
+		if pattern == "" || pattern == "/" && r.URL.Path != "/" {
+			utils.Error(w,404)
+			return
+		}
+		handler.ServeHTTP(w, r)
+	})
 
 	log.Fatal(http.ListenAndServe("0.0.0.0:8080", nil))
 }
