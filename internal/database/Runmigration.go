@@ -10,21 +10,24 @@ import (
 )
 
 func RunMigrations(db *sql.DB) error {
-	// Check if tables already exist
-
+	allExist := true
 	tables := []string{"users", "posts", "comments", "categories", "post_categories", "likes"}
 	for _, table := range tables {
-		if tableExists(db, table) {
-			fmt.Printf("table %s already exists\n", table)
+		if !tableExists(db, table) {
+			allExist = false
+			break
 		}
 	}
-	// If no tables exist, proceed with migrations
+
+	if allExist {
+		return nil
+	}
+
 	migrationSQL, err := ioutil.ReadFile("../../internal/database/migrations/001_initial_schema.sql")
 	if err != nil {
 		return err
 	}
 
-	// Split the SQL file into individual statements
 	statements := strings.Split(string(migrationSQL), ";")
 
 	for _, stmt := range statements {
@@ -50,7 +53,6 @@ func tableExists(db *sql.DB, tableName string) bool {
 }
 
 func InsertDefaultCategories(db *sql.DB) error {
-	// Check and insert each category
 	categories := []string{
 		"Announcements",
 		"General Discussion",
@@ -70,16 +72,15 @@ func InsertDefaultCategories(db *sql.DB) error {
 
 	for _, category := range categories {
 		ID := uuid.Must(uuid.NewV4())
-		// Check if category exists
+
 		var exists int
 		err := db.QueryRow("SELECT COUNT(*) FROM categories WHERE name = ?", category).Scan(&exists)
 		if err != nil {
 			return fmt.Errorf("error checking category %s: %v", category, err)
 		}
 
-		// Insert only if it doesn't exist
 		if exists == 0 {
-			_, err := db.Exec("INSERT INTO categories (ID , name) VALUES (?,?)",ID, category)
+			_, err := db.Exec("INSERT INTO categories (ID , name) VALUES (?,?)", ID, category)
 			if err != nil {
 				return fmt.Errorf("error inserting category %s: %v", category, err)
 			}

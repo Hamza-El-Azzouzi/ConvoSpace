@@ -18,6 +18,9 @@ type AuthHandler struct {
 }
 
 func (h *AuthHandler) LogoutHandle(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet{
+		utils.Error(w,405)
+	}
 	cookie, err := r.Cookie("session_id")
 	if err != nil {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
@@ -25,12 +28,11 @@ func (h *AuthHandler) LogoutHandle(w http.ResponseWriter, r *http.Request) {
 	}
 
 	sessionID := cookie.Value
-
+	fmt.Println(sessionID)
 	_, err = h.AuthService.UserRepo.DB.Exec("DELETE FROM sessions WHERE session_id = ?", sessionID)
 	if err != nil {
 		utils.Error(w, 500)
 	}
-
 	http.SetCookie(w, &http.Cookie{
 		Name:     "session_id",
 		Value:    "",
@@ -65,32 +67,33 @@ func (h *AuthHandler) LoginHandle(w http.ResponseWriter, r *http.Request) {
 
 		if !h.AuthMidlaware.IsValidEmail(email) {
 			errFrom["email"] = "Invalid email"
-		}
-		if len(errFrom) == 1 {
 			utils.OpenHtml("login.html", w, errFrom)
 			return
 		}
 		user, loginError := h.AuthService.Login(email, password)
+		if loginError != nil {
+			utils.Error(w, 500)
+		}
 		if user == nil {
 			errFrom["password"] = "Invalid email or password"
 			utils.OpenHtml("login.html", w, errFrom)
 			return
 		}
+		expiration := time.Now().Add(60 * time.Minute)
 		sessionID := uuid.Must(uuid.NewV4()).String()
-		_, err = h.AuthService.UserRepo.DB.Exec("INSERT INTO sessions (session_id, user_id) VALUES (?, ?)", sessionID, user.ID)
+		_, err = h.AuthService.UserRepo.DB.Exec("INSERT INTO sessions (session_id, user_id, expires_at) VALUES (?, ?, ?)", sessionID, user.ID, expiration)
 		if err != nil {
 			utils.Error(w, 500)
 		}
+
 		http.SetCookie(w, &http.Cookie{
 			Name:     "session_id",
 			Value:    sessionID,
 			Path:     "/",
-			Expires:  time.Now().Add(24 * time.Hour),
+			Expires:  expiration,
 			HttpOnly: true,
 		})
-		if loginError != nil {
-			utils.Error(w, 500)
-		}
+
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 	} else {
 		utils.Error(w, http.StatusMethodNotAllowed)
@@ -135,8 +138,42 @@ func (h *AuthHandler) RegisterHandle(w http.ResponseWriter, r *http.Request) {
 			fmt.Println(registrError)
 			errFrom["alreadyExist"] = "The Email Already Exist"
 			utils.OpenHtml("signup.html", w, errFrom)
-			
+
 			return
 		}
+		h.LoginHandle(w, r)
+	}
+}
+
+func (h *AuthHandler) CheckDoubleLogging(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet{
+		utils.Error(w,405)
+	}
+	cookie, err := r.Cookie("session_id")
+	if err != nil {
+		http.Redirect(w, r, "/", http.StatusOK)
+		return
+	}
+	if cookie != nil {
+		sessionId := cookie.Value
+		user, err := h.AuthService.UserRepo.GetUserBySessionID(sessionId)
+		if err != nil {
+			utils.Error(w, http.StatusBadRequest)
+			return
+		}
+
+		userSEssion, errSession := h.AuthService.UserRepo.CheckUserAlreadyLogged(user.ID)
+		if errSession != nil {
+			fmt.Printf("err f session login : %v", errSession)
+		}
+		fmt.Println(len((userSEssion)))
+		if len(userSEssion) > 1 {
+			fmt.Println(userSEssion)
+			h.LogoutHandle(w, r)
+			return
+		}
+	} else {
+		utils.Error(w, 404)
+		return
 	}
 }

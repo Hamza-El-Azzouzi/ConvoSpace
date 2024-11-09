@@ -17,6 +17,9 @@ func NewCategoryHandler(service *services.CategoryService) *CategoryHandler {
 }
 
 func (h *CategoryHandler) GetCategories(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet{
+		utils.Error(w,405)
+	}
 	categories, err := h.service.GetAllCategories()
 	if err != nil {
 		utils.Error(w, 500)

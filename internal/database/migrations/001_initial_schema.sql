@@ -1,6 +1,7 @@
 -- Users table
-CREATE TABLE users( 
-    id TEXT  PRIMARY KEY ,
+CREATE TABLE users
+(
+    id TEXT PRIMARY KEY ,
     username TEXT NOT NULL UNIQUE,
     email TEXT NOT NULL UNIQUE,
     password_hash TEXT NOT NULL,
@@ -8,7 +9,8 @@ CREATE TABLE users(
 );
 
 -- Posts table
-CREATE TABLE posts(
+CREATE TABLE posts
+(
     id TEXT PRIMARY KEY ,
     user_id TEXT NOT NULL,
     title TEXT NOT NULL,
@@ -18,7 +20,8 @@ CREATE TABLE posts(
 );
 
 -- Comments table
-CREATE TABLE comments(
+CREATE TABLE comments
+(
     id TEXT PRIMARY KEY ,
     user_id TEXT NOT NULL,
     post_id TEXT NOT NULL,
@@ -29,13 +32,15 @@ CREATE TABLE comments(
 );
 
 -- Categories table
-CREATE TABLE categories(
+CREATE TABLE categories
+(
     id TEXT PRIMARY KEY ,
     name TEXT NOT NULL UNIQUE
 );
 
 -- PostCategories table (for many-to-many relationship between posts and categories)
-CREATE TABLE post_categories(
+CREATE TABLE post_categories
+(
     post_id TEXT NOT NULL,
     category_id TEXT NOT NULL,
     PRIMARY KEY (post_id, category_id),
@@ -44,7 +49,8 @@ CREATE TABLE post_categories(
 );
 
 -- Likes table
-CREATE TABLE likes(
+CREATE TABLE likes
+(
     id TEXT PRIMARY KEY,
     user_id TEXT NOT NULL,
     post_id TEXT,
@@ -54,17 +60,17 @@ CREATE TABLE likes(
     FOREIGN KEY (user_id) REFERENCES users(id),
     FOREIGN KEY (post_id) REFERENCES posts(id),
     FOREIGN KEY (comment_id) REFERENCES comments(id),
+    CONSTRAINT unique_user_post_comment UNIQUE (user_id, post_id, comment_id),
     CHECK ((post_id IS NOT NULL AND comment_id IS NULL) OR (post_id IS NULL AND comment_id IS NOT NULL))
 );
-CREATE TABLE sessions (
+CREATE TABLE sessions
+(
     session_id TEXT PRIMARY KEY,
     user_id TEXT NOT NULL,
+    expires_at TIMESTAMP NOT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
-ALTER TABLE likes ADD CONSTRAINT unique_user_post_comment UNIQUE (user_id, post_id, comment_id);
-
--- Index for faster querying
 CREATE INDEX idx_user_id_session ON sessions(user_id);
 CREATE INDEX idx_post_categories_post_id ON post_categories(post_id);
 CREATE INDEX idx_post_categories_category_id ON post_categories(category_id);

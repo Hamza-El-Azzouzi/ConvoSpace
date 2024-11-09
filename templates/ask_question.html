@@ -39,9 +39,11 @@
             <div class="question-type2033">
                 <h4>Ask Question</h4>
                 <hr>
-                <form action="/createPost" method="post">
+                <form action="/createPost" method="post" id="postForm">
                     <div class="input-group300">
-                        <input type="text" name="title" class="namein309" placeholder="Write Your Question Title">
+                        <input type="text" name="title" required class="namein309"
+                            placeholder="Write Your Question Title">
+                        <div class="error-message" id="title-error"></div>
                     </div>
 
                     <div class="categori-part329">
@@ -54,17 +56,21 @@
                             </label><br>
                             {{ end }}
                         </div>
+                        <div class="error-message" id="category-error"></div>
                     </div>
 
                     <div class="input-group300">
-                        <textarea name="textarea" id="textarea" class="passin309" rows="5" placeholder="Describe your question in detail"></textarea>
+                        <textarea name="textarea" id="textarea" class="passin309" rows="5" required
+                            placeholder="Describe your question in detail"></textarea>
+                        <div class="error-message" id="textarea-error"></div>
                     </div>
 
                     <div class="button0239-item">
                         {{ if .LoggedIn }}
                         <button type="submit" class="userlogin320">Publish your Question</button>
                         {{ else }}
-                        <button type="button" onclick="clickToRegister()" class="userlogin320">You should be logged in</button>
+                        <button type="button" onclick="clickToRegister()" class="userlogin320">You should be logged
+                            in</button>
                         {{ end }}
                     </div>
                 </form>
@@ -82,6 +88,41 @@
         const clickToRegister = () => {
             window.location.replace('/register');
         }
+
+        document.getElementById('postForm').addEventListener('submit', function (event) {
+            let isValid = true;
+
+            // Clear previous error messages
+            document.getElementById('title-error').textContent = '';
+            document.getElementById('category-error').textContent = '';
+            document.getElementById('textarea-error').textContent = '';
+
+            // Validate title
+            const titleInput = document.querySelector('input[name="title"]');
+            if (!titleInput.value.trim()) {
+                document.getElementById('title-error').textContent = 'Title is required.';
+                isValid = false;
+            }
+
+            // Validate at least one category checkbox is selected
+            const categoryCheckboxes = document.querySelectorAll('input[name="category"]:checked');
+            if (categoryCheckboxes.length === 0) {
+                document.getElementById('category-error').textContent = 'Please select at least one category.';
+                isValid = false;
+            }
+
+            // Validate textarea (question description)
+            const textareaInput = document.querySelector('textarea[name="textarea"]');
+            if (!textareaInput.value.trim()) {
+                document.getElementById('textarea-error').textContent = 'Description is required.';
+                isValid = false;
+            }
+
+            // Prevent form submission if validation fails
+            if (!isValid) {
+                event.preventDefault();
+            }
+        });
     </script>
 </body>
 

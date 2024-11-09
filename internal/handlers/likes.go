@@ -17,6 +17,9 @@ type LikeHandler struct {
 }
 
 func (l *LikeHandler) LikePost(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet{
+		utils.Error(w,405)
+	}
 	var userID uuid.UUID
 	pathParts := strings.Split(r.URL.Path, "/")
 
@@ -41,6 +44,9 @@ func (l *LikeHandler) LikePost(w http.ResponseWriter, r *http.Request) {
 }
 
 func (l *LikeHandler) DisLikePost(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet{
+		utils.Error(w,405)
+	}
 	data := map[string]interface{}{
 		"LoggedIn": true,
 	}
@@ -71,6 +77,9 @@ func (l *LikeHandler) DisLikePost(w http.ResponseWriter, r *http.Request) {
 }
 
 func (l *LikeHandler) LikeComment(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet{
+		utils.Error(w,405)
+	}
 	var userID uuid.UUID
 	pathParts := strings.Split(r.URL.Path, "/")
 
@@ -102,6 +111,9 @@ func (l *LikeHandler) LikeComment(w http.ResponseWriter, r *http.Request) {
 }
 
 func (l *LikeHandler) DisLikeComment(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet{
+		utils.Error(w,405)
+	}
 	var userID uuid.UUID
 	pathParts := strings.Split(r.URL.Path, "/")
 

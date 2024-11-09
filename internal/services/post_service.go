@@ -53,7 +53,6 @@ func (p *PostService) GetPost(PostID string) (models.PostDetails, error) {
 	return posts, nil
 }
 
-func (p *PostService) FilterPost(post, like string, categorie []string) ([]models.PostWithUser, error) {
-	fmt.Printf("slice f service : %v  hada len : %v \n" ,categorie,len(categorie))
-	return p.PostRepo.FilterPost(post,like,categorie)
+func (p *PostService) FilterPost(filterby, categorie string, userID uuid.UUID) ([]models.PostWithUser, error) {
+	return p.PostRepo.FilterPost(filterby, categorie ,userID)
 }

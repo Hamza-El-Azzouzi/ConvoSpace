@@ -243,7 +243,7 @@ func (r *PostRepository) GetPostById(PostId string) (models.PostDetails, error) 
 	return postDetails, nil
 }
 
-func (r *PostRepository) FilterPost(post, like string, categorie []string) ([]models.PostWithUser, error) {
+func (r *PostRepository) FilterPost(filterby, categorie string, userID uuid.UUID) ([]models.PostWithUser, error) {
 	baseQuery := `SELECT 
     posts.id AS post_id,
     posts.title,
@@ -252,7 +252,6 @@ func (r *PostRepository) FilterPost(post, like string, categorie []string) ([]mo
     users.id AS user_id,
     users.username,
     users.email,
-	(SELECT COUNT(*) FROM likes WHERE likes.post_id = posts.id AND react_type = "like") AS like_count,
     IFNULL(GROUP_CONCAT(categories.name, ', '), '') AS category_names,
     COUNT(comments.id) AS comment_count
 	FROM 
@@ -264,41 +263,34 @@ func (r *PostRepository) FilterPost(post, like string, categorie []string) ([]mo
 	LEFT JOIN 
     	categories ON post_categories.category_id = categories.id
 	LEFT JOIN 
-    	comments ON posts.id = comments.post_id`
+    	comments ON posts.id = comments.post_id
+	LEFT JOIN 
+      likes ON posts.id = likes.post_id	
+	`
+
 	groupQuery := " GROUP BY posts.id"
-	var categoryFilter string
+	// var categoryFilter string
 	args := []interface{}{}
-	fmt.Printf("slice f repo : %v  hada len : %v \n" ,categorie,len(categorie))
-	if len(categorie) > 0 {
-		categoryFilter = " WHERE post_categories.category_id IN ("
-		for i, id := range categorie {
-			if i > 0 {
-				categoryFilter += ", "
-			}
-			categoryFilter += "?"
-			args = append(args, id)
-		}
-		categoryFilter += ")"
-	}
-	orderClause := ""
-	if post != "" || like != "" {
-		orderClause = " ORDER BY"
-	}
-	if post == "asc" {
-		orderClause += " posts.created_at ASC" 
-	} else if post == "desc" {
-		orderClause += " posts.created_at DESC"
-	}
-	if post != "" && like != ""{
-		orderClause += ","
-	}
-	if like == "asc" {
-		orderClause += " like_count ASC" 
-	} else if like == "desc" {
-		orderClause += " like_count DESC"
+	WhereClause := ""
+	decider := " WHERE"
+	
+	
+	if filterby == "created" {
+		WhereClause = decider+ " posts.user_id = ? "
+		decider = " AND"
+		args = append(args, userID)
+	} else if filterby == "liked"{
+		WhereClause = decider+ " likes.user_id = ? AND likes.comment_id IS NULL"
+		decider = " AND"
+		args = append(args, userID)
 	}
 
-	finalQuery := baseQuery + categoryFilter + groupQuery+orderClause
+	if categorie != "" {
+		WhereClause += decider +" post_categories.category_id = ?"
+		args = append(args, categorie)
+	}
+
+	finalQuery := baseQuery + WhereClause + groupQuery
 	fmt.Println(finalQuery)
 	fmt.Println(args...)
 	rows, err := r.DB.Query(finalQuery, args...)
@@ -318,7 +310,6 @@ func (r *PostRepository) FilterPost(post, like string, categorie []string) ([]mo
 			&post.UserID,
 			&post.Username,
 			&post.Email,
-			&post.LikeCount,
 			&post.CategoryName,
 			&post.CommentCount,
 		); err != nil {

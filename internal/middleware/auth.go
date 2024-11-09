@@ -19,8 +19,7 @@ func (h *AuthMidlaware) IsUserLoggedIn(w http.ResponseWriter, r *http.Request) (
 	}
 
 	sessionID := cookie.Value
-
-	// Query the database to find the session
+	
 	var userID string
 	err = h.AuthService.UserRepo.DB.QueryRow("SELECT user_id FROM sessions WHERE session_id = ?", sessionID).Scan(&userID)
 	if err != nil {

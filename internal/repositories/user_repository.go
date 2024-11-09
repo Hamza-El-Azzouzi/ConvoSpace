@@ -2,10 +2,11 @@ package repositories
 
 import (
 	"database/sql"
+	"fmt"
 
 	"forum/internal/models"
 
-	// "golang.org/x/crypto/bcrypt"
+	"github.com/gofrs/uuid/v5"
 )
 
 type UserRepository struct {
@@ -51,26 +52,46 @@ func (repo *UserRepository) FindByID(userId string) (*models.User, error) {
 
 	return user, nil
 }
+
 func (r *UserRepository) GetUserBySessionID(sessionID string) (*models.User, error) {
-	// Prepare a new User instance
 	user := &models.User{}
 
-	// Query to fetch the username based on session ID
 	err := r.DB.QueryRow(`
 		SELECT users.id, users.username, users.email, users.password_hash
 		FROM users 
 		JOIN sessions ON users.id = sessions.user_id 
 		WHERE sessions.session_id = ?`, sessionID).
 		Scan(&user.ID, &user.Username, &user.Email, &user.PasswordHash)
-	
-	// Check for errors and handle no rows found
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return nil, nil // No user found
+			return nil, nil
 		}
-		return nil, err // Other errors
+		return nil, err
 	}
 
-	return user, nil // Successful fetch
+	return user, nil
 }
-// Implement other CRUD operations...
+
+func (r *UserRepository) CheckUserAlreadyLogged(UserID uuid.UUID) ([]models.UserSession, error) {
+	var userSessions []models.UserSession
+	query := `SELECT session_id ,user_id FROM sessions WHERE user_id = ? ORDER BY created_at ASC`
+	rows, err := r.DB.Query(query, UserID)
+	for rows.Next() {
+		var userSession models.UserSession
+		if err := rows.Scan(&userSession.ID, &userSession.USerID);
+		 err != nil {
+			return nil, fmt.Errorf("error scanning sessions with user info filter: %v", err)
+		}
+		userSessions = append(userSessions, userSession)
+	}
+	
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return []models.UserSession{}, nil
+		}
+		return []models.UserSession{}, err
+	}
+
+	return userSessions, nil
+}

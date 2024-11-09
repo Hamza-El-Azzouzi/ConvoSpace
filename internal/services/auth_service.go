@@ -1,6 +1,8 @@
 package services
 
 import (
+	"fmt"
+
 	"forum/internal/models"
 	"forum/internal/repositories"
 
@@ -23,18 +25,18 @@ func (s *AuthService) Register(username, email, password string) error {
 		Email:        email,
 		PasswordHash: string(hashedPassword),
 	}
-	
+
 	return s.UserRepo.Create(user)
 }
 
 func (s *AuthService) Login(email, password string) (*models.User, error) {
 	user, err := s.UserRepo.FindByEmail(email)
-	if err != nil {
+	if err != nil || user == nil {
 		return nil, err
 	}
-
 	err = bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(password))
 	if err != nil {
+		fmt.Printf("error f login : %v",err)
 		return nil, err
 	}
 

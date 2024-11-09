@@ -16,6 +16,7 @@ func Error(response http.ResponseWriter, status int) {
 		405: {"Method Not Allowed", "The request method is not supported for the requested resource."},
 		500: {"Something Went Wrong!", "Oops! It looks like our server encountered an unexpected issue. Don't worry, our team has been notified."},
 		429: {"Too Many Requests", "You have sent too many requests in a given amount of time. Please try again later."},
+		403: {"Forbidden", "You do not have permission to access this resource."},
 	}
 	var errorData ErrorStruct
 	response.WriteHeader(status)

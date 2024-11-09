@@ -44,23 +44,23 @@
                                 <div class="left-section">
                                     <i class="fa fa-user"> {{ .posts.Username }} </i>
                                     <i class="fa fa-clock-o"> {{ .posts.FormattedDate }} </i>
-                                    <i class="fa fa-hashtag"> {{ .posts.CategoryNames }} </i>
+                                    <!-- <i class="fa fa-hashtag"> {{ .posts.CategoryNames }} </i> -->
                                 </div>
                                 <div class="right-section">
                                     {{ if .LoggedIn }}
                                     <a href="/like/{{ .posts.PostID }}">
-                                        <button class="btn-like" title="Like"><i class="fa fa-thumbs-o-up"></i></button>
-                                        <span>{{ .posts.LikeCount }}</span>
+                                        <button class="btn-like" title="Like"></i></button>
+                                        <span>👍{{ .posts.LikeCount }}</span>
                                     </a>
                                     <a href="/dislike/{{ .posts.PostID }}">
-                                        <button class="btn-dislike" title="Dislike"><i class="fa fa-thumbs-o-down"></i></button>
-                                        <span>{{ .posts.DisLikeCount }}</span>
+                                        <button class="btn-dislike" title="Dislike"></button>
+                                        <span>👎{{ .posts.DisLikeCount }}</span>
                                     </a>
                                     {{ else }}
-                                    <button class="btn-like" title="Like"><i class="fa fa-thumbs-o-up"></i></button>
-                                    <span>{{ .posts.LikeCount }}</span>
-                                    <button class="btn-dislike" title="Dislike"><i class="fa fa-thumbs-o-down"></i></button>
-                                    <span>{{ .posts.DisLikeCount }}</span>
+                                    <button class="btn-like" title="Like"></i></button>
+                                    <span>👍{{ .posts.LikeCount }}</span>
+                                    <button class="btn-dislike" title="Dislike"></button>
+                                    <span>👎{{ .posts.DisLikeCount }}</span>
                                     {{ end }}
                                 </div>
                             </div>
@@ -83,12 +83,12 @@
                             <div class="comment-body">{{ .Content }}</div>
                             <div class="comment-footer">
                                 <a href="/likeComment/{{ .PostIDcomment }}/{{ .CommentID }}">
-                                    <button class="btn-like" title="Like"><i class="fa fa-thumbs-o-up"></i></button>
-                                    <span>{{ .LikeCountComment }}</span>
+                                    <button class="btn-like" title="Like"></button>
+                                    <span>👍{{ .LikeCountComment }}</span>
                                 </a>
                                 <a href="/dislikeComment/{{ .PostIDcomment }}/{{ .CommentID }}">
-                                    <button class="btn-dislike" title="Dislike"><i class="fa fa-thumbs-o-down"></i></button>
-                                    <span>{{ .DisLikeCountComment }}</span>
+                                    <button class="btn-dislike" title="Dislike"></button>
+                                    <span>👎{{ .DisLikeCountComment }}</span>
                                 </a>
                             </div>
                         </div>
@@ -108,10 +108,10 @@
                             </div>
                             <div class="comment-body">{{ .Content }}</div>
                             <div class="comment-footer">
-                                <button class="btn-like" title="Like"><i class="fa fa-thumbs-o-up"></i></button>
-                                <span>{{ .LikeCountComment }}</span>
-                                <button class="btn-dislike" title="Dislike"><i class="fa fa-thumbs-o-down"></i></button>
-                                <span>{{ .DisLikeCountComment }}</span>
+                                <button class="btn-like" title="Like"></button>
+                                <span>👍{{ .LikeCountComment }}</span>
+                                <button class="btn-dislike" title="Dislike"></button>
+                                <span>👎{{ .DisLikeCountComment }}</span>
                             </div>
                         </div>
                         {{ end }}
@@ -122,8 +122,9 @@
                    <hr>
                     <div class="comment-form">
                         <h3>Leave A Reply</h3>
-                        <form action="/sendcomment/{{ .posts.PostID }}" method="post">
-                            <textarea name="textarea" placeholder="Enter Your Post" class="comment-textarea" id="textarea"></textarea>
+                        <form action="/sendcomment/{{ .posts.PostID }}" method="post" id="commentForm">
+                            <textarea name="textarea" required placeholder="Enter Your Post" class="comment-textarea" id="textarea"></textarea>
+                            <div class="error-message" id="textarea-error"></div>
                             {{ if .LoggedIn }}
                             <button type="submit" class="btn-publish">Publish your Comment</button>
                             {{ else }}
@@ -149,6 +150,24 @@
         const clickToRegister = (event) => {
             window.location.replace('/register');
         }
+
+        document.getElementById('commentForm').addEventListener('submit', function (event) {
+            let isValid = true;
+
+            document.getElementById('textarea-error').textContent = '';
+
+            // Validate textarea (question description)
+            const textareaInput = document.querySelector('textarea[name="textarea"]');
+            if (!textareaInput.value.trim()) {
+                document.getElementById('textarea-error').textContent = 'Comment is required.';
+                isValid = false;
+            }
+
+            // Prevent form submission if validation fails
+            if (!isValid) {
+                event.preventDefault();
+            }
+        });
     </script>
 </body>
 

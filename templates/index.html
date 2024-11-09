@@ -19,8 +19,9 @@
             <div class="navbar-menu-left-side239">
                 <ul>
                     <li><a href="/"><i aria-hidden="true"></i> Home</a></li>
-                    <li><a href="/create"><i aria-hidden="true"></i> Create A Post</a></li>
+
                     {{ if .LoggedIn }}
+                    <li><a href="/create"><i aria-hidden="true"></i> Create A Post</a></li>
                     <li><a href="/logout"><i aria-hidden="true"></i> Log Out</a></li>
                     {{ else }}
                     <li><a href="/login"><i aria-hidden="true"></i> Login Area</a></li>
@@ -49,7 +50,7 @@
             {{ range .posts }}
             <div class="question-type2033">
                 <div class="row">
-                    
+
                     <div class="right-description893">
                         <h3><a href="detailsPost/{{ .PostID }}" target="_blank">{{ .Title }}</a></h3>
                         <p>{{ .Content }}</p>
@@ -70,65 +71,41 @@
             {{ end }}
         </div>
         <aside class="sidebar97239">
+            {{ if .LoggedIn }}
             <div class="login-part2389">
-                {{ if .LoggedIn }}
                 <h4>Welcome, {{ .Username }}</h4>
                 <a href="/logout"><button type="button" class="userlogin320">Log Out</button></a>
-                {{ else }}
-                <h4>Login</h4>
-                <div class="input-group300">
-                    <form action="/login" method="post">
-                        <span><i class="fa fa-user" aria-hidden="true"></i></span>
-                        <input type="email" name="email" class="namein309" placeholder="email" required />
-                </div>
-                <div class="input-group300">
-                    <span><i class="fa fa-lock" aria-hidden="true"></i></span>
-                    <input type="password" class="passin309" name="password" placeholder="password" required />
-
-                </div>
-                <button type="submit" class="userlogin320">LOG IN</button>
-                </form>
-                {{ end }}
             </div>
+            {{ else }}
+            {{ end }}
             {{ if .LoggedIn }}
             <div class="categori-part329">
-                <h4>Created Posts</h4>
+                <h4>Filter Posts</h4>
                 <ul>
                     <label>
-                        <input type="radio" name="post" value="desc" id="index-checkbox" />
-                        <span class="custom-checkbox">Recent Posts</span>
+                        <input type="radio" name="filter" value="created" id="index-checkbox" />
+                        <span class="custom-checkbox">Created Posts</span>
                     </label>
                     <label>
-                        <input type="radio" name="post" value="asc" id="index-checkbox" />
-                        <span class="custom-checkbox">Oldest Posts</span>
+                        <input type="radio" name="filter" value="liked" id="index-checkbox" />
+                        <span class="custom-checkbox">Liked Posts</span>
                     </label>
-                </ul>
-            </div>
-            <div class="categori-part329">
-                <h4>Liked Posts</h4>
-                <ul>
-                    <label>
-                        <input type="radio" name="liked" value="desc" id="index-checkbox" />
-                        <span class="custom-checkbox">Most Liked Posts</span>
-                    </label>
-                    <label>
-                        <input type="radio" name="liked" value="asc" id="index-checkbox" />
-                        <span class="custom-checkbox">Less Liked Posts</span>
-                    </label>
+                    <button class="resetFilter userlogin320">Reset Filter</button>
                 </ul>
             </div>
             {{ end }}
             <div class="categori-part329">
                 <h4>Category</h4>
-                <ul>
+                <ul class="cate">
                     {{ range .categories }}
                     <label>
-                        <input type="checkbox" value="{{ .ID }}" name="categorie" id="index-checkbox" />
+                        <input type="radio" value="{{ .ID }}" name="categorie" id="index-checkbox" />
                         <span class="custom-checkbox">{{ .Name }}</span>
                     </label>
                     <br>
                     {{ end }}
                 </ul>
+                <button class="resetCategorie userlogin320">Reset Category</button>
             </div>
         </aside>
     </section>
@@ -140,9 +117,32 @@
     </section>
 </body>
 <script>
+    window.addEventListener('unload', function () {
+        navigator.sendBeacon("http://10.1.2.1:8080/checker")
+    })
+
+
+
+    var btnResetFilter = document.querySelector(".resetFilter")
+    var btnResetCategorie = document.querySelector(".resetCategorie")
+
+
+    btnResetFilter.addEventListener("click", () => {
+        const filterby = document.querySelector('input[name="filter"]:checked');
+        filterby.checked = false
+        handleFilterChange()
+
+    })
+
+    btnResetCategorie.addEventListener("click", () => {
+        const categories = document.querySelector('input[name="categorie"]:checked');
+        categories.checked = false
+        handleFilterChange()
+    })
+
     function debounce(func, wait) {
         let timeout;
-        return function(...args) {
+        return function (...args) {
             clearTimeout(timeout);
             timeout = setTimeout(() => func.apply(this, args), wait);
         };
@@ -150,23 +150,21 @@
 
     // Main function to handle changes and make the fetch call
     function handleFilterChange() {
-        const post = document.querySelector('input[name="post"]:checked');
-        const like = document.querySelector('input[name="liked"]:checked');
-        const categorie = document.querySelectorAll('input[name="categorie"]:checked');
-
-        const categoryValues = Array.from(categorie).map(category => category.value);
-        const postVal = post ? post.value : "";
-        const likeVal = like ? like.value : "";
-
+        const filterby = document.querySelector('input[name="filter"]:checked');
+        const categorie = document.querySelector('input[name="categorie"]:checked');
+        const categoryVal = categorie ? categorie.value : "";
+        const filterbyVal = filterby ? filterby.value : "";
+        console.log(filterbyVal)
         const queryParams = new URLSearchParams({
-            posts: postVal,
-            likes: likeVal,
-            categories: categoryValues.join(",")
+            filterby: filterbyVal,
+            categories: categoryVal
         });
 
         console.log(queryParams.toString());
 
-        fetch('/filters?' + queryParams.toString(), { method: 'GET' })
+        fetch('/filters?' + queryParams.toString(), {
+                method: 'GET'
+            })
             .then(response => response.json())
             .then(data => {
                 console.log(data);
@@ -178,7 +176,7 @@
     }
 
     // Debounce the change event to prevent too many requests
-    document.body.addEventListener("change", debounce(handleFilterChange, 300));
+    document.body.addEventListener("change", debounce(handleFilterChange, 100));
 
     // Function to update the DOM with new data
     const updateData = (data) => {

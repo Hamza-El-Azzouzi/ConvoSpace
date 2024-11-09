@@ -29,13 +29,16 @@ func main() {
 	}
 
 	defer db.Close()
+	cleaner := &utils.Cleaner{Db:db}
+
+	go cleaner.CleanupExpiredSessions()
+
 	userRepo := &repositories.UserRepository{DB: db}
 	categorieRepo := &repositories.CategoryRepository{DB: db}
 	postRepo := &repositories.PostRepository{DB: db}
 	commentRepo := &repositories.CommentRepositorie{DB: db}
 	likeRepo := &repositories.LikeReposetorie{DB: db}
 
-	
 	postServices := &services.PostService{PostRepo: postRepo}
 	categorieServices := &services.CategoryService{CategorieRepo: categorieRepo}
 	commentService := &services.CommentService{CommentRepo: commentRepo}
@@ -44,14 +47,16 @@ func main() {
 
 	authMidlware := &middleware.AuthMidlaware{AuthService: authService}
 
-	authHandler := &handlers.AuthHandler{AuthService: authService,AuthMidlaware:authMidlware}
+	authHandler := &handlers.AuthHandler{AuthService: authService, AuthMidlaware: authMidlware}
 	postHandler := &handlers.PostHandler{
 		AuthService:     authService,
+		AuthMidlaware: authMidlware,
 		CategoryService: categorieServices,
 		PostService:     postServices,
 		CommentService:  commentService,
+		AuthHandler:     authHandler,
 	}
-	likeHandler :=  &handlers.LikeHandler{LikeService : likeService ,AuthService: authService}
+	likeHandler := &handlers.LikeHandler{LikeService: likeService, AuthService: authService}
 
 	mux := http.NewServeMux()
 
@@ -67,19 +72,20 @@ func main() {
 	mux.HandleFunc("/register", authHandler.RegisterHandle)
 	mux.HandleFunc("/detailsPost/", postHandler.DetailsPost)
 
-	mux.HandleFunc("/like/",likeHandler.LikePost)
-	mux.HandleFunc("/disLike/",likeHandler.DisLikePost)
+	mux.HandleFunc("/like/", likeHandler.LikePost)
+	mux.HandleFunc("/dislike/", likeHandler.DisLikePost)
 
-	mux.HandleFunc("/likeComment/",likeHandler.LikeComment)
-	mux.HandleFunc("/disLikeComment/",likeHandler.DisLikeComment)
+	mux.HandleFunc("/likeComment/", likeHandler.LikeComment)
+	mux.HandleFunc("/dislikeComment/", likeHandler.DisLikeComment)
 
-	mux.HandleFunc("/filters" ,postHandler.PostFilter)
+	mux.HandleFunc("/filters", postHandler.PostFilter)
+
+	mux.HandleFunc("/checker", authHandler.CheckDoubleLogging)
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-
 		handler, pattern := mux.Handler(r)
 		if pattern == "" || pattern == "/" && r.URL.Path != "/" {
-			utils.Error(w,404)
+			utils.Error(w, 404)
 			return
 		}
 		handler.ServeHTTP(w, r)
