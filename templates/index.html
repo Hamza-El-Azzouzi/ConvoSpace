@@ -148,7 +148,6 @@
         };
     }
 
-    // Main function to handle changes and make the fetch call
     function handleFilterChange() {
         const filterby = document.querySelector('input[name="filter"]:checked');
         const categorie = document.querySelector('input[name="categorie"]:checked');
@@ -175,16 +174,14 @@
             });
     }
 
-    // Debounce the change event to prevent too many requests
     document.body.addEventListener("change", debounce(handleFilterChange, 100));
 
-    // Function to update the DOM with new data
     const updateData = (data) => {
         const mainDiv = document.getElementById("main");
-        mainDiv.innerHTML = ""; // Clear existing content
+        mainDiv.innerHTML = "";
 
         if (!data || data.length === 0) {
-            // Display a "No Results Found" message if no data
+
             const noResultsDiv = document.createElement("div");
             noResultsDiv.classList.add("no-results");
             noResultsDiv.textContent = "No Results Found.";
@@ -192,7 +189,6 @@
             return;
         }
 
-        // Loop through and create elements for each post
         data.forEach(post => {
             const postDiv = document.createElement("div");
             postDiv.classList.add("question-type2033");
@@ -244,6 +240,4 @@
         });
     };
 </script>
-
-
 </html>

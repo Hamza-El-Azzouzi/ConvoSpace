@@ -22,9 +22,11 @@ func OpenHtml(fileName string, w http.ResponseWriter, data any) {
 	}
 }
 
-func SetupStaticFilesHandlers(response http.ResponseWriter, request *http.Request) {
-	fileinfo, err := os.Stat("../../" + request.URL.Path)
+func SetupStaticFilesHandlers(w http.ResponseWriter, r *http.Request) {
+	fileinfo, err := os.Stat("../../" + r.URL.Path)
 	if !os.IsNotExist(err) && !fileinfo.IsDir() {
-		http.FileServer(http.Dir("../../")).ServeHTTP(response, request)
+		http.FileServer(http.Dir("../../")).ServeHTTP(w, r)
+	} else {
+		Error(w,404)
 	}
 }

@@ -16,8 +16,8 @@
             <div class="navbar-menu-left-side239">
                 <ul>
                     <li><a href="/"><i class="fa fa-home" aria-hidden="true"></i> Home</a></li>
-                    <li><a href="/create"><i class="fa fa-pencil" aria-hidden="true"></i> Create A Post</a></li>
                     {{ if .LoggedIn }}
+                    <li><a href="/create"><i class="fa fa-pencil" aria-hidden="true"></i> Create A Post</a></li>
                     <li><a href="/logout"><i class="fa fa-user" aria-hidden="true"></i> Log Out</a></li>
                     {{ else }}
                     <li><a href="/login"><i class="fa fa-user" aria-hidden="true"></i> Login Area</a></li>
@@ -92,33 +92,29 @@
         document.getElementById('postForm').addEventListener('submit', function (event) {
             let isValid = true;
 
-            // Clear previous error messages
             document.getElementById('title-error').textContent = '';
             document.getElementById('category-error').textContent = '';
             document.getElementById('textarea-error').textContent = '';
 
-            // Validate title
+
             const titleInput = document.querySelector('input[name="title"]');
             if (!titleInput.value.trim()) {
                 document.getElementById('title-error').textContent = 'Title is required.';
                 isValid = false;
             }
 
-            // Validate at least one category checkbox is selected
             const categoryCheckboxes = document.querySelectorAll('input[name="category"]:checked');
             if (categoryCheckboxes.length === 0) {
                 document.getElementById('category-error').textContent = 'Please select at least one category.';
                 isValid = false;
             }
 
-            // Validate textarea (question description)
             const textareaInput = document.querySelector('textarea[name="textarea"]');
             if (!textareaInput.value.trim()) {
                 document.getElementById('textarea-error').textContent = 'Description is required.';
                 isValid = false;
             }
 
-            // Prevent form submission if validation fails
             if (!isValid) {
                 event.preventDefault();
             }

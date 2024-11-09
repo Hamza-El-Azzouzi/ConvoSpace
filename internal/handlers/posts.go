@@ -33,7 +33,7 @@ func (p *PostHandler) HomeHandle(w http.ResponseWriter, r *http.Request) {
 		fmt.Printf("error kayn f categories getter : %v\n", err)
 		utils.Error(w, 500)
 	}
-	// fmt.Println(posts)
+	
 	if err != nil {
 		fmt.Printf("error kayn f service POSt all : %v", err)
 		utils.Error(w, 500)
@@ -203,7 +203,7 @@ func (p *PostHandler) PostFilter(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(posts)
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(posts)
-	}else{
-		utils.Error(w,403)
+	} else {
+		utils.Error(w, 403)
 	}
 }

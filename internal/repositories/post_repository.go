@@ -14,11 +14,6 @@ type PostRepository struct {
 	DB *sql.DB
 }
 
-func NewPostRepository(db *sql.DB) *PostRepository {
-	return &PostRepository{DB: db}
-}
-
-// GetAllCategories gets raw data from database
 func (r *PostRepository) Create(post *models.Post) error {
 	_, err := r.DB.Exec(
 		"INSERT INTO posts (ID, user_id, Title, Content) VALUES (?, ?, ?, ?)",
@@ -269,7 +264,7 @@ func (r *PostRepository) FilterPost(filterby, categorie string, userID uuid.UUID
 	`
 
 	groupQuery := " GROUP BY posts.id"
-	// var categoryFilter string
+
 	args := []interface{}{}
 	WhereClause := ""
 	decider := " WHERE"

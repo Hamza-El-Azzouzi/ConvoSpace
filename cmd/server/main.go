@@ -56,7 +56,11 @@ func main() {
 		CommentService:  commentService,
 		AuthHandler:     authHandler,
 	}
-	likeHandler := &handlers.LikeHandler{LikeService: likeService, AuthService: authService}
+	likeHandler := &handlers.LikeHandler{
+		LikeService: likeService,
+		AuthService: authService,
+		AuthMidlaware: authMidlware,
+	}
 
 	mux := http.NewServeMux()
 

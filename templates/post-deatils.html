@@ -16,8 +16,8 @@
             <div class="navbar-menu-left-side239">
                 <ul>
                     <li><a href="/"><i class="fa fa-home" aria-hidden="true"></i> Home</a></li>
-                    <li><a href="/create"><i class="fa fa-pencil" aria-hidden="true"></i> Create A Post</a></li>
                     {{ if .LoggedIn }}
+                    <li><a href="/create"><i class="fa fa-pencil" aria-hidden="true"></i> Create A Post</a></li>
                     <li><a href="/logout"><i class="fa fa-user" aria-hidden="true"></i> Log Out</a></li>
                     {{ else }}
                     <li><a href="/login"><i class="fa fa-user" aria-hidden="true"></i> Login Area</a></li>
@@ -137,8 +137,6 @@
         </div>
     </section>
 
-
-    <!-- Footer -->
     <section class="footer-part">
         <div class="container">
             <p>&copy; 2024 Forum01. All Rights Reserved.</p>
@@ -146,7 +144,6 @@
     </section>
 
     <script>
-        // Redirect to register page
         const clickToRegister = (event) => {
             window.location.replace('/register');
         }
@@ -156,14 +153,12 @@
 
             document.getElementById('textarea-error').textContent = '';
 
-            // Validate textarea (question description)
             const textareaInput = document.querySelector('textarea[name="textarea"]');
             if (!textareaInput.value.trim()) {
                 document.getElementById('textarea-error').textContent = 'Comment is required.';
                 isValid = false;
             }
-
-            // Prevent form submission if validation fails
+            
             if (!isValid) {
                 event.preventDefault();
             }

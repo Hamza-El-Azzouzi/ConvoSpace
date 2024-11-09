@@ -1,4 +1,3 @@
--- Users table
 CREATE TABLE users
 (
     id TEXT PRIMARY KEY ,
@@ -8,7 +7,6 @@ CREATE TABLE users
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Posts table
 CREATE TABLE posts
 (
     id TEXT PRIMARY KEY ,
@@ -19,7 +17,6 @@ CREATE TABLE posts
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
--- Comments table
 CREATE TABLE comments
 (
     id TEXT PRIMARY KEY ,
@@ -31,14 +28,12 @@ CREATE TABLE comments
     FOREIGN KEY (post_id) REFERENCES posts(id)
 );
 
--- Categories table
 CREATE TABLE categories
 (
     id TEXT PRIMARY KEY ,
     name TEXT NOT NULL UNIQUE
 );
 
--- PostCategories table (for many-to-many relationship between posts and categories)
 CREATE TABLE post_categories
 (
     post_id TEXT NOT NULL,
@@ -48,7 +43,6 @@ CREATE TABLE post_categories
     FOREIGN KEY (category_id) REFERENCES categories(id)
 );
 
--- Likes table
 CREATE TABLE likes
 (
     id TEXT PRIMARY KEY,

@@ -1,11 +1,11 @@
 /* Global Styles */
 html {
-  background-color: #FF7361;
+  background-color: #ff7361;
   font-family: "Roboto", sans-serif;
 }
 
 body {
-  font-family: 'Roboto', sans-serif;
+  font-family: "Roboto", sans-serif;
   background-color: #f9f9f9;
   display: flex;
   justify-content: center;
@@ -84,7 +84,7 @@ input[type="password"]:focus {
 
 /* Button Styles */
 .button {
-  background-color: #007BFF;
+  background-color: #007bff;
   color: white;
   border: none;
   padding: 10px 15px;
@@ -112,7 +112,6 @@ a {
   color: inherit;
 }
 
-
-.errorMsg{
+.errorMsg {
   color: red;
 }

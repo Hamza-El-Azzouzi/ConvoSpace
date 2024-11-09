@@ -26,7 +26,6 @@ func (h *AuthMidlaware) IsUserLoggedIn(w http.ResponseWriter, r *http.Request) (
 		return false, nil
 	}
 
-	// Retrieve user from database using userID
 	user, err := h.AuthService.UserRepo.FindByID(userID)
 	if err != nil || user == nil {
 		return false, nil
@@ -36,15 +35,13 @@ func (h *AuthMidlaware) IsUserLoggedIn(w http.ResponseWriter, r *http.Request) (
 }
 
 func (h *AuthMidlaware) IsValidEmail(email string) bool {
-	// Basic email validation using regex
 	regex := `^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`
 	re := regexp.MustCompile(regex)
 	return re.MatchString(email)
 }
 
-// Helper function to validate password
 func (h *AuthMidlaware) IsValidPassword(password string) bool {
-	// Check for a minimum of 8 characters
+
 	regex := `^([a-z0-9A-Z]).{7,}$`
 	re := regexp.MustCompile(regex)
 	return re.MatchString(password)

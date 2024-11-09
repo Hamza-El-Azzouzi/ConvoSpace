@@ -35,7 +35,6 @@ A web-based forum platform built with Go that enables user communication, post c
 forum/
 ├── cmd/                    # Application entrypoint
 ├── internal/              # Internal application code
-│   ├── config/           # Configuration management
 │   ├── database/         # Database setup and migrations
 │   ├── handlers/         # HTTP request handlers
 │   ├── middleware/       # HTTP middleware
@@ -44,8 +43,7 @@ forum/
 │   ├── services/         # Business logic
 │   └── utils/            # Utility functions
 ├── static/               # Static assets
-├── templates/            # HTML templates
-└── tests/                # Test files
+└── templates/            # HTML templates
 ```
 
 ## Prerequisites
