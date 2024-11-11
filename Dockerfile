@@ -1,23 +1,45 @@
-# Start from the latest golang base image
-FROM golang:latest
+# Build stage
+FROM golang:1.22.3-alpine as builder
 
-# Set the Current Working Directory inside the container
+# Enable CGO and set environment variables for Alpine
+ENV CGO_ENABLED=1 \
+    GOOS=linux \
+    GOARCH=amd64
+
+# Install build tools and SQLite dependencies
+RUN apk add --no-cache gcc musl-dev sqlite-dev
+
+# Set the working directory
 WORKDIR /app
 
-# Copy go mod and sum files
+# Copy Go modules and install dependencies
 COPY go.mod go.sum ./
-
-# Download all dependencies. Dependencies will be cached if the go.mod and go.sum files are not changed
 RUN go mod download
 
-# Copy the source from the current directory to the Working Directory inside the container
+# Copy the source code and templates
 COPY . .
 
-# Build the Go app
-RUN go build -o main ./cmd/server/
+# Build the Go application
+RUN go build -o main cmd/server/main.go
 
-# Expose port 8080 to the outside world
+# Run stage
+FROM alpine:latest
+
+# Install SQLite runtime dependencies
+RUN apk add --no-cache sqlite-libs
+
+WORKDIR /app
+
+# Copy the compiled binary and necessary assets
+COPY --from=builder /app/main /app/main
+COPY internal/database/migrations /app/internal/database/migrations
+COPY templates /app/templates
+COPY static /app/static
+
+
+
+# Expose the application port
 EXPOSE 8080
 
-# Command to run the executable
-CMD ["./main"]
+# Run the application
+CMD ["/app/main"]

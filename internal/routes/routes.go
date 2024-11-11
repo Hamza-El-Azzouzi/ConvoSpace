@@ -9,6 +9,7 @@ import (
 
 func SetupRoutes(mux *http.ServeMux, authHandler *handlers.AuthHandler, postHandler *handlers.PostHandler, likeHandler *handlers.LikeHandler) {
 	mux.HandleFunc("/static/", utils.SetupStaticFilesHandlers)
+	
 	mux.HandleFunc("/", postHandler.HomeHandle)
 	mux.HandleFunc("/create", postHandler.PostCreation)
 	mux.HandleFunc("/createPost", postHandler.PostSaver)

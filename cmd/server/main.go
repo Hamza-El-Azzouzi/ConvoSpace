@@ -31,40 +31,13 @@ func main() {
 
 	go cleaner.CleanupExpiredSessions()
 
-	// userRepo := &repositories.UserRepository{DB: db}
-	// categorieRepo := &repositories.CategoryRepository{DB: db}
-	// postRepo := &repositories.PostRepository{DB: db}
-	// commentRepo := &repositories.CommentRepositorie{DB: db}
-	// likeRepo := &repositories.LikeReposetorie{DB: db}
-
-	// postServices := &services.PostService{PostRepo: postRepo}
-	// categorieServices := &services.CategoryService{CategorieRepo: categorieRepo}
-	// commentService := &services.CommentService{CommentRepo: commentRepo}
-	// likeService := &services.LikeService{LikeRepo: likeRepo}
-	// authService := &services.AuthService{UserRepo: userRepo}
-
-	// authMidlware := &middleware.AuthMidlaware{AuthService: authService}
-
-	// authHandler := &handlers.AuthHandler{AuthService: authService, AuthMidlaware: authMidlware}
-	// postHandler := &handlers.PostHandler{
-	// 	AuthService:     authService,
-	// 	AuthMidlaware: authMidlware,
-	// 	CategoryService: categorieServices,
-	// 	PostService:     postServices,
-	// 	CommentService:  commentService,
-	// 	AuthHandler:     authHandler,
-	// }
-	// likeHandler := &handlers.LikeHandler{
-	// 	LikeService: likeService,
-	// 	AuthService: authService,
-	// 	AuthMidlaware: authMidlware,
-	// }
 
 	userRepo, categoryRepo, postRepo, commentRepo, likeRepo := internal.InitRepositories(db)
 	authService, postService, categoryService, commentService, likeService := internal.InitServices(userRepo, postRepo, categoryRepo, commentRepo, likeRepo)
 	authHandler, postHandler, likeHandler := internal.InitHandlers(authService, postService, categoryService, commentService, likeService)
 	mux := http.NewServeMux()
 
+	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("/app/static"))))
 	fmt.Println("Starting the forum server...")
 
 	routes.SetupRoutes(mux, authHandler, postHandler, likeHandler)

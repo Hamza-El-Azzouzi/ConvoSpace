@@ -23,7 +23,7 @@ func RunMigrations(db *sql.DB) error {
 		return nil
 	}
 
-	migrationSQL, err := ioutil.ReadFile("../../internal/database/migrations/001_initial_schema.sql")
+	migrationSQL, err := ioutil.ReadFile("internal/database/migrations/001_initial_schema.sql")
 	if err != nil {
 		return err
 	}

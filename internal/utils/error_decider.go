@@ -19,7 +19,7 @@ func Error(response http.ResponseWriter, status int) {
 		500: {"Something Went Wrong!", "Oops! It looks like our server encountered an unexpected issue. Don't worry, our team has been notified."},
 	}
 	var errorData ErrorStruct
-	response.WriteHeader(status)
+	// response.WriteHeader(status)
 	for key, value := range errorMap {
 		if key == status {
 			

@@ -8,7 +8,7 @@ import (
 )
 
 func OpenHtml(fileName string, w http.ResponseWriter, data any) {
-	temp, err := template.ParseFiles("../../templates/" + fileName)
+	temp, err := template.ParseFiles("templates/" + fileName)
 	if err != nil {
 		fmt.Printf("error parsing template file: %v", err)
 		Error(w, 500)
@@ -23,15 +23,16 @@ func OpenHtml(fileName string, w http.ResponseWriter, data any) {
 }
 
 func SetupStaticFilesHandlers(w http.ResponseWriter, r *http.Request) {
-	defer func() {
-		if err := recover(); err != nil {
-			Error(w,500)
-		}
-	}()
-	fileinfo, err := os.Stat("../../" + r.URL.Path)
-	if !os.IsNotExist(err) && !fileinfo.IsDir() {
-		http.FileServer(http.Dir("../../")).ServeHTTP(w, r)
-	} else {
-		Error(w,404)
-	}
+    defer func() {
+        if err := recover(); err != nil {
+            Error(w, 500)
+        }
+    }()
+    fileinfo, err := os.Stat("static" + r.URL.Path) // Adjusted path
+    if !os.IsNotExist(err) && !fileinfo.IsDir() {
+		
+		http.StripPrefix("/static/", http.FileServer(http.Dir("/app/static")))
+    } else {
+        Error(w, 404)
+    }
 }
