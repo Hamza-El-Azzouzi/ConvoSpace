@@ -9,8 +9,11 @@ import (
 	// "forum/internal/handlers"
 
 	"forum/internal/middleware"
+	"forum/internal/models"
 	"forum/internal/services"
 	"forum/internal/utils"
+
+	"github.com/gofrs/uuid/v5"
 )
 
 type PostHandler struct {
@@ -33,7 +36,7 @@ func (p *PostHandler) HomeHandle(w http.ResponseWriter, r *http.Request) {
 		fmt.Printf("error kayn f categories getter : %v\n", err)
 		utils.Error(w, 500)
 	}
-	
+
 	if err != nil {
 		fmt.Printf("error kayn f service POSt all : %v", err)
 		utils.Error(w, 500)
@@ -182,28 +185,39 @@ func (p *PostHandler) CommentSaver(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	http.Redirect(w, r, fmt.Sprintf("/detailsPost/%v", postID), http.StatusOK)
+	http.Redirect(w, r, fmt.Sprintf("/detailsPost/%v", postID), http.StatusSeeOther)
 }
 
 func (p *PostHandler) PostFilter(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		utils.Error(w, 405)
 	}
-	filterby := r.URL.Query().Get("filterby")
 
+	filterby := ""
+	var posts []models.PostWithUser
+	var err error
 	categorie := r.URL.Query().Get("categories")
 
 	_, usermid := p.AuthMidlaware.IsUserLoggedIn(w, r)
 	if usermid != nil {
-		posts, err := p.PostService.FilterPost(filterby, categorie, usermid.ID)
+		filterby = r.URL.Query().Get("filterby")
+	}
+	if filterby != "" {
+		posts, err = p.PostService.FilterPost(filterby, categorie, usermid.ID)
 		if err != nil {
 			fmt.Printf("error kayn f filter : %v\n ", err)
 			utils.Error(w, 500)
 		}
-		fmt.Println(posts)
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(posts)
+		
 	} else {
-		utils.Error(w, 403)
+		posts, err = p.PostService.FilterPost(filterby, categorie, uuid.Nil)
+		if err != nil {
+			fmt.Printf("error kayn f filter : %v\n ", err)
+			utils.Error(w, 500)
+		}
+		
 	}
+	fmt.Println(posts)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(posts)
 }

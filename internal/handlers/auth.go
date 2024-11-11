@@ -149,11 +149,7 @@ func (h *AuthHandler) CheckDoubleLogging(w http.ResponseWriter, r *http.Request)
 	if r.Method != http.MethodGet{
 		utils.Error(w,405)
 	}
-	cookie, err := r.Cookie("session_id")
-	if err != nil {
-		http.Redirect(w, r, "/", http.StatusOK)
-		return
-	}
+	cookie, _ := r.Cookie("session_id")
 	if cookie != nil {
 		sessionId := cookie.Value
 		user, err := h.AuthService.UserRepo.GetUserBySessionID(sessionId)

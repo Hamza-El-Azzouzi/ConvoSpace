@@ -123,16 +123,18 @@
 
 
 
-    var btnResetFilter = document.querySelector(".resetFilter")
-    var btnResetCategorie = document.querySelector(".resetCategorie")
+    const btnResetFilter = document.querySelector(".resetFilter")
+    const btnResetCategorie = document.querySelector(".resetCategorie")
 
+    if(btnResetFilter){
+            btnResetFilter.addEventListener("click", () => {
+            const filterby = document.querySelector('input[name="filter"]:checked');
+            filterby.checked = false
+            handleFilterChange()
 
-    btnResetFilter.addEventListener("click", () => {
-        const filterby = document.querySelector('input[name="filter"]:checked');
-        filterby.checked = false
-        handleFilterChange()
-
-    })
+        })
+    }
+    
 
     btnResetCategorie.addEventListener("click", () => {
         const categories = document.querySelector('input[name="categorie"]:checked');
@@ -151,9 +153,9 @@
     function handleFilterChange() {
         const filterby = document.querySelector('input[name="filter"]:checked');
         const categorie = document.querySelector('input[name="categorie"]:checked');
+        console.log("was clicked here")
         const categoryVal = categorie ? categorie.value : "";
         const filterbyVal = filterby ? filterby.value : "";
-        console.log(filterbyVal)
         const queryParams = new URLSearchParams({
             filterby: filterbyVal,
             categories: categoryVal
@@ -169,12 +171,12 @@
                 console.log(data);
                 updateData(data);
             })
-            .catch(error => {
+            .catch((error) => {
                 console.error('Error:', error);
             });
     }
 
-    document.body.addEventListener("change", debounce(handleFilterChange, 100));
+    document.body.addEventListener("change", debounce(handleFilterChange, 200));
 
     const updateData = (data) => {
         const mainDiv = document.getElementById("main");
