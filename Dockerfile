@@ -39,7 +39,7 @@ COPY static /app/static
 
 
 # Expose the application port
-EXPOSE 8080
+EXPOSE 8082
 
 # Run the application
 CMD ["/app/main"]
