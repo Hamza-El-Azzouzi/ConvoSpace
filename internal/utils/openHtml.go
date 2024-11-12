@@ -28,9 +28,8 @@ func SetupStaticFilesHandlers(w http.ResponseWriter, r *http.Request) {
             Error(w, 500)
         }
     }()
-    fileinfo, err := os.Stat("static" + r.URL.Path) // Adjusted path
+    fileinfo, err := os.Stat("static" + r.URL.Path)
     if !os.IsNotExist(err) && !fileinfo.IsDir() {
-		
 		http.StripPrefix("/static/", http.FileServer(http.Dir("/app/static")))
     } else {
         Error(w, 404)

@@ -1,9 +1,3 @@
-window.addEventListener('unload', function () {
-    navigator.sendBeacon("http://10.1.2.1:8080/checker")
-})
-
-
-
 const btnResetFilter = document.querySelector(".resetFilter")
 const btnResetCategorie = document.querySelector(".resetCategorie")
 

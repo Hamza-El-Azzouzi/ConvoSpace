@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html >
+<html>
+
 <head>
   <meta charset="UTF-8">
   <meta name="title" content="Ask online Form">
@@ -7,40 +8,36 @@
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <meta name="language" content="English">
   <link href="/static/css/loginstyle.css" rel="stylesheet" type="text/css">
-  
+
 </head>
 
 <body>
-  
-<div class="modal-wrap">
-
-  <div class="modal-bodies">
-    <div class="modal-body modal-body-step-1 is-showing">
-      <div class="title">Sign Up</div>
-      <div class="description">Hello there, Register Form</div>
-      <span class="errorMsg">{{ .alreadyExist }}</span>
-      <p class="errorMsg">{{ .empty }}</p>
-      <form action="/register" method="post">
-        <input type="text" name="Username" placeholder="Username*"/>
-        <input type="email" name="email" placeholder="E-Mail*"/>
-        <span class="errorMsg">{{ .email }}</span>
-          <input type="password" name="password" placeholder="Password*"/>
-          <span class="errorMsg">{{ .password }}</span> 
-          <input type="password" name="Confirm-Password" placeholder="Confirm Password*"/>
-          <span class="errorMsg">{{ .conPassowrd }}</span>  
-        <div class="text-center">
-          <a href="/login"><div class="button">Already Have one ?</div></a>
-          <button type="submit" class="button">Sign Up</button>
-
-        </div>
-      </form>
+  <div class="modal-wrap">
+    <div class="modal-bodies">
+      <div class="modal-body modal-body-step-1 is-showing">
+        <div class="title">Sign Up</div>
+        <div class="description">Hello there, Register Form</div>
+        <span class="errorMsg">{{ .alreadyExist }}</span>
+        <p class="errorMsg">{{ .empty }}</p>
+        <form action="/register" method="post">
+          <input type="text" name="Username" placeholder="Username*" />
+          <input type="email" name="email" placeholder="E-Mail*" />
+          <span class="errorMsg">{{ .email }}</span>
+          <input type="password" name="password" placeholder="Password*" />
+          <span class="errorMsg">{{ .password }}</span>
+          <input type="password" name="Confirm-Password" placeholder="Confirm Password*" />
+          <span class="errorMsg">{{ .conPassowrd }}</span>
+          <div class="text-center">
+            <a href="/login">
+              <div class="button">Already Have one ?</div>
+            </a>
+            <button type="submit" class="button">Sign Up</button>
+          </div>
+        </form>
+      </div>
     </div>
-
- 
   </div>
-</div>
-
-    
-
 </body>
+<script src="/static/js/main.js"></script>
+
 </html>
