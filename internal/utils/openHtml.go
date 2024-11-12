@@ -15,7 +15,7 @@ func getPath() string {
 	if err != nil {
 		log.Fatal(err)
 	}
-	if filepath.Dir(ex) == "/app" { // Assuming /app is your container's working dir
+	if filepath.Dir(ex) == "/app" {
 		basePath = ""
 	} else {
 		basePath = "../../"
