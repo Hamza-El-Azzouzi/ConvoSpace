@@ -1,4 +1,4 @@
-const clickToRegister = (event) => {
+const clickToRegister = () => {
     window.location.replace('/register');
 }
 

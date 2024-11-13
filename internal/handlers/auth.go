@@ -14,7 +14,7 @@ import (
 
 type AuthHandler struct {
 	AuthService    *services.AuthService
-	AuthMidlaware  *middleware.AuthMidlaware
+	AuthMidlaware  *middleware.AuthMiddleware
 	SessionService *services.SessionService
 }
 
@@ -22,15 +22,11 @@ func (h *AuthHandler) LogoutHandle(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		utils.Error(w, 405)
 	}
-	cookie, err := r.Cookie("session_id")
-	if err != nil {
-		http.Redirect(w, r, "/", http.StatusSeeOther)
-		return
-	}
+	cookie, _ := r.Cookie("session_id")
 
 	sessionID := cookie.Value
 	fmt.Println(sessionID)
-	err = h.SessionService.DeleteSession(sessionID)
+	err := h.SessionService.DeleteSession(sessionID)
 	if err != nil {
 		utils.Error(w, 500)
 	}
@@ -42,7 +38,7 @@ func (h *AuthHandler) LogoutHandle(w http.ResponseWriter, r *http.Request) {
 		HttpOnly: true,
 	})
 
-	http.Redirect(w, r, "/", http.StatusSeeOther)
+	http.Redirect(w, r, "/login", http.StatusSeeOther)
 }
 
 func (h *AuthHandler) LoginHandle(w http.ResponseWriter, r *http.Request) {
@@ -73,7 +69,7 @@ func (h *AuthHandler) LoginHandle(w http.ResponseWriter, r *http.Request) {
 		}
 		user, loginError := h.AuthService.Login(email, password)
 		if loginError != nil {
-			utils.Error(w, 500)
+			errFrom["password"] = "Invalid email or password"
 		}
 		if user == nil {
 			errFrom["password"] = "Invalid email or password"
@@ -95,7 +91,7 @@ func (h *AuthHandler) LoginHandle(w http.ResponseWriter, r *http.Request) {
 			Expires:  expiration,
 			HttpOnly: true,
 		})
-
+		fmt.Printf("user is logged with this seession : %v\n", sessionID)
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 	} else {
 		utils.Error(w, http.StatusMethodNotAllowed)
@@ -151,27 +147,23 @@ func (h *AuthHandler) CheckDoubleLogging(w http.ResponseWriter, r *http.Request)
 	if r.Method != http.MethodGet {
 		utils.Error(w, 405)
 	}
-	cookie, _ := r.Cookie("session_id")
-	if cookie != nil {
-		sessionId := cookie.Value
-		user, err := h.AuthService.UserRepo.GetUserBySessionID(sessionId)
-		if err != nil {
-			utils.Error(w, http.StatusBadRequest)
-			return
-		}
 
+	isLogged, user := h.AuthMidlaware.IsUserLoggedIn(w, r)
+	if !isLogged {
+		fmt.Println("no user found logged")
+	} else {
 		userSEssion, errSession := h.AuthService.UserRepo.CheckUserAlreadyLogged(user.ID)
 		if errSession != nil {
 			fmt.Printf("err f session login : %v", errSession)
 		}
-		fmt.Println(len((userSEssion)))
+		cookie, _ := r.Cookie("session_id")
+
+		sessionID := cookie.Value
+		
 		if len(userSEssion) > 1 {
-			fmt.Println(userSEssion)
+			fmt.Printf("this sessions will deleted : %v\n",sessionID)
 			h.LogoutHandle(w, r)
 			return
 		}
-	} else {
-		utils.Error(w, 404)
-		return
 	}
 }

@@ -7,6 +7,7 @@ import (
 
 	"forum/internal"
 	"forum/internal/database"
+	"forum/internal/middleware"
 	"forum/internal/routes"
 	"forum/internal/utils"
 )
@@ -30,8 +31,10 @@ func main() {
 	defer db.Close()
 
 	userRepo, categoryRepo, postRepo, commentRepo, likeRepo, sessionRepo := internal.InitRepositories(db)
+
 	authService, postService, categoryService, commentService, likeService, sessionService := internal.InitServices(userRepo, postRepo, categoryRepo, commentRepo, likeRepo, sessionRepo)
-	authHandler, postHandler, likeHandler := internal.InitHandlers(authService, postService, categoryService, commentService, likeService, sessionService)
+	authMiddleware := &middleware.AuthMiddleware{AuthService: authService}
+	authHandler, postHandler, likeHandler := internal.InitHandlers(authService, postService, categoryService, commentService, likeService, sessionService, authMiddleware)
 	mux := http.NewServeMux()
 	cleaner := &utils.Cleaner{SessionService: sessionService}
 
@@ -39,7 +42,7 @@ func main() {
 
 	fmt.Println("Starting the forum server...")
 
-	routes.SetupRoutes(mux, authHandler, postHandler, likeHandler)
+	routes.SetupRoutes(mux, authHandler, postHandler, likeHandler, authMiddleware)
 
-	log.Fatal(http.ListenAndServe(":8082", nil))
+	log.Fatal(http.ListenAndServe("0.0.0.0:8082", nil))
 }

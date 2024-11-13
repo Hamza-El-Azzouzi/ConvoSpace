@@ -27,8 +27,8 @@ func InitServices(userRepo *repositories.UserRepository, postRepo *repositories.
 		&services.SessionService{SessionRepo: sessionRepo}
 }
 
-func InitHandlers(authService *services.AuthService, postService *services.PostService, categoryService *services.CategoryService, commentService *services.CommentService, likeService *services.LikeService, sessionRepo *services.SessionService) (*handlers.AuthHandler, *handlers.PostHandler, *handlers.LikeHandler) {
-	authMiddleware := &middleware.AuthMidlaware{AuthService: authService}
+func InitHandlers(authService *services.AuthService, postService *services.PostService, categoryService *services.CategoryService, commentService *services.CommentService, likeService *services.LikeService, sessionRepo *services.SessionService ,authMiddleware  *middleware.AuthMiddleware) (*handlers.AuthHandler, *handlers.PostHandler, *handlers.LikeHandler) {
+	
 
 	authHandler := &handlers.AuthHandler{
 		AuthService:    authService,

@@ -14,7 +14,7 @@ import (
 type LikeHandler struct {
 	LikeService   *services.LikeService
 	AuthService   *services.AuthService
-	AuthMidlaware *middleware.AuthMidlaware
+	AuthMidlaware *middleware.AuthMiddleware
 }
 
 func (l *LikeHandler) LikePost(w http.ResponseWriter, r *http.Request) {

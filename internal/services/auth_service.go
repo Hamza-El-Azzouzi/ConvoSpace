@@ -14,7 +14,7 @@ type AuthService struct {
 	UserRepo *repositories.UserRepository
 }
 
-func (s *AuthService) Register(username, email, password string) error {
+func (a *AuthService) Register(username, email, password string) error {
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
 		return err
@@ -26,11 +26,11 @@ func (s *AuthService) Register(username, email, password string) error {
 		PasswordHash: string(hashedPassword),
 	}
 
-	return s.UserRepo.Create(user)
+	return a.UserRepo.Create(user)
 }
 
-func (s *AuthService) Login(email, password string) (*models.User, error) {
-	user, err := s.UserRepo.FindByEmail(email)
+func (a *AuthService) Login(email, password string) (*models.User, error) {
+	user, err := a.UserRepo.FindByEmail(email)
 	if err != nil || user == nil {
 		return nil, err
 	}
@@ -41,4 +41,14 @@ func (s *AuthService) Login(email, password string) (*models.User, error) {
 	}
 
 	return user, nil
+}
+
+func (a *AuthService) CheckUserAlreadyLogged(userID uuid.UUID) ([]models.UserSession, error) {
+
+	return a.UserRepo.CheckUserAlreadyLogged(userID)
+}
+
+func (a *AuthService) GetUserBySessionID(sessionID string) (*models.User, error) {
+	
+	return a.UserRepo.GetUserBySessionID(sessionID)
 }

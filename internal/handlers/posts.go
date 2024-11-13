@@ -18,7 +18,7 @@ import (
 
 type PostHandler struct {
 	AuthService     *services.AuthService
-	AuthMidlaware   *middleware.AuthMidlaware
+	AuthMidlaware   *middleware.AuthMiddleware
 	CategoryService *services.CategoryService
 	PostService     *services.PostService
 	CommentService  *services.CommentService
@@ -31,16 +31,20 @@ func (p *PostHandler) HomeHandle(w http.ResponseWriter, r *http.Request) {
 	}
 	posts, err := p.PostService.AllPosts()
 
+	if err != nil {
+		fmt.Printf("error kayn f service POSt all : %v", err)
+		utils.Error(w, 500)
+		return
+	}
+	
 	categories, errCat := p.CategoryService.GetAllCategories()
 	if errCat != nil {
 		fmt.Printf("error kayn f categories getter : %v\n", err)
 		utils.Error(w, 500)
+		return
 	}
 
-	if err != nil {
-		fmt.Printf("error kayn f service POSt all : %v", err)
-		utils.Error(w, 500)
-	}
+	
 	data := map[string]interface{}{
 		"LoggedIn":   true,
 		"posts":      posts,

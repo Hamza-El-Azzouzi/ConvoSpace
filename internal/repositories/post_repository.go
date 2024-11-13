@@ -40,7 +40,7 @@ func (r *PostRepository) AllPosts() ([]models.PostWithUser, error) {
     users.username,
     users.email,
     IFNULL(GROUP_CONCAT(categories.name, ', '), '') AS category_names,
-    COUNT(comments.id) AS comment_count
+    (SELECT COUNT(*) FROM comments WHERE comments.post_id = posts.id) AS comment_count
 FROM 
     posts
 JOIN 
@@ -56,7 +56,7 @@ GROUP BY
 	ORDER BY posts.created_at DESC;`
 	rows, err := r.DB.Query(query)
 	if err != nil {
-		return nil, fmt.Errorf("error querying posts with user info: %v", err)
+		return nil, fmt.Errorf("error querying posts with Post info: %v", err)
 	}
 	defer rows.Close()
 

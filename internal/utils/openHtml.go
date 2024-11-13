@@ -54,9 +54,6 @@ func SetupStaticFilesHandlers(w http.ResponseWriter, r *http.Request) {
 	}()
 
 	fileinfo, err := os.Stat(path + r.URL.Path)
-	fmt.Println(fileinfo)
-	fmt.Printf("err file serve : %v \n",err)
-	fmt.Println(basePath)
 	if !os.IsNotExist(err) && !fileinfo.IsDir() {
 		http.FileServer(http.Dir(basePath)).ServeHTTP(w, r)
 	} else {

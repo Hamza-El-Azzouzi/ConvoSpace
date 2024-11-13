@@ -74,7 +74,7 @@ func (r *UserRepository) GetUserBySessionID(sessionID string) (*models.User, err
 
 func (r *UserRepository) CheckUserAlreadyLogged(UserID uuid.UUID) ([]models.UserSession, error) {
 	var userSessions []models.UserSession
-	query := `SELECT session_id ,user_id FROM sessions WHERE user_id = ? ORDER BY created_at ASC`
+	query := `SELECT session_id ,user_id FROM sessions WHERE user_id = ?`
 	rows, err := r.DB.Query(query, UserID)
 	for rows.Next() {
 		var userSession models.UserSession
