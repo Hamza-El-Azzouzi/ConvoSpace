@@ -20,7 +20,7 @@ func (r *CategoryRepository) GetAllCategories() ([]models.Category, error) {
 	var categories []models.Category
 	for rows.Next() {
 		var cat models.Category
-		if err := rows.Scan(&cat.ID,&cat.Name); err != nil {
+		if err := rows.Scan(&cat.ID, &cat.Name); err != nil {
 			return nil, fmt.Errorf("error scanning category: %v", err)
 		}
 		categories = append(categories, cat)

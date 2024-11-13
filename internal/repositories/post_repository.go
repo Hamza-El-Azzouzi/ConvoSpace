@@ -52,7 +52,8 @@ LEFT JOIN
 LEFT JOIN 
     comments ON posts.id = comments.post_id
 GROUP BY 
-    posts.id;`
+    posts.id
+	ORDER BY posts.created_at DESC;`
 	rows, err := r.DB.Query(query)
 	if err != nil {
 		return nil, fmt.Errorf("error querying posts with user info: %v", err)
@@ -284,8 +285,8 @@ func (r *PostRepository) FilterPost(filterby, categorie string, userID uuid.UUID
 		WhereClause += decider +" post_categories.category_id = ?"
 		args = append(args, categorie)
 	}
-
-	finalQuery := baseQuery + WhereClause + groupQuery
+	orderQuery := " ORDER BY posts.created_at DESC;"
+	finalQuery := baseQuery + WhereClause + groupQuery +orderQuery
 	fmt.Println(finalQuery)
 	fmt.Println(args...)
 	rows, err := r.DB.Query(finalQuery, args...)

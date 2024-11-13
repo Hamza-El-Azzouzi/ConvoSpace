@@ -3,7 +3,7 @@ package database
 import (
 	"database/sql"
 	"fmt"
-	"io/ioutil"
+	"os"
 	"strings"
 
 	"github.com/gofrs/uuid/v5"
@@ -23,7 +23,7 @@ func RunMigrations(db *sql.DB) error {
 		return nil
 	}
 
-	migrationSQL, err := ioutil.ReadFile("internal/database/migrations/001_initial_schema.sql")
+	migrationSQL, err := os.ReadFile("internal/database/migrations/001_initial_schema.sql")
 	if err != nil {
 		return err
 	}

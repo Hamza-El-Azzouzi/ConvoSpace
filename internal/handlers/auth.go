@@ -13,13 +13,14 @@ import (
 )
 
 type AuthHandler struct {
-	AuthService   *services.AuthService
-	AuthMidlaware *middleware.AuthMidlaware
+	AuthService    *services.AuthService
+	AuthMidlaware  *middleware.AuthMidlaware
+	SessionService *services.SessionService
 }
 
 func (h *AuthHandler) LogoutHandle(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet{
-		utils.Error(w,405)
+	if r.Method != http.MethodGet {
+		utils.Error(w, 405)
 	}
 	cookie, err := r.Cookie("session_id")
 	if err != nil {
@@ -29,7 +30,7 @@ func (h *AuthHandler) LogoutHandle(w http.ResponseWriter, r *http.Request) {
 
 	sessionID := cookie.Value
 	fmt.Println(sessionID)
-	_, err = h.AuthService.UserRepo.DB.Exec("DELETE FROM sessions WHERE session_id = ?", sessionID)
+	err = h.SessionService.DeleteSession(sessionID)
 	if err != nil {
 		utils.Error(w, 500)
 	}
@@ -81,8 +82,9 @@ func (h *AuthHandler) LoginHandle(w http.ResponseWriter, r *http.Request) {
 		}
 		expiration := time.Now().Add(60 * time.Minute)
 		sessionID := uuid.Must(uuid.NewV4()).String()
-		_, err = h.AuthService.UserRepo.DB.Exec("INSERT INTO sessions (session_id, user_id, expires_at) VALUES (?, ?, ?)", sessionID, user.ID, expiration)
+		err = h.SessionService.CreateSession(sessionID, expiration, user.ID)
 		if err != nil {
+			fmt.Printf("errr f creation sesions : %v \n", err)
 			utils.Error(w, 500)
 		}
 
@@ -146,8 +148,8 @@ func (h *AuthHandler) RegisterHandle(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *AuthHandler) CheckDoubleLogging(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet{
-		utils.Error(w,405)
+	if r.Method != http.MethodGet {
+		utils.Error(w, 405)
 	}
 	cookie, _ := r.Cookie("session_id")
 	if cookie != nil {

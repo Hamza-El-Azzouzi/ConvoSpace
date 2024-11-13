@@ -31,7 +31,7 @@ func (l *LikeHandler) LikePost(w http.ResponseWriter, r *http.Request) {
 	isLogged, usermid := l.AuthMidlaware.IsUserLoggedIn(w, r)
 	if isLogged {
 		l.LikeService.Create(usermid.ID, postID, "", "like", false)
-		http.Redirect(w, r, fmt.Sprintf("http://10.1.2.1:8080/detailsPost/%v", postID), http.StatusSeeOther)
+		http.Redirect(w, r, fmt.Sprintf("http://localhost:8082/detailsPost/%v", postID), http.StatusSeeOther)
 		return
 	}else{
 		utils.Error(w,403)
@@ -52,8 +52,8 @@ func (l *LikeHandler) DisLikePost(w http.ResponseWriter, r *http.Request) {
 
 	isLogged, usermid := l.AuthMidlaware.IsUserLoggedIn(w, r)
 	if isLogged {
-		l.LikeService.Create(usermid.ID, postID, "", "like", false)
-		http.Redirect(w, r, fmt.Sprintf("http://10.1.2.1:8080/detailsPost/%v", postID), http.StatusSeeOther)
+		l.LikeService.Create(usermid.ID, postID, "", "dislike", false)
+		http.Redirect(w, r, fmt.Sprintf("http://localhost:8082/detailsPost/%v", postID), http.StatusSeeOther)
 		return
 
 	}
@@ -80,7 +80,7 @@ func (l *LikeHandler) LikeComment(w http.ResponseWriter, r *http.Request) {
 			fmt.Printf("err kayn f like comment : %v", err)
 			utils.Error(w, 500)
 		}
-		http.Redirect(w, r, fmt.Sprintf("http://10.1.2.1:8080/detailsPost/%v", postID), http.StatusSeeOther)
+		http.Redirect(w, r, fmt.Sprintf("http://localhost:8082/detailsPost/%v", postID), http.StatusSeeOther)
 
 	}
 }
@@ -108,7 +108,7 @@ func (l *LikeHandler) DisLikeComment(w http.ResponseWriter, r *http.Request) {
 				fmt.Printf("err kayn f like comment : %v", err)
 				utils.Error(w, 500)
 			}
-		http.Redirect(w, r, fmt.Sprintf("http://10.1.2.1:8080/detailsPost/%v", postID), http.StatusSeeOther)
+		http.Redirect(w, r, fmt.Sprintf("http://localhost:8082/detailsPost/%v", postID), http.StatusSeeOther)
 
 	}
 }

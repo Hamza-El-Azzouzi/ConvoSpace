@@ -19,7 +19,7 @@ func main() {
 		return
 	}
 
-	if err := database.RunMigrations(db);err != nil {
+	if err := database.RunMigrations(db); err != nil {
 		fmt.Printf("Error running migrations: %v", err)
 	}
 
@@ -28,19 +28,18 @@ func main() {
 	}
 
 	defer db.Close()
-	cleaner := &utils.Cleaner{Db: db}
+
+	userRepo, categoryRepo, postRepo, commentRepo, likeRepo, sessionRepo := internal.InitRepositories(db)
+	authService, postService, categoryService, commentService, likeService, sessionService := internal.InitServices(userRepo, postRepo, categoryRepo, commentRepo, likeRepo, sessionRepo)
+	authHandler, postHandler, likeHandler := internal.InitHandlers(authService, postService, categoryService, commentService, likeService, sessionService)
+	mux := http.NewServeMux()
+	cleaner := &utils.Cleaner{SessionService: sessionService}
 
 	go cleaner.CleanupExpiredSessions()
-
-
-	userRepo, categoryRepo, postRepo, commentRepo, likeRepo := internal.InitRepositories(db)
-	authService, postService, categoryService, commentService, likeService := internal.InitServices(userRepo, postRepo, categoryRepo, commentRepo, likeRepo)
-	authHandler, postHandler, likeHandler := internal.InitHandlers(authService, postService, categoryService, commentService, likeService)
-	mux := http.NewServeMux()
 
 	fmt.Println("Starting the forum server...")
 
 	routes.SetupRoutes(mux, authHandler, postHandler, likeHandler)
 
-	log.Fatal(http.ListenAndServe("0.0.0.0:8082", nil))
+	log.Fatal(http.ListenAndServe(":8082", nil))
 }
