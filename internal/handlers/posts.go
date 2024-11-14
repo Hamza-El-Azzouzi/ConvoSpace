@@ -36,7 +36,7 @@ func (p *PostHandler) HomeHandle(w http.ResponseWriter, r *http.Request) {
 		utils.Error(w, 500)
 		return
 	}
-	
+
 	categories, errCat := p.CategoryService.GetAllCategories()
 	if errCat != nil {
 		fmt.Printf("error kayn f categories getter : %v\n", err)
@@ -47,15 +47,36 @@ func (p *PostHandler) HomeHandle(w http.ResponseWriter, r *http.Request) {
 	
 	data := map[string]interface{}{
 		"LoggedIn":   true,
-		"posts":      posts,
 		"categories": categories,
 	}
 	isLogged, usermid := p.AuthMidlaware.IsUserLoggedIn(w, r)
+
+	var postsWithStatus []map[string]interface{}
+    for _, post := range posts {
+        postData := map[string]interface{}{
+            "PostID":        post.PostID,
+            "Title":         post.Title,
+            "Content":       post.Content,
+            "CreatedAt":     post.CreatedAt,
+            "UserID":        post.UserID,
+            "Username":      post.Username,
+            "Email":         post.Email,
+            "FormattedDate": post.FormattedDate,
+            "CategoryName":  post.CategoryName,
+            "CommentCount":  post.CommentCount,
+            "LikeCount":     post.LikeCount,
+            "DisLikeCount":  post.DisLikeCount,
+            "LoggedInP":      isLogged, // Add dynamic LoggedIn property
+        }
+        postsWithStatus = append(postsWithStatus, postData)
+    }
 	if isLogged {
 		data["LoggedIn"] = isLogged
 		data["Username"] = usermid.Username
+		data["posts"] = postsWithStatus
 	} else {
 		data["LoggedIn"] = isLogged
+		data["posts"] = postsWithStatus
 	}
 
 	utils.OpenHtml("index.html", w, data)

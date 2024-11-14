@@ -40,7 +40,7 @@ func main() {
 
 	go cleaner.CleanupExpiredSessions()
 
-	fmt.Println("Starting the forum server...")
+	fmt.Println("Starting the forum server...\nWelcome http://localhost:8082/")
 
 	routes.SetupRoutes(mux, authHandler, postHandler, likeHandler, authMiddleware)
 

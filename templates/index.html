@@ -56,9 +56,26 @@
                         <p>{{ .Content }}</p>
                         <hr>
                         <div class="ques-icon-info3293">
-                            <i class="fa fa-user" aria-hidden="true"> {{ .Username }} </i>
-                            <i class="fa fa-clock-o" aria-hidden="true"> {{ .FormattedDate }}</i>
-                            <i class="fa fa-hashtag" aria-hidden="true"> {{ .CategoryName }}</i>
+                           <span> {{ .Username }} </span>
+                            <span> {{ .FormattedDate }}</span>
+                            <span> {{ .CategoryName }}</span>
+                        </div>
+                        <div class="right-section">
+                            {{ if .LoggedInP }}
+                            <a href="/like/{{ .PostID }}">
+                                <button class="btn-like" title="Like"></i></button>
+                                <span>👍{{ .LikeCount }}</span>
+                            </a>
+                            <a href="/dislike/{{ .PostID }}">
+                                <button class="btn-dislike" title="Dislike"></button>
+                                <span>👎{{ .DisLikeCount }}</span>
+                            </a>
+                            {{ else }}
+                            <button class="btn-like" title="Like"></i></button>
+                            <span>👍{{ .LikeCount }}</span>
+                            <button class="btn-dislike" title="Dislike"></button>
+                            <span>👎{{ .DisLikeCount }}</span>
+                            {{ end }}
                         </div>
                     </div>
                     <div class="ques-type302">

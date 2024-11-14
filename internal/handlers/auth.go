@@ -144,7 +144,7 @@ func (h *AuthHandler) RegisterHandle(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *AuthHandler) CheckDoubleLogging(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
+	if r.Method != http.MethodPost {
 		utils.Error(w, 405)
 	}
 

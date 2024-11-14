@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"fmt"
 	"log"
 	"time"
 
@@ -14,6 +15,7 @@ type Cleaner struct {
 func (c *Cleaner) CleanupExpiredSessions() {
 	for {
 		time.Sleep(1 * time.Minute)
+		fmt.Println("working...")
 		time := time.Now()
 		err := c.SessionService.DeleteSessionByDate(time)
 		if err != nil {

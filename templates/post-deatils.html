@@ -44,7 +44,7 @@
                                 <div class="left-section">
                                     <i class="fa fa-user"> {{ .posts.Username }} </i>
                                     <i class="fa fa-clock-o"> {{ .posts.FormattedDate }} </i>
-                                    <!-- <i class="fa fa-hashtag"> {{ .posts.CategoryNames }} </i> -->
+                                    <i class="fa fa-hashtag"> {{ .posts.CategoryNames }} </i>
                                 </div>
                                 <div class="right-section">
                                     {{ if .LoggedIn }}
@@ -82,11 +82,11 @@
                             </div>
                             <div class="comment-body">{{ .Content }}</div>
                             <div class="comment-footer">
-                                <a href="/likeComment/{{ .PostIDcomment }}/{{ .CommentID }}">
+                                <a href="/likeComment/{{ .CommentID }}">
                                     <button class="btn-like" title="Like"></button>
                                     <span>👍{{ .LikeCountComment }}</span>
                                 </a>
-                                <a href="/dislikeComment/{{ .PostIDcomment }}/{{ .CommentID }}">
+                                <a href="/dislikeComment/{{ .CommentID }}">
                                     <button class="btn-dislike" title="Dislike"></button>
                                     <span>👎{{ .DisLikeCountComment }}</span>
                                 </a>

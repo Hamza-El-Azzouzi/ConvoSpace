@@ -140,7 +140,7 @@ body {
   font-size: 0.9em;
 }
 
-.ques-type302 button {
+/* .ques-type302 button {
   background: #3498db;
   color: white;
   border: none;
@@ -148,11 +148,11 @@ body {
   border-radius: 4px;
   cursor: pointer;
   transition: background 0.3s ease;
-}
+} */
 
-.ques-type302 button:hover {
+/* .ques-type302 button:hover {
   background: #2980b9;
-}
+} */
 
 /* Sidebar Styles */
 .sidebar97239 {
@@ -706,4 +706,35 @@ a {
   color: red;
   font-size: 0.9em;
   margin-top: 5px;
+}
+
+
+.ques-type302 {
+  display: flex;
+  justify-content: flex-end; /* Align button to the right */
+  padding: 10px;
+}
+
+.ques-type302 a {
+  text-decoration: none; /* Removes underline from link */
+}
+
+.ques-type302 button {
+  padding: 8px 16px;
+  background-color: #007bff; /* Bootstrap-like blue */
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.ques-type302 button:hover {
+  background-color: #0056b3; /* Darker blue on hover */
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+  .ques-type302 {
+      justify-content: center; /* Center button on smaller screens */
+  }
 }

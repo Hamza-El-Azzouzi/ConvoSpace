@@ -30,6 +30,8 @@ type PostWithUser struct {
 	FormattedDate string    `json:"formatted_date"`
 	CategoryName  string    `json:"category_names"`
 	CommentCount  int       `json:"comment_count"`
+	LikeCount     int       `json:"likes_count"`
+	DisLikeCount  int       `json:"dislike_count"`
 }
 
 type PostDetails struct {

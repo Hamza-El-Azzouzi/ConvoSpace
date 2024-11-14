@@ -39,8 +39,10 @@ func (r *PostRepository) AllPosts() ([]models.PostWithUser, error) {
     users.id AS user_id,
     users.username,
     users.email,
-    IFNULL(GROUP_CONCAT(categories.name, ', '), '') AS category_names,
-    (SELECT COUNT(*) FROM comments WHERE comments.post_id = posts.id) AS comment_count
+    IFNULL(GROUP_CONCAT(DISTINCT categories.name), '') AS category_names,
+    (SELECT COUNT(*) FROM comments WHERE comments.post_id = posts.id) AS comment_count,
+	(SELECT COUNT(*) FROM likes WHERE likes.post_id = posts.id AND likes.react_type = "like") AS likes_count,
+	(SELECT COUNT(*) FROM likes WHERE likes.post_id = posts.id AND likes.react_type = "dislike") AS dislike_count
 FROM 
     posts
 JOIN 
@@ -56,7 +58,7 @@ GROUP BY
 	ORDER BY posts.created_at DESC;`
 	rows, err := r.DB.Query(query)
 	if err != nil {
-		return nil, fmt.Errorf("error querying posts with Post info: %v", err)
+		return nil, fmt.Errorf("error querying posts with user info: %v", err)
 	}
 	defer rows.Close()
 
@@ -73,6 +75,8 @@ GROUP BY
 			&post.Email,
 			&post.CategoryName,
 			&post.CommentCount,
+			&post.LikeCount,
+			&post.DisLikeCount,
 		); err != nil {
 			return nil, fmt.Errorf("error scanning post with user info: %v", err)
 		}
@@ -269,24 +273,23 @@ func (r *PostRepository) FilterPost(filterby, categorie string, userID uuid.UUID
 	args := []interface{}{}
 	WhereClause := ""
 	decider := " WHERE"
-	
-	
+
 	if filterby == "created" {
-		WhereClause = decider+ " posts.user_id = ? "
+		WhereClause = decider + " posts.user_id = ? "
 		decider = " AND"
 		args = append(args, userID)
-	} else if filterby == "liked"{
-		WhereClause = decider+ " likes.user_id = ? AND likes.comment_id IS NULL"
+	} else if filterby == "liked" {
+		WhereClause = decider + " likes.user_id = ? AND likes.comment_id IS NULL"
 		decider = " AND"
 		args = append(args, userID)
 	}
 
 	if categorie != "" {
-		WhereClause += decider +" post_categories.category_id = ?"
+		WhereClause += decider + " post_categories.category_id = ?"
 		args = append(args, categorie)
 	}
 	orderQuery := " ORDER BY posts.created_at DESC;"
-	finalQuery := baseQuery + WhereClause + groupQuery +orderQuery
+	finalQuery := baseQuery + WhereClause + groupQuery + orderQuery
 	fmt.Println(finalQuery)
 	fmt.Println(args...)
 	rows, err := r.DB.Query(finalQuery, args...)
