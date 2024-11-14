@@ -254,8 +254,8 @@ func (r *PostRepository) FilterPost(filterby, categorie string, userID uuid.UUID
     users.email,
     IFNULL(GROUP_CONCAT(DISTINCT categories.name), '') AS category_names,
     (SELECT COUNT(*) FROM comments WHERE comments.post_id = posts.id) AS comment_count,
-	(SELECT COUNT(*) FROM likes WHERE likes.comment_id = comments.id AND likes.react_type = "like") AS comment_likes_count,
-	(SELECT COUNT(*) FROM likes WHERE likes.comment_id = comments.id AND likes.react_type = "dislike") AS comment_dislike_count
+	(SELECT COUNT(*) FROM likes WHERE likes.post_id = posts.id AND likes.react_type = "like") AS likes_count,
+	(SELECT COUNT(*) FROM likes WHERE likes.post_id = posts.id AND likes.react_type = "dislike") AS dislike_count
 	FROM 
     	posts
 	JOIN 
