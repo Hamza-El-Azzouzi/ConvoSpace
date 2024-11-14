@@ -252,8 +252,10 @@ func (r *PostRepository) FilterPost(filterby, categorie string, userID uuid.UUID
     users.id AS user_id,
     users.username,
     users.email,
-    IFNULL(GROUP_CONCAT(categories.name, ', '), '') AS category_names,
-    COUNT(comments.id) AS comment_count
+    IFNULL(GROUP_CONCAT(DISTINCT categories.name), '') AS category_names,
+    (SELECT COUNT(*) FROM comments WHERE comments.post_id = posts.id) AS comment_count,
+	(SELECT COUNT(*) FROM likes WHERE likes.comment_id = comments.id AND likes.react_type = "like") AS comment_likes_count,
+	(SELECT COUNT(*) FROM likes WHERE likes.comment_id = comments.id AND likes.react_type = "dislike") AS comment_dislike_count
 	FROM 
     	posts
 	JOIN 
@@ -311,12 +313,16 @@ func (r *PostRepository) FilterPost(filterby, categorie string, userID uuid.UUID
 			&post.Email,
 			&post.CategoryName,
 			&post.CommentCount,
+			&post.LikeCount,
+			&post.DisLikeCount,
+			
 		); err != nil {
 			return nil, fmt.Errorf("error scanning post with user info filter: %v", err)
 		}
 		post.FormattedDate = post.CreatedAt.Format("January 2, 2006")
 		posts = append(posts, post)
 	}
+
 
 	return posts, nil
 }

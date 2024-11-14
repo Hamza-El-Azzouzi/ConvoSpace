@@ -69,50 +69,68 @@ const updateData = (data) => {
     data.forEach(post => {
         const postDiv = document.createElement("div");
         postDiv.classList.add("question-type2033");
-
+    
         const rowDiv = document.createElement("div");
         rowDiv.classList.add("row");
-
+    
         const col1 = document.createElement("div");
         col1.classList.add("col-md-1");
         col1.innerHTML = `
             <div class="left-user12923 left-user12923-repeat">
                 <a href="#"><i class="fa fa-check" aria-hidden="true"></i></a>
             </div>`;
-
+    
         const col9 = document.createElement("div");
         col9.classList.add("col-md-9");
         col9.innerHTML = `
             <div class="right-description893">
                 <div id="que-hedder2983">
-                    <h3><a href='detailsPost/${post.post_id}' target="_blank" id="title">${post.title}</a></h3>
+                    <h3><a href='detailsPost/${post.PostID}' target="_blank" id="title">${post.Title}</a></h3>
                 </div>
                 <div class="ques-details10018">
-                    <p id="content">${post.content}</p>
+                    <p id="content">${post.Content}</p>
                 </div>
                 <hr>
                 <div class="ques-icon-info3293">
-                    <i class="fa fa-user" aria-hidden="true"> ${post.username}</i>
-                    <i class="fa fa-clock-o" aria-hidden="true"> ${post.formatted_date}</i>
-                    <i class="fa fa-hashtag" aria-hidden="true"> ${post.category_names}</i>
+                    <i class="fa fa-user" aria-hidden="true"> ${post.Username}</i>
+                    <i class="fa fa-clock-o" aria-hidden="true"> ${post.FormattedDate}</i>
+                    <i class="fa fa-hashtag" aria-hidden="true"> ${post.CategoryName}</i>
+                </div>
+                <div class="right-section">
+                    ${post.LoggedInP ? `
+                        <a href="/like/${post.PostID}">
+                            <button class="btn-like" title="Like"></button>
+                            <span>👍${post.LikeCount}</span>
+                        </a>
+                        <a href="/dislike/${post.PostID}">
+                            <button class="btn-dislike" title="Dislike"></button>
+                            <span>👎${post.DisLikeCount}</span>
+                        </a>
+                    ` : `
+                        <button class="btn-like" title="Like"></button>
+                        <span>👍${post.LikeCount}</span>
+                        <button class="btn-dislike" title="Dislike"></button>
+                        <span>👎${post.DisLikeCount}</span>
+                    `}
                 </div>
             </div>`;
-
+    
         const col2 = document.createElement("div");
         col2.classList.add("col-md-2");
         col2.innerHTML = `
             <div class="ques-type302">
-                <a href='detailsPost/${post.post_id}'>
+                <a href='detailsPost/${post.PostID}'>
                     <button type="button" class="q-type238">
-                        <i class="fa fa-comment" aria-hidden="true"> ${post.comment_count} Comments</i>
+                        <i class="fa fa-comment" aria-hidden="true"> ${post.CommentCount} Comments</i>
                     </button>
                 </a>
             </div>`;
-
+    
         rowDiv.appendChild(col1);
         rowDiv.appendChild(col9);
         rowDiv.appendChild(col2);
         postDiv.appendChild(rowDiv);
         mainDiv.appendChild(postDiv);
     });
+    
 };

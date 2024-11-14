@@ -223,7 +223,7 @@ func (p *PostHandler) PostFilter(w http.ResponseWriter, r *http.Request) {
 	var err error
 	categorie := r.URL.Query().Get("categories")
 
-	_, usermid := p.AuthMidlaware.IsUserLoggedIn(w, r)
+	isLogged, usermid := p.AuthMidlaware.IsUserLoggedIn(w, r)
 	if usermid != nil {
 		filterby = r.URL.Query().Get("filterby")
 	}
@@ -242,7 +242,26 @@ func (p *PostHandler) PostFilter(w http.ResponseWriter, r *http.Request) {
 		}
 		
 	}
-	fmt.Println(posts)
+	var postsWithStatus []map[string]interface{}
+    for _, post := range posts {
+        postData := map[string]interface{}{
+            "PostID":        post.PostID,
+            "Title":         post.Title,
+            "Content":       post.Content,
+            "CreatedAt":     post.CreatedAt,
+            "UserID":        post.UserID,
+            "Username":      post.Username,
+            "Email":         post.Email,
+            "FormattedDate": post.FormattedDate,
+            "CategoryName":  post.CategoryName,
+            "CommentCount":  post.CommentCount,
+            "LikeCount":     post.LikeCount,
+            "DisLikeCount":  post.DisLikeCount,
+            "LoggedInP":      isLogged, // Add dynamic LoggedIn property
+        }
+        postsWithStatus = append(postsWithStatus, postData)
+    }
+	fmt.Println(postsWithStatus)
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(posts)
+	json.NewEncoder(w).Encode(postsWithStatus)
 }
