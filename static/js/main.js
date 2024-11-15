@@ -5,7 +5,6 @@ window.addEventListener('load', function () {
 function getCurrentYearAsMax() {
     const currentYear = new Date().getFullYear();
     const  footer = document.querySelector(".footer-part").childNodes[1]
-    console.log(footer)
     footer.innerHTML = ` <p>&copy; ${currentYear} Forum01. All Rights Reserved.</p>` 
 }
 getCurrentYearAsMax()

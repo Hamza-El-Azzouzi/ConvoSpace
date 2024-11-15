@@ -75,7 +75,6 @@ const updateData = (data) => {
             <div class="left-user12923 left-user12923-repeat">
                 <a href="#"><i class="fa fa-check" aria-hidden="true"></i></a>
             </div>`;
-        console.log(post.LikeCount)
         const col9 = document.createElement("div");
         col9.classList.add("col-md-9");
         col9.innerHTML = `

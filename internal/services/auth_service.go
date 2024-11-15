@@ -40,7 +40,6 @@ func (a *AuthService) Login(email, password string) (*models.User, error) {
 	}
 	err = bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(password))
 	if err != nil {
-		fmt.Printf("error f login : %v",err)
 		return nil, err
 	}
 

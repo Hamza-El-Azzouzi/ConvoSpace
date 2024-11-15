@@ -10,6 +10,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="language" content="English">
     <title>Forum01</title>
+    <link rel="icon" type="image/png" href="/static/img/favicon.ico">
     <link href="/static/css/mystyle.css" rel="stylesheet" type="text/css">
 </head>
 
@@ -100,11 +101,11 @@
                 <h4>Filter Posts</h4>
                 <ul>
                     <label>
-                        <input type="radio" name="filter" value="created" id="index-checkbox" />
+                        <input type="radio" name="filter" value="created" />
                         <span class="custom-checkbox">Created Posts</span>
                     </label>
                     <label>
-                        <input type="radio" name="filter" value="liked" id="index-checkbox" />
+                        <input type="radio" name="filter" value="liked"  />
                         <span class="custom-checkbox">Liked Posts</span>
                     </label>
                     <button class="resetFilter userlogin320">Reset Filter</button>
@@ -116,7 +117,7 @@
                 <ul class="cate">
                     {{ range .categories }}
                     <label>
-                        <input type="radio" value="{{ .ID }}" name="categorie" id="index-checkbox" />
+                        <input type="radio" value="{{ .ID }}" name="categorie" />
                         <span class="custom-checkbox">{{ .Name }}</span>
                     </label>
                     <br>
