@@ -32,30 +32,30 @@ func (r *PostRepository) PostCatgorie(postCategorie *models.PostCategory) error 
 
 func (r *PostRepository) AllPosts() ([]models.PostWithUser, error) {
 	query := `SELECT 
-    posts.id AS post_id,
-    posts.title,
-    posts.content,
-    posts.created_at,
-    users.id AS user_id,
-    users.username,
-    users.email,
-    IFNULL(GROUP_CONCAT(DISTINCT categories.name), '') AS category_names,
-    (SELECT COUNT(*) FROM comments WHERE comments.post_id = posts.id) AS comment_count,
-	(SELECT COUNT(*) FROM likes WHERE likes.post_id = posts.id AND likes.react_type = "like") AS likes_count,
-	(SELECT COUNT(*) FROM likes WHERE likes.post_id = posts.id AND likes.react_type = "dislike") AS dislike_count
-FROM 
-    posts
-JOIN 
-    users ON posts.user_id = users.id
-LEFT JOIN 
-    post_categories ON posts.id = post_categories.post_id
-LEFT JOIN 
-    categories ON post_categories.category_id = categories.id
-LEFT JOIN 
-    comments ON posts.id = comments.post_id
-GROUP BY 
-    posts.id
-	ORDER BY posts.created_at DESC;`
+		posts.id AS post_id,
+		posts.title,
+		posts.content,
+		posts.created_at,
+		users.id AS user_id,
+		users.username,
+		users.email,
+		IFNULL(GROUP_CONCAT(DISTINCT categories.name), '') AS category_names,
+		(SELECT COUNT(*) FROM comments WHERE comments.post_id = posts.id) AS comment_count,
+		(SELECT COUNT(*) FROM likes WHERE likes.post_id = posts.id AND likes.react_type = "like") AS likes_count,
+		(SELECT COUNT(*) FROM likes WHERE likes.post_id = posts.id AND likes.react_type = "dislike") AS dislike_count
+		FROM 
+			posts
+		JOIN 
+			users ON posts.user_id = users.id
+		LEFT JOIN 
+			post_categories ON posts.id = post_categories.post_id
+		LEFT JOIN 
+			categories ON post_categories.category_id = categories.id
+		LEFT JOIN 
+			comments ON posts.id = comments.post_id
+		GROUP BY 
+			posts.id
+		ORDER BY posts.created_at DESC;`
 	rows, err := r.DB.Query(query)
 	if err != nil {
 		return nil, fmt.Errorf("error querying posts with user info: %v", err)
@@ -65,7 +65,7 @@ GROUP BY
 	var posts []models.PostWithUser
 	for rows.Next() {
 		var post models.PostWithUser
-		if err := rows.Scan(
+		err = rows.Scan(
 			&post.PostID,
 			&post.Title,
 			&post.Content,
@@ -77,14 +77,15 @@ GROUP BY
 			&post.CommentCount,
 			&post.LikeCount,
 			&post.DisLikeCount,
-		); err != nil {
+		)
+		if err != nil {
 			return nil, fmt.Errorf("error scanning post with user info: %v", err)
 		}
 		post.FormattedDate = post.CreatedAt.Format("January 2, 2006")
 		posts = append(posts, post)
 	}
-
-	if err := rows.Err(); err != nil {
+	err = rows.Err()
+	if err != nil {
 		return nil, fmt.Errorf("error iterating posts with user info: %v", err)
 	}
 
@@ -113,24 +114,24 @@ func (r *PostRepository) GetPostById(PostId string) (models.PostDetails, error) 
 	    comment_user.email AS comment_email,
 		(SELECT COUNT(*) FROM likes WHERE likes.comment_id = comments.id AND likes.react_type = "like") AS comment_likes_count,
 	    (SELECT COUNT(*) FROM likes WHERE likes.comment_id = comments.id AND likes.react_type = "dislike") AS comment_dislike_count
-	FROM 
-	    posts
-	JOIN 
-	    users AS post_user ON posts.user_id = post_user.id
-	LEFT JOIN 
-	    post_categories ON posts.id = post_categories.post_id
-	LEFT JOIN 
-	    categories ON post_categories.category_id = categories.id
-	LEFT JOIN 
-	    comments ON posts.id = comments.post_id
-	LEFT JOIN 
-	    users AS comment_user ON comments.user_id = comment_user.id
-	WHERE 
-	    posts.id = ?
-	GROUP BY 
-	    posts.id, comments.id
-	ORDER BY 
-	    posts.created_at DESC, comments.created_at ASC;`
+		FROM 
+			posts
+		JOIN 
+			users AS post_user ON posts.user_id = post_user.id
+		LEFT JOIN 
+			post_categories ON posts.id = post_categories.post_id
+		LEFT JOIN 
+			categories ON post_categories.category_id = categories.id
+		LEFT JOIN 
+			comments ON posts.id = comments.post_id
+		LEFT JOIN 
+			users AS comment_user ON comments.user_id = comment_user.id
+		WHERE 
+			posts.id = ?
+		GROUP BY 
+			posts.id, comments.id
+		ORDER BY 
+			posts.created_at DESC, comments.created_at ASC;`
 
 	rows, err := r.DB.Query(query, PostId)
 	if err != nil {
@@ -165,7 +166,7 @@ func (r *PostRepository) GetPostById(PostId string) (models.PostDetails, error) 
 			commentDislikeCount sql.NullInt64
 		)
 
-		err := rows.Scan(
+		err = rows.Scan(
 			&postID,
 			&title,
 			&content,
@@ -236,8 +237,8 @@ func (r *PostRepository) GetPostById(PostId string) (models.PostDetails, error) 
 			postDetails.Comments = append(postDetails.Comments, comment)
 		}
 	}
-
-	if err = rows.Err(); err != nil {
+	err = rows.Err()
+	if err != nil {
 		return models.PostDetails{}, fmt.Errorf("error f row.errr : %v", err)
 	}
 	return postDetails, nil
@@ -245,34 +246,33 @@ func (r *PostRepository) GetPostById(PostId string) (models.PostDetails, error) 
 
 func (r *PostRepository) FilterPost(filterby, categorie string, userID uuid.UUID) ([]models.PostWithUser, error) {
 	baseQuery := `SELECT 
-    posts.id AS post_id,
-    posts.title,
-    posts.content,
-    posts.created_at,
-    users.id AS user_id,
-    users.username,
-    users.email,
-    IFNULL(GROUP_CONCAT(DISTINCT categories.name), '') AS category_names,
-    (SELECT COUNT(*) FROM comments WHERE comments.post_id = posts.id) AS comment_count,
-	(SELECT COUNT(*) FROM likes WHERE likes.post_id = posts.id AND likes.react_type = "like") AS likes_count,
-	(SELECT COUNT(*) FROM likes WHERE likes.post_id = posts.id AND likes.react_type = "dislike") AS dislike_count
-	FROM 
-    	posts
-	JOIN 
-    	users ON posts.user_id = users.id
-	LEFT JOIN 
-    	post_categories ON posts.id = post_categories.post_id
-	LEFT JOIN 
-    	categories ON post_categories.category_id = categories.id
-	LEFT JOIN 
-    	comments ON posts.id = comments.post_id
-	LEFT JOIN 
-      likes ON posts.id = likes.post_id	
-	`
+		posts.id AS post_id,
+		posts.title,
+		posts.content,
+		posts.created_at,
+		users.id AS user_id,
+		users.username,
+		users.email,
+		IFNULL(GROUP_CONCAT(DISTINCT categories.name), '') AS category_names,
+		(SELECT COUNT(*) FROM comments WHERE comments.post_id = posts.id) AS comment_count,
+		(SELECT COUNT(*) FROM likes WHERE likes.post_id = posts.id AND likes.react_type = "like") AS likes_count,
+		(SELECT COUNT(*) FROM likes WHERE likes.post_id = posts.id AND likes.react_type = "dislike") AS dislike_count
+		FROM 
+			posts
+		JOIN 
+			users ON posts.user_id = users.id
+		LEFT JOIN 
+			post_categories ON posts.id = post_categories.post_id
+		LEFT JOIN 
+			categories ON post_categories.category_id = categories.id
+		LEFT JOIN 
+			comments ON posts.id = comments.post_id
+		LEFT JOIN 
+		likes ON posts.id = likes.post_id`
 
 	groupQuery := " GROUP BY posts.id"
 
-	args := []interface{}{}
+	args := []any{}
 	WhereClause := ""
 	decider := " WHERE"
 
@@ -292,8 +292,6 @@ func (r *PostRepository) FilterPost(filterby, categorie string, userID uuid.UUID
 	}
 	orderQuery := " ORDER BY posts.created_at DESC;"
 	finalQuery := baseQuery + WhereClause + groupQuery + orderQuery
-	fmt.Println(finalQuery)
-	fmt.Println(args...)
 	rows, err := r.DB.Query(finalQuery, args...)
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute query in filter: %w", err)
@@ -303,7 +301,7 @@ func (r *PostRepository) FilterPost(filterby, categorie string, userID uuid.UUID
 	var posts []models.PostWithUser
 	for rows.Next() {
 		var post models.PostWithUser
-		if err := rows.Scan(
+		err = rows.Scan(
 			&post.PostID,
 			&post.Title,
 			&post.Content,
@@ -315,14 +313,12 @@ func (r *PostRepository) FilterPost(filterby, categorie string, userID uuid.UUID
 			&post.CommentCount,
 			&post.LikeCount,
 			&post.DisLikeCount,
-			
-		); err != nil {
+		)
+		if  err != nil {
 			return nil, fmt.Errorf("error scanning post with user info filter: %v", err)
 		}
 		post.FormattedDate = post.CreatedAt.Format("January 2, 2006")
 		posts = append(posts, post)
 	}
-
-
 	return posts, nil
 }

@@ -28,7 +28,6 @@ function debounce(func, wait) {
 function handleFilterChange() {
     const filterby = document.querySelector('input[name="filter"]:checked');
     const categorie = document.querySelector('input[name="categorie"]:checked');
-    console.log("was clicked here")
     const categoryVal = categorie ? categorie.value : "";
     const filterbyVal = filterby ? filterby.value : "";
     const queryParams = new URLSearchParams({
@@ -36,14 +35,11 @@ function handleFilterChange() {
         categories: categoryVal
     });
 
-    console.log(queryParams.toString());
-
     fetch('/filters?' + queryParams.toString(), {
             method: 'GET'
         })
         .then(response => response.json())
         .then(data => {
-            console.log(data);
             updateData(data);
         })
         .catch((error) => {

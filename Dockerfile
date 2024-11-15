@@ -36,8 +36,6 @@ COPY internal/database/migrations /app/internal/database/migrations
 COPY templates /app/templates
 COPY static /app/static
 
-
-
 # Expose the application port
 EXPOSE 8082
 

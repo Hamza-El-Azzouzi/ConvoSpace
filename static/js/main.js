@@ -1,3 +1,15 @@
 window.addEventListener('load', function () {
     navigator.sendBeacon("http://localhost:8082/checker")
 })
+
+function getCurrentYearAsMax() {
+    const currentYear = new Date().getFullYear();
+    const  footer = document.querySelector(".footer-part").childNodes[1]
+    console.log(footer)
+    footer.innerHTML = ` <p>&copy; ${currentYear} Forum01. All Rights Reserved.</p>` 
+}
+getCurrentYearAsMax()
+
+const clickToLogin = () => {
+    window.location.replace('/login');
+}

@@ -76,22 +76,19 @@ func (r *UserRepository) CheckUserAlreadyLogged(UserID uuid.UUID) ([]models.User
 	var userSessions []models.UserSession
 	query := `SELECT session_id ,user_id FROM sessions WHERE user_id = ?`
 	rows, err := r.DB.Query(query, UserID)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+		return nil, err
+	}
 	for rows.Next() {
 		var userSession models.UserSession
-		if err := rows.Scan(&userSession.ID, &userSession.USerID);
-		 err != nil {
+		err = rows.Scan(&userSession.ID, &userSession.USerID);
+		if err != nil {
 			return nil, fmt.Errorf("error scanning sessions with user info filter: %v", err)
 		}
 		userSessions = append(userSessions, userSession)
 	}
-	
-
-	if err != nil {
-		if err == sql.ErrNoRows {
-			return []models.UserSession{}, nil
-		}
-		return []models.UserSession{}, err
-	}
-
 	return userSessions, nil
 }

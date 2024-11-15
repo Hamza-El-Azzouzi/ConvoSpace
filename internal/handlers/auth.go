@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"fmt"
 	"net/http"
 	"time"
 
@@ -19,16 +18,20 @@ type AuthHandler struct {
 }
 
 func (h *AuthHandler) LogoutHandle(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
-		utils.Error(w, 405)
-	}
-	cookie, _ := r.Cookie("session_id")
 
-	sessionID := cookie.Value
-	fmt.Println(sessionID)
-	err := h.SessionService.DeleteSession(sessionID)
+	if r.Method != http.MethodGet {
+		utils.Error(w, http.StatusMethodNotAllowed)
+	}
+	cookie, err := r.Cookie("session_id")
 	if err != nil {
-		utils.Error(w, 500)
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
+	}
+	sessionID := cookie.Value
+
+	err = h.SessionService.DeleteSession(sessionID)
+	if err != nil {
+		utils.Error(w, http.StatusInternalServerError)
 	}
 	http.SetCookie(w, &http.Cookie{
 		Name:     "session_id",
@@ -38,7 +41,7 @@ func (h *AuthHandler) LogoutHandle(w http.ResponseWriter, r *http.Request) {
 		HttpOnly: true,
 	})
 
-	http.Redirect(w, r, "/login", http.StatusSeeOther)
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
 func (h *AuthHandler) LoginHandle(w http.ResponseWriter, r *http.Request) {
@@ -46,18 +49,20 @@ func (h *AuthHandler) LoginHandle(w http.ResponseWriter, r *http.Request) {
 		utils.OpenHtml("login.html", w, nil)
 		return
 	}
-	errFrom := make(map[string]string)
+
+	errFrom := map[string]string{}
+
 	if r.Method == http.MethodPost {
 		err := r.ParseForm()
 		if err != nil {
-			utils.Error(w, 500)
+			utils.Error(w, http.StatusInternalServerError)
 		}
 
 		email := r.Form.Get("email")
 		password := r.Form.Get("password")
 
 		if email == "" || password == "" {
-			errFrom["password"] = "They can't be Empty"
+			errFrom["password"] = "Fields can't be Empty"
 			utils.OpenHtml("login.html", w, errFrom)
 			return
 		}
@@ -68,20 +73,19 @@ func (h *AuthHandler) LoginHandle(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		user, loginError := h.AuthService.Login(email, password)
-		if loginError != nil {
-			errFrom["password"] = "Invalid email or password"
-		}
-		if user == nil {
+		
+		if user == nil || loginError != nil {
 			errFrom["password"] = "Invalid email or password"
 			utils.OpenHtml("login.html", w, errFrom)
 			return
 		}
+
 		expiration := time.Now().Add(60 * time.Minute)
 		sessionID := uuid.Must(uuid.NewV4()).String()
 		err = h.SessionService.CreateSession(sessionID, expiration, user.ID)
 		if err != nil {
-			fmt.Printf("errr f creation sesions : %v \n", err)
-			utils.Error(w, 500)
+
+			utils.Error(w, http.StatusInternalServerError)
 		}
 
 		http.SetCookie(w, &http.Cookie{
@@ -91,7 +95,6 @@ func (h *AuthHandler) LoginHandle(w http.ResponseWriter, r *http.Request) {
 			Expires:  expiration,
 			HttpOnly: true,
 		})
-		fmt.Printf("user is logged with this seession : %v\n", sessionID)
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 	} else {
 		utils.Error(w, http.StatusMethodNotAllowed)
@@ -99,15 +102,17 @@ func (h *AuthHandler) LoginHandle(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *AuthHandler) RegisterHandle(w http.ResponseWriter, r *http.Request) {
+	
 	if r.Method == http.MethodGet {
 		utils.OpenHtml("signup.html", w, nil)
 		return
 	}
-	errFrom := make(map[string]string)
+
+	errFrom := map[string]string{}
 	if r.Method == http.MethodPost {
 		err := r.ParseForm()
 		if err != nil {
-			utils.Error(w, 500)
+			utils.Error(w, http.StatusInternalServerError)
 		}
 
 		userName := r.Form.Get("Username")
@@ -132,36 +137,36 @@ func (h *AuthHandler) RegisterHandle(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		registrError := h.AuthService.Register(userName, email, password)
-		if registrError != nil {
-			fmt.Println(registrError)
+		if registrError.Error() == "email already exist"{
 			errFrom["alreadyExist"] = "The Email Already Exist"
+		}else{
+			errFrom["alreadyExist"] = "The Usernames Already Exist"
+		}
+		if len(errFrom) > 1 {
 			utils.OpenHtml("signup.html", w, errFrom)
-
 			return
 		}
-		h.LoginHandle(w, r)
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		// h.LoginHandle(w, r)
+	}else{
+		utils.Error(w,http.StatusMethodNotAllowed)
 	}
 }
 
 func (h *AuthHandler) CheckDoubleLogging(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
-		utils.Error(w, 405)
+		utils.Error(w, http.StatusMethodNotAllowed)
 	}
 
 	isLogged, user := h.AuthMidlaware.IsUserLoggedIn(w, r)
-	if !isLogged {
-		fmt.Println("no user found logged")
-	} else {
+	
+	if isLogged {
 		userSEssion, errSession := h.AuthService.UserRepo.CheckUserAlreadyLogged(user.ID)
 		if errSession != nil {
-			fmt.Printf("err f session login : %v", errSession)
+			utils.Error(w,http.StatusInternalServerError)
 		}
-		cookie, _ := r.Cookie("session_id")
-
-		sessionID := cookie.Value
 		
 		if len(userSEssion) > 1 {
-			fmt.Printf("this sessions will deleted : %v\n",sessionID)
 			h.LogoutHandle(w, r)
 			return
 		}

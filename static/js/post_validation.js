@@ -1,6 +1,4 @@
-const clickToRegister = () => {
-    window.location.replace('/register');
-}
+
 
 document.getElementById('postForm').addEventListener('submit', function (event) {
     let isValid = true;

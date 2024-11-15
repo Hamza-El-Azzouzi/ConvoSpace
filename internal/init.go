@@ -9,7 +9,13 @@ import (
 	"forum/internal/services"
 )
 
-func InitRepositories(db *sql.DB) (*repositories.UserRepository, *repositories.CategoryRepository, *repositories.PostRepository, *repositories.CommentRepositorie, *repositories.LikeReposetorie, *repositories.SessionsRepositorie) {
+func InitRepositories(db *sql.DB) (*repositories.UserRepository, 
+	*repositories.CategoryRepository, 
+	*repositories.PostRepository, 
+	*repositories.CommentRepositorie, 
+	*repositories.LikeReposetorie, 
+	*repositories.SessionsRepositorie) {
+
 	return &repositories.UserRepository{DB: db},
 		&repositories.CategoryRepository{DB: db},
 		&repositories.PostRepository{DB: db},
@@ -18,7 +24,18 @@ func InitRepositories(db *sql.DB) (*repositories.UserRepository, *repositories.C
 		&repositories.SessionsRepositorie{DB: db}
 }
 
-func InitServices(userRepo *repositories.UserRepository, postRepo *repositories.PostRepository, categoryRepo *repositories.CategoryRepository, commentRepo *repositories.CommentRepositorie, likeRepo *repositories.LikeReposetorie, sessionRepo *repositories.SessionsRepositorie) (*services.AuthService, *services.PostService, *services.CategoryService, *services.CommentService, *services.LikeService, *services.SessionService) {
+func InitServices(userRepo *repositories.UserRepository, 
+	postRepo *repositories.PostRepository, 
+	categoryRepo *repositories.CategoryRepository, 
+	commentRepo *repositories.CommentRepositorie, 
+	likeRepo *repositories.LikeReposetorie, 
+	sessionRepo *repositories.SessionsRepositorie) (*services.AuthService, 
+		*services.PostService, 
+		*services.CategoryService, 
+		*services.CommentService, 
+		*services.LikeService, 
+		*services.SessionService) {
+
 	return &services.AuthService{UserRepo: userRepo},
 		&services.PostService{PostRepo: postRepo},
 		&services.CategoryService{CategorieRepo: categoryRepo},
@@ -27,7 +44,15 @@ func InitServices(userRepo *repositories.UserRepository, postRepo *repositories.
 		&services.SessionService{SessionRepo: sessionRepo}
 }
 
-func InitHandlers(authService *services.AuthService, postService *services.PostService, categoryService *services.CategoryService, commentService *services.CommentService, likeService *services.LikeService, sessionRepo *services.SessionService ,authMiddleware  *middleware.AuthMiddleware) (*handlers.AuthHandler, *handlers.PostHandler, *handlers.LikeHandler) {
+func InitHandlers(authService *services.AuthService, 
+	postService *services.PostService, 
+	categoryService *services.CategoryService, 
+	commentService *services.CommentService, 
+	likeService *services.LikeService, 
+	sessionRepo *services.SessionService,
+	authMiddleware  *middleware.AuthMiddleware) (*handlers.AuthHandler, 
+		*handlers.PostHandler, 
+		*handlers.LikeHandler) {
 	
 
 	authHandler := &handlers.AuthHandler{

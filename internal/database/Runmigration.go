@@ -46,6 +46,7 @@ func RunMigrations(db *sql.DB) error {
 }
 
 func tableExists(db *sql.DB, tableName string) bool {
+
 	query := `SELECT name FROM sqlite_master WHERE type='table' AND name=?;`
 	var name string
 	err := db.QueryRow(query, tableName).Scan(&name)
@@ -53,6 +54,7 @@ func tableExists(db *sql.DB, tableName string) bool {
 }
 
 func InsertDefaultCategories(db *sql.DB) error {
+	
 	categories := []string{
 		"Announcements",
 		"General Discussion",

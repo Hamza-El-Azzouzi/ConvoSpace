@@ -1,7 +1,3 @@
-const clickToRegister = () => {
-    window.location.replace('/register');
-}
-
 document.getElementById('commentForm').addEventListener('submit', function (event) {
     let isValid = true;
 

@@ -1,17 +1,19 @@
 package database
 
 import (
-    "database/sql"
-    _ "github.com/mattn/go-sqlite3"
+	"database/sql"
+
+	_ "github.com/mattn/go-sqlite3"
 )
 
 func InitDB(dataSourceName string) (*sql.DB, error) {
-    db, err := sql.Open("sqlite3", dataSourceName)
-    if err != nil {
-        return nil, err
-    }
-    if err = db.Ping(); err != nil {
-        return nil, err
-    }
-    return db, nil
+	db, err := sql.Open("sqlite3", dataSourceName)
+	if err != nil {
+		return nil, err
+	}
+	err = db.Ping()
+	if err != nil {
+		return nil, err
+	}
+	return db, nil
 }

@@ -22,7 +22,6 @@ func Error(response http.ResponseWriter, status int) {
 	response.WriteHeader(status)
 	for key, value := range errorMap {
 		if key == status {
-			
 			errorData.Err = key
 			errorData.Name = value[0]
 			errorData.Messages = value[1]

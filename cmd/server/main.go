@@ -15,34 +15,51 @@ import (
 func main() {
 	db, err := database.InitDB("forum.db")
 	if err != nil {
-		log.Fatal(err)
-		fmt.Printf("errr f DB : %v", err)
+		log.Fatalf("error in DB : %v", err)
+		return
+	}
+	err = database.RunMigrations(db)
+	if err != nil {
+		fmt.Printf("Error running migrations: %v", err)
 		return
 	}
 
-	if err := database.RunMigrations(db); err != nil {
-		fmt.Printf("Error running migrations: %v", err)
-	}
-
-	if err := database.InsertDefaultCategories(db); err != nil {
+	err = database.InsertDefaultCategories(db)
+	if err != nil {
 		fmt.Printf("error inserting default categories: %v", err)
+		return
 	}
 
 	defer db.Close()
 
 	userRepo, categoryRepo, postRepo, commentRepo, likeRepo, sessionRepo := internal.InitRepositories(db)
 
-	authService, postService, categoryService, commentService, likeService, sessionService := internal.InitServices(userRepo, postRepo, categoryRepo, commentRepo, likeRepo, sessionRepo)
+	authService, postService, categoryService, commentService, likeService, sessionService := internal.InitServices(userRepo,
+		postRepo,
+		categoryRepo,
+		commentRepo,
+		likeRepo,
+		sessionRepo)
+
 	authMiddleware := &middleware.AuthMiddleware{AuthService: authService}
-	authHandler, postHandler, likeHandler := internal.InitHandlers(authService, postService, categoryService, commentService, likeService, sessionService, authMiddleware)
-	mux := http.NewServeMux()
+
+	authHandler, postHandler, likeHandler := internal.InitHandlers(authService,
+		postService,
+		categoryService,
+		commentService,
+		likeService,
+		sessionService,
+		authMiddleware)
+
 	cleaner := &utils.Cleaner{SessionService: sessionService}
 
 	go cleaner.CleanupExpiredSessions()
 
-	fmt.Println("Starting the forum server...\nWelcome http://localhost:8082/")
+	mux := http.NewServeMux()
 
 	routes.SetupRoutes(mux, authHandler, postHandler, likeHandler, authMiddleware)
+
+	fmt.Println("Starting the forum server...\nWelcome http://localhost:8082/")
 
 	log.Fatal(http.ListenAndServe("0.0.0.0:8082", nil))
 }

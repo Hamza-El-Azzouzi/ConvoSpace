@@ -13,10 +13,6 @@ type LikeReposetorie struct {
 	DB *sql.DB
 }
 
-func NewLikeRepositorie(db *sql.DB) *LikeReposetorie {
-	return &LikeReposetorie{DB: db}
-}
-
 func (l *LikeReposetorie) CreateForPost(like *models.Like) error {
 	var existingID uuid.UUID
 	var existingReactType string
@@ -28,7 +24,7 @@ func (l *LikeReposetorie) CreateForPost(like *models.Like) error {
 
 	if err == nil {
 		if existingReactType == like.ReactType {
-	
+
 			_, err = l.DB.Exec("DELETE FROM likes WHERE id = ?", existingID)
 			if err != nil {
 				return fmt.Errorf("failed to remove existing reaction: %w", err)
@@ -56,18 +52,19 @@ func (l *LikeReposetorie) CreateForPost(like *models.Like) error {
 	}
 	return nil
 }
+
 func (l *LikeReposetorie) CreateForComment(like *models.Like) error {
 	var existingID uuid.UUID
 	var existingReactType string
 
 	err := l.DB.QueryRow(
 		"SELECT id, react_type FROM likes WHERE user_id = ? AND comment_id = ?",
-		like.UserID,like.CommentID,
+		like.UserID, like.CommentID,
 	).Scan(&existingID, &existingReactType)
 
 	if err == nil {
 		if existingReactType == like.ReactType {
-	
+
 			_, err = l.DB.Exec("DELETE FROM likes WHERE id = ?", existingID)
 			if err != nil {
 				return fmt.Errorf("failed to remove existing reaction: %w", err)

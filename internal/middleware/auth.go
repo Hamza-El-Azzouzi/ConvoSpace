@@ -1,7 +1,6 @@
 package middleware
 
 import (
-	"fmt"
 	"net/http"
 	"regexp"
 
@@ -51,27 +50,19 @@ func (h *AuthMiddleware) IsValidPassword(password string) bool {
 func (h *AuthMiddleware) CheckDoubleLogging(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		isLogged, user := h.IsUserLoggedIn(w, r)
-		fmt.Printf("user logged in: %v\n", user)
 
 		if !isLogged {
-			fmt.Printf("no user logged in found\n")
-			next.ServeHTTP(w, r) // Proceed to the next handler even if not logged in.
+			next.ServeHTTP(w, r)
 			return
 		}
 
 		userSessions, errSession := h.AuthService.CheckUserAlreadyLogged(user.ID)
 		if errSession != nil {
-			fmt.Printf("session error: %v\n", errSession)
-			utils.Error(w, 500)
+			utils.Error(w, http.StatusInternalServerError)
 			return
 		}
 
-		fmt.Printf("user sessions: %v\n", userSessions)
 		if len(userSessions) > 1 {
-			cookie, _ := r.Cookie("session_id")
-			sessionID := cookie.Value
-			fmt.Printf("this session will be deleted: %v\n", sessionID)
-
 			http.Redirect(w, r, "/logout", http.StatusSeeOther)
 			return
 		}

@@ -15,11 +15,15 @@ type AuthService struct {
 }
 
 func (a *AuthService) Register(username, email, password string) error {
+	user, err := a.UserRepo.FindByEmail(email)
+	if user != nil || err != nil {
+		return fmt.Errorf("email already exist")
+	}
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
 		return err
 	}
-	user := &models.User{
+	user = &models.User{
 		ID:           uuid.Must(uuid.NewV4()),
 		Username:     username,
 		Email:        email,
@@ -44,11 +48,9 @@ func (a *AuthService) Login(email, password string) (*models.User, error) {
 }
 
 func (a *AuthService) CheckUserAlreadyLogged(userID uuid.UUID) ([]models.UserSession, error) {
-
 	return a.UserRepo.CheckUserAlreadyLogged(userID)
 }
 
 func (a *AuthService) GetUserBySessionID(sessionID string) (*models.User, error) {
-	
 	return a.UserRepo.GetUserBySessionID(sessionID)
 }

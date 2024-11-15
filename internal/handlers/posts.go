@@ -6,8 +6,6 @@ import (
 	"net/http"
 	"strings"
 
-	// "forum/internal/handlers"
-
 	"forum/internal/middleware"
 	"forum/internal/models"
 	"forum/internal/services"
@@ -27,49 +25,46 @@ type PostHandler struct {
 
 func (p *PostHandler) HomeHandle(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
-		utils.Error(w, 405)
+		utils.Error(w, http.StatusMethodNotAllowed)
+		return
 	}
 	posts, err := p.PostService.AllPosts()
-
 	if err != nil {
-		fmt.Printf("error kayn f service POSt all : %v", err)
-		utils.Error(w, 500)
+		utils.Error(w, http.StatusInternalServerError)
 		return
 	}
 
 	categories, errCat := p.CategoryService.GetAllCategories()
 	if errCat != nil {
-		fmt.Printf("error kayn f categories getter : %v\n", err)
-		utils.Error(w, 500)
+		utils.Error(w, http.StatusInternalServerError)
 		return
 	}
 
-	
-	data := map[string]interface{}{
+	data := map[string]any{
 		"LoggedIn":   true,
 		"categories": categories,
 	}
 	isLogged, usermid := p.AuthMidlaware.IsUserLoggedIn(w, r)
 
-	var postsWithStatus []map[string]interface{}
-    for _, post := range posts {
-        postData := map[string]interface{}{
-            "PostID":        post.PostID,
-            "Title":         post.Title,
-            "Content":       post.Content,
-            "CreatedAt":     post.CreatedAt,
-            "UserID":        post.UserID,
-            "Username":      post.Username,
-            "Email":         post.Email,
-            "FormattedDate": post.FormattedDate,
-            "CategoryName":  post.CategoryName,
-            "CommentCount":  post.CommentCount,
-            "LikeCount":     post.LikeCount,
-            "DisLikeCount":  post.DisLikeCount,
-            "LoggedInP":      isLogged, // Add dynamic LoggedIn property
-        }
-        postsWithStatus = append(postsWithStatus, postData)
-    }
+	var postsWithStatus []map[string]any
+	for _, post := range posts {
+		postData := map[string]any{
+			"PostID":        post.PostID,
+			"Title":         post.Title,
+			"Content":       post.Content,
+			"CreatedAt":     post.CreatedAt,
+			"UserID":        post.UserID,
+			"Username":      post.Username,
+			"Email":         post.Email,
+			"FormattedDate": post.FormattedDate,
+			"CategoryName":  post.CategoryName,
+			"CommentCount":  post.CommentCount,
+			"LikeCount":     post.LikeCount,
+			"DisLikeCount":  post.DisLikeCount,
+			"LoggedInP":     isLogged,
+		}
+		postsWithStatus = append(postsWithStatus, postData)
+	}
 	if isLogged {
 		data["LoggedIn"] = isLogged
 		data["Username"] = usermid.Username
@@ -84,12 +79,14 @@ func (p *PostHandler) HomeHandle(w http.ResponseWriter, r *http.Request) {
 
 func (p *PostHandler) PostCreation(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
-		utils.Error(w, 405)
+		utils.Error(w, http.StatusMethodNotAllowed)
+		return
 	}
+
 	categories, err := p.CategoryService.GetAllCategories()
 	if err != nil {
-		fmt.Printf("error kayn f categories getter : %v\n", err)
-		utils.Error(w, 500)
+		utils.Error(w, http.StatusInternalServerError)
+		return
 	}
 	data := map[string]any{
 		"LoggedIn":   false,
@@ -108,33 +105,33 @@ func (p *PostHandler) PostCreation(w http.ResponseWriter, r *http.Request) {
 
 func (p *PostHandler) PostSaver(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
-		utils.Error(w, 405)
+		utils.Error(w, http.StatusMethodNotAllowed)
+		return
 	}
 	data := map[string]any{
 		"LoggedIn": false,
 	}
 	err := r.ParseForm()
 	if err != nil {
-		fmt.Printf("error kayn fl form : %v", err)
-		utils.Error(w, 500)
+		utils.Error(w, http.StatusInternalServerError)
+		return
 	}
 	title := r.Form.Get("title")
 	categories := r.Form["category"]
 	subject := r.Form.Get("textarea")
 	contentWithBreaks := strings.ReplaceAll(subject, "\n", "<br>")
+
 	if title == "" || contentWithBreaks == "" || len(categories) == 0 {
-		utils.Error(w, 400)
+		utils.Error(w, http.StatusBadRequest)
 		return
 	}
 	isLogged, usermid := p.AuthMidlaware.IsUserLoggedIn(w, r)
 	if isLogged {
 		data["LoggedIn"] = isLogged
 		data["Username"] = usermid.Username
-		fmt.Println(categories)
 		err = p.PostService.PostSave(usermid.ID, title, contentWithBreaks, categories)
 		if err != nil {
-			fmt.Printf("error kayn ftsrad dyal post : %v\n ", err)
-			utils.Error(w, 500)
+			utils.Error(w, http.StatusInternalServerError)
 		} else {
 			http.Redirect(w, r, "/", http.StatusSeeOther)
 		}
@@ -147,23 +144,23 @@ func (p *PostHandler) PostSaver(w http.ResponseWriter, r *http.Request) {
 
 func (p *PostHandler) DetailsPost(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
-		utils.Error(w, 405)
+		utils.Error(w, http.StatusMethodNotAllowed)
+		return
 	}
 	pathParts := strings.Split(r.URL.Path, "/")
 	if len(pathParts) != 3 {
-		utils.Error(w, 404)
+		utils.Error(w, http.StatusNotFound)
 		return
 	}
 	postID := pathParts[2]
 	posts, err := p.PostService.GetPost(postID)
+	if err != nil {
+		utils.Error(w, http.StatusNotFound)
+		return
+	}
 	data := map[string]any{
 		"LoggedIn": false,
 		"posts":    posts,
-	}
-	if err != nil {
-		fmt.Println(err)
-		utils.Error(w, 404)
-		return
 	}
 
 	isLogged, usermid := p.AuthMidlaware.IsUserLoggedIn(w, r)
@@ -180,23 +177,27 @@ func (p *PostHandler) DetailsPost(w http.ResponseWriter, r *http.Request) {
 
 func (p *PostHandler) CommentSaver(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
-		utils.Error(w, 405)
+		utils.Error(w, http.StatusMethodNotAllowed)
+		return
 	}
+
 	pathParts := strings.Split(r.URL.Path, "/")
 
 	if len(pathParts) != 3 {
-		utils.Error(w, 404)
+		utils.Error(w, http.StatusNotFound)
+		return
 	}
 	postID := pathParts[2]
 	err := r.ParseForm()
 	if err != nil {
-		utils.Error(w, 500)
+		utils.Error(w, http.StatusInternalServerError)
+		return
 	}
 	commetContent := r.Form.Get("textarea")
 	commetContentWithNewLines := strings.ReplaceAll(commetContent, "\n", "<br>")
 
 	if commetContentWithNewLines == "" {
-		utils.Error(w, 400)
+		utils.Error(w, http.StatusBadRequest)
 		return
 	}
 
@@ -205,8 +206,8 @@ func (p *PostHandler) CommentSaver(w http.ResponseWriter, r *http.Request) {
 	if isLogged {
 		err = p.CommentService.SaveComment(usermid.ID, postID, commetContentWithNewLines)
 		if err != nil {
-			fmt.Printf("error kayn ftsrad dyal comment : %v\n ", err)
-			utils.Error(w, 500)
+			utils.Error(w, http.StatusInternalServerError)
+			return
 		}
 	}
 
@@ -215,7 +216,8 @@ func (p *PostHandler) CommentSaver(w http.ResponseWriter, r *http.Request) {
 
 func (p *PostHandler) PostFilter(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
-		utils.Error(w, 405)
+		utils.Error(w, http.StatusMethodNotAllowed)
+		return
 	}
 
 	filterby := ""
@@ -230,38 +232,37 @@ func (p *PostHandler) PostFilter(w http.ResponseWriter, r *http.Request) {
 	if filterby != "" {
 		posts, err = p.PostService.FilterPost(filterby, categorie, usermid.ID)
 		if err != nil {
-			fmt.Printf("error kayn f filter : %v\n ", err)
-			utils.Error(w, 500)
+			utils.Error(w, http.StatusInternalServerError)
+			return
 		}
-		
+
 	} else {
 		posts, err = p.PostService.FilterPost(filterby, categorie, uuid.Nil)
 		if err != nil {
-			fmt.Printf("error kayn f filter : %v\n ", err)
-			utils.Error(w, 500)
+			utils.Error(w, http.StatusInternalServerError)
+			return
 		}
-		
+
 	}
-	var postsWithStatus []map[string]interface{}
-    for _, post := range posts {
-        postData := map[string]interface{}{
-            "PostID":        post.PostID,
-            "Title":         post.Title,
-            "Content":       post.Content,
-            "CreatedAt":     post.CreatedAt,
-            "UserID":        post.UserID,
-            "Username":      post.Username,
-            "Email":         post.Email,
-            "FormattedDate": post.FormattedDate,
-            "CategoryName":  post.CategoryName,
-            "CommentCount":  post.CommentCount,
-            "LikeCount":     post.LikeCount,
-            "DisLikeCount":  post.DisLikeCount,
-            "LoggedInP":      isLogged, // Add dynamic LoggedIn property
-        }
-        postsWithStatus = append(postsWithStatus, postData)
-    }
-	fmt.Println(postsWithStatus)
+	var postsWithStatus []map[string]any
+	for _, post := range posts {
+		postData := map[string]any{
+			"PostID":        post.PostID,
+			"Title":         post.Title,
+			"Content":       post.Content,
+			"CreatedAt":     post.CreatedAt,
+			"UserID":        post.UserID,
+			"Username":      post.Username,
+			"Email":         post.Email,
+			"FormattedDate": post.FormattedDate,
+			"CategoryName":  post.CategoryName,
+			"CommentCount":  post.CommentCount,
+			"LikeCount":     post.LikeCount,
+			"DisLikeCount":  post.DisLikeCount,
+			"LoggedInP":     isLogged,
+		}
+		postsWithStatus = append(postsWithStatus, postData)
+	}
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(postsWithStatus)
 }

@@ -13,7 +13,6 @@ type SessionsRepositorie struct {
 
 func (s *SessionsRepositorie) DeletSession(sessionID string) error {
 	_, err := s.DB.Exec("DELETE FROM sessions WHERE session_id = ?", sessionID)
-
 	return err
 }
 

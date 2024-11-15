@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -27,14 +26,12 @@ func OpenHtml(fileName string, w http.ResponseWriter, data any) {
 	basePath := getPath()
 	temp, err := template.ParseFiles(basePath + "templates/" + fileName)
 	if err != nil {
-		fmt.Printf("error parsing template file: %v", err)
-		Error(w, 500)
+		Error(w, http.StatusInternalServerError)
 		return
 	}
 	err = temp.Execute(w, data)
 	if err != nil {
-		fmt.Printf("error executing template: %v", err)
-		Error(w, 500)
+		Error(w, http.StatusInternalServerError)
 		return
 	}
 }
@@ -48,8 +45,9 @@ func SetupStaticFilesHandlers(w http.ResponseWriter, r *http.Request) {
 		path = basePath
 	}
 	defer func() {
-		if err := recover(); err != nil {
-			Error(w, 404)
+		err := recover()
+		if err != nil {
+			Error(w, http.StatusNotFound)
 		}
 	}()
 
@@ -57,6 +55,6 @@ func SetupStaticFilesHandlers(w http.ResponseWriter, r *http.Request) {
 	if !os.IsNotExist(err) && !fileinfo.IsDir() {
 		http.FileServer(http.Dir(basePath)).ServeHTTP(w, r)
 	} else {
-		Error(w, 404)
+		Error(w, http.StatusNotFound)
 	}
 }

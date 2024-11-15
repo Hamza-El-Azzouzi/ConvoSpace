@@ -15,7 +15,6 @@ func SetupRoutes(mux *http.ServeMux, authHandler *handlers.AuthHandler, postHand
 	mux.HandleFunc("/login", authHandler.LoginHandle)
 	mux.HandleFunc("/register", authHandler.RegisterHandle)
 
-	// mux.Handle("/", http.HandlerFunc(postHandler.HomeHandle))
 
 	mux.HandleFunc("/", postHandler.HomeHandle)
 	mux.HandleFunc("/create", postHandler.PostCreation)
@@ -33,7 +32,7 @@ func SetupRoutes(mux *http.ServeMux, authHandler *handlers.AuthHandler, postHand
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		handler, pattern := mux.Handler(r)
 		if pattern == "" || pattern == "/" && r.URL.Path != "/" {
-			utils.Error(w, 404)
+			utils.Error(w, http.StatusNotFound)
 			return
 		}
 		handler.ServeHTTP(w, r)
