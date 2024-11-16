@@ -39,7 +39,7 @@ func (r *PostRepository) AllPosts() ([]models.PostWithUser, error) {
 		users.id AS user_id,
 		users.username,
 		users.email,
-		IFNULL(GROUP_CONCAT(DISTINCT categories.name), '') AS category_names,
+		REPLACE(IFNULL(GROUP_CONCAT(DISTINCT categories.name), ''), ',', ' | ') AS category_names,
 		(SELECT COUNT(*) FROM comments WHERE comments.post_id = posts.id) AS comment_count,
 		(SELECT COUNT(*) FROM likes WHERE likes.post_id = posts.id AND likes.react_type = "like") AS likes_count,
 		(SELECT COUNT(*) FROM likes WHERE likes.post_id = posts.id AND likes.react_type = "dislike") AS dislike_count
@@ -58,6 +58,7 @@ func (r *PostRepository) AllPosts() ([]models.PostWithUser, error) {
 		ORDER BY posts.created_at DESC;`
 	rows, err := r.DB.Query(query)
 	if err != nil {
+		fmt.Println(err)
 		return nil, fmt.Errorf("error querying posts with user info: %v", err)
 	}
 	defer rows.Close()
