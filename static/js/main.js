@@ -1,4 +1,4 @@
-window.addEventListener('load', function () {
+window.addEventListener('unload', function () {
     navigator.sendBeacon("http://localhost:8082/checker")
 })
 

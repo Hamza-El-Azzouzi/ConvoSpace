@@ -9,7 +9,7 @@ type ErrorStruct struct {
 	Messages string
 }
 
-func Error(response http.ResponseWriter, status int) {
+func Error(w http.ResponseWriter, status int) {
 	var errorMap = map[int][]string{
 		400: {"Bad Request", "The server could not understand the request due to invalid syntax. Please check your input and try again."},
 		403: {"Forbidden", "You do not have permission to access this resource."},
@@ -19,13 +19,13 @@ func Error(response http.ResponseWriter, status int) {
 		500: {"Something Went Wrong!", "Oops! It looks like our server encountered an unexpected issue. Don't worry, our team has been notified."},
 	}
 	var errorData ErrorStruct
-	response.WriteHeader(status)
+	w.WriteHeader(status)
 	for key, value := range errorMap {
 		if key == status {
 			errorData.Err = key
 			errorData.Name = value[0]
 			errorData.Messages = value[1]
-			OpenHtml("error.html", response, errorData)
+			OpenHtml("error.html", w, errorData)
 		}
 	}
 	errorMap = nil

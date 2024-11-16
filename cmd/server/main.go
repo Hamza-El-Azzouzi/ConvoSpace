@@ -41,7 +41,7 @@ func main() {
 		likeRepo,
 		sessionRepo)
 
-	authMiddleware := &middleware.AuthMiddleware{AuthService: authService}
+	authMiddleware := &middleware.AuthMiddleware{AuthService: authService,SessionService: sessionService}
 
 	authHandler, postHandler, likeHandler := internal.InitHandlers(authService,
 		postService,

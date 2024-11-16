@@ -26,3 +26,12 @@ func (s *SessionsRepositorie) DeleteSessionByDate(time time.Time) error {
 	_, err := s.DB.Exec("DELETE FROM sessions WHERE expires_at < ?", time)
 	return err
 }
+
+func (s *SessionsRepositorie) GetUser(sessionID string) (string,error) {
+	var userID string
+	err := s.DB.QueryRow("SELECT user_id FROM sessions WHERE session_id = ?", sessionID).Scan(&userID)
+	if err != nil || err == sql.ErrNoRows{
+		return "" , err
+	}
+	return userID, nil
+}

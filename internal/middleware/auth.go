@@ -10,7 +10,8 @@ import (
 )
 
 type AuthMiddleware struct {
-	AuthService *services.AuthService
+	AuthService    *services.AuthService
+	SessionService *services.SessionService
 }
 
 func (h *AuthMiddleware) IsUserLoggedIn(w http.ResponseWriter, r *http.Request) (bool, *models.User) {
@@ -22,7 +23,7 @@ func (h *AuthMiddleware) IsUserLoggedIn(w http.ResponseWriter, r *http.Request) 
 	sessionID := cookie.Value
 
 	var userID string
-	err = h.AuthService.UserRepo.DB.QueryRow("SELECT user_id FROM sessions WHERE session_id = ?", sessionID).Scan(&userID)
+	userID, err = h.SessionService.GetUserService(sessionID)
 	if err != nil {
 		return false, nil
 	}
@@ -42,9 +43,19 @@ func (h *AuthMiddleware) IsValidEmail(email string) bool {
 }
 
 func (h *AuthMiddleware) IsValidPassword(password string) bool {
-	regex := `^([a-z0-9A-Z]).{7,}$`
-	re := regexp.MustCompile(regex)
-	return re.MatchString(password)
+	secure := true
+
+	tests := []string{".{7,}", "[a-z]", "[A-Z]", "[0-9]", "[^\\d\\w]"}
+	for _, test := range tests {
+		t, _ := regexp.MatchString(test, password)
+		if !t {
+
+			secure = false
+			break
+		}
+	}
+
+	return secure
 }
 
 func (h *AuthMiddleware) CheckDoubleLogging(next http.Handler) http.Handler {

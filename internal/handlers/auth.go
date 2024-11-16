@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 	"time"
 
@@ -24,6 +25,7 @@ func (h *AuthHandler) LogoutHandle(w http.ResponseWriter, r *http.Request) {
 	}
 	cookie, err := r.Cookie("session_id")
 	if err != nil {
+		fmt.Println("not found")
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
@@ -40,7 +42,7 @@ func (h *AuthHandler) LogoutHandle(w http.ResponseWriter, r *http.Request) {
 		Expires:  time.Now().Add(-1 * time.Hour),
 		HttpOnly: true,
 	})
-
+	fmt.Println("found")
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
@@ -127,7 +129,7 @@ func (h *AuthHandler) RegisterHandle(w http.ResponseWriter, r *http.Request) {
 			errFrom["email"] = "Invalid email"
 		}
 		if !h.AuthMidlaware.IsValidPassword(password) {
-			errFrom["password"] = "Invalid Password, At least 8 charachters"
+			errFrom["password"] = "Invalid Password<br>At least 8 characters<br>Contains at least one letter<br>Contains at least one digit<br>Contains at least one special characte"
 		}
 		if userName == "" || email == "" || password == "" {
 			errFrom["empty"] = "The Fields can't be Empty"
@@ -142,7 +144,7 @@ func (h *AuthHandler) RegisterHandle(w http.ResponseWriter, r *http.Request) {
 		}else{
 			errFrom["alreadyExist"] = "The Usernames Already Exist"
 		}
-		if len(errFrom) > 1 {
+		if len(errFrom) > 0 {
 			utils.OpenHtml("signup.html", w, errFrom)
 			return
 		}
