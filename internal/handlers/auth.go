@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"fmt"
 	"net/http"
 	"time"
 
@@ -19,13 +18,11 @@ type AuthHandler struct {
 }
 
 func (h *AuthHandler) LogoutHandle(w http.ResponseWriter, r *http.Request) {
-
 	if r.Method != http.MethodGet {
 		utils.Error(w, http.StatusMethodNotAllowed)
 	}
 	cookie, err := r.Cookie("session_id")
 	if err != nil {
-		fmt.Println("not found")
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
@@ -42,7 +39,6 @@ func (h *AuthHandler) LogoutHandle(w http.ResponseWriter, r *http.Request) {
 		Expires:  time.Now().Add(-1 * time.Hour),
 		HttpOnly: true,
 	})
-	fmt.Println("found")
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
@@ -75,7 +71,7 @@ func (h *AuthHandler) LoginHandle(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		user, loginError := h.AuthService.Login(email, password)
-		
+
 		if user == nil || loginError != nil {
 			errFrom["password"] = "Invalid email or password"
 			utils.OpenHtml("login.html", w, errFrom)
@@ -86,7 +82,6 @@ func (h *AuthHandler) LoginHandle(w http.ResponseWriter, r *http.Request) {
 		sessionID := uuid.Must(uuid.NewV4()).String()
 		err = h.SessionService.CreateSession(sessionID, expiration, user.ID)
 		if err != nil {
-
 			utils.Error(w, http.StatusInternalServerError)
 		}
 
@@ -104,7 +99,6 @@ func (h *AuthHandler) LoginHandle(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *AuthHandler) RegisterHandle(w http.ResponseWriter, r *http.Request) {
-	
 	if r.Method == http.MethodGet {
 		utils.OpenHtml("signup.html", w, nil)
 		return
@@ -139,9 +133,9 @@ func (h *AuthHandler) RegisterHandle(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		registrError := h.AuthService.Register(userName, email, password)
-		if registrError.Error() == "email already exist"{
+		if registrError.Error() == "email already exist" {
 			errFrom["alreadyExist"] = "The Email Already Exist"
-		}else{
+		} else {
 			errFrom["alreadyExist"] = "The Usernames Already Exist"
 		}
 		if len(errFrom) > 0 {
@@ -150,8 +144,8 @@ func (h *AuthHandler) RegisterHandle(w http.ResponseWriter, r *http.Request) {
 		}
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		// h.LoginHandle(w, r)
-	}else{
-		utils.Error(w,http.StatusMethodNotAllowed)
+	} else {
+		utils.Error(w, http.StatusMethodNotAllowed)
 	}
 }
 
@@ -161,15 +155,15 @@ func (h *AuthHandler) CheckDoubleLogging(w http.ResponseWriter, r *http.Request)
 	}
 
 	isLogged, user := h.AuthMidlaware.IsUserLoggedIn(w, r)
-	
+
 	if isLogged {
 		userSEssion, errSession := h.AuthService.UserRepo.CheckUserAlreadyLogged(user.ID)
 		if errSession != nil {
-			utils.Error(w,http.StatusInternalServerError)
+			utils.Error(w, http.StatusInternalServerError)
 		}
-		
+
 		if len(userSEssion) > 1 {
-			h.LogoutHandle(w, r)
+			http.Redirect(w, r, "/logout", http.StatusSeeOther)
 			return
 		}
 	}
