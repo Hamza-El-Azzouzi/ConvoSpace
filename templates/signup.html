@@ -22,8 +22,8 @@
         <span class="errorMsg">{{ .alreadyExist }}</span>
         <p class="errorMsg">{{ .empty }}</p>
         <form action="/register" method="post">
-          <input type="text" name="Username" placeholder="Username*" />
-          <input type="email" name="email" placeholder="E-Mail*" />
+          <input type="text" name="Username"  autocomplete="on" placeholder="Username*" />
+          <input type="email" name="email"  autocomplete="on" placeholder="E-Mail*" />
           <span class="errorMsg">{{ .email }}</span>
           <input type="password" name="password" placeholder="Password*" />
           <span class="errorMsg">{{ .password }}</span>
