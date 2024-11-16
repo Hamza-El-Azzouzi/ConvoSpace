@@ -7,9 +7,9 @@ import (
 )
 
 type Comment struct {
-	ID        uuid.UUID `json:"id"`
-	UserID    uuid.UUID `json:"user_id"`
-	PostID    string `json:"post_id"`
-	Content   string    `json:"content"`
-	CreatedAt time.Time `json:"created_at"`
+	ID        uuid.UUID 
+	UserID    uuid.UUID
+	PostID    string
+	Content   string
+	CreatedAt time.Time
 }

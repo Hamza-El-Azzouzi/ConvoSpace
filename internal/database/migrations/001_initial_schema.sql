@@ -69,8 +69,10 @@ CREATE TABLE
         session_id TEXT PRIMARY KEY,
         user_id TEXT NOT NULL,
         expires_at TIMESTAMP NOT NULL,
-        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users (id) ON UPDATE CASCADE ON DELETE CASCADE
     );
+
 
 CREATE INDEX idx_user_id_session ON sessions (user_id);
 

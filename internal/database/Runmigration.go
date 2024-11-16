@@ -11,7 +11,7 @@ import (
 
 func RunMigrations(db *sql.DB) error {
 	allExist := true
-	tables := []string{"users", "posts", "comments", "categories", "post_categories", "likes"}
+	tables := []string{"users", "posts", "comments", "categories", "post_categories", "likes","sessions"}
 	for _, table := range tables {
 		if !tableExists(db, table) {
 			allExist = false
