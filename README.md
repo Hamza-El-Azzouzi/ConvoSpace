@@ -72,7 +72,9 @@ forum/
    ```
 
 ## Database Schema
-
+<p>
+  <img src="mermaid-diagram-2024-11-16-113936.png" alt="Database Schema" width="800">
+</p>
 The application uses SQLite with the following main tables:
 - Users
 - Posts
