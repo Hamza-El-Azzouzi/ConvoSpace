@@ -28,7 +28,7 @@ func (l *LikeService) Create(userID uuid.UUID, postID, commentID, reactType stri
 		ReactType: reactType,
 	}
 	if isComment {
-		return l.LikeRepo.Create(like, "comment")
+		return l.LikeRepo.CreateLike(like, "comment")
 	}
-	return l.LikeRepo.Create(like, "post")
+	return l.LikeRepo.CreateLike(like, "post")
 }

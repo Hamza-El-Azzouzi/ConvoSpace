@@ -13,7 +13,7 @@ type LikeReposetorie struct {
 	DB *sql.DB
 }
 
-func (l *LikeReposetorie) Create(like *models.Like, liked string) error {
+func (l *LikeReposetorie) CreateLike(like *models.Like, liked string) error {
 	var existingID uuid.UUID
 	var existingReactType string
 	var reactOn *string
