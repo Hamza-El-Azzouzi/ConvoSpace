@@ -23,7 +23,15 @@ type PostHandler struct {
 	AuthHandler     *AuthHandler
 }
 
-func (p *PostHandler) HomeHandle(w http.ResponseWriter, r *http.Request) {
+func (p *PostHandler) Home(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		utils.Error(w, http.StatusMethodNotAllowed)
+		return
+	}
+	utils.OpenHtml("index.html", w, nil)
+}
+
+func (p *PostHandler) Posts(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		utils.Error(w, http.StatusMethodNotAllowed)
 		return
@@ -43,38 +51,19 @@ func (p *PostHandler) HomeHandle(w http.ResponseWriter, r *http.Request) {
 	data := map[string]any{
 		"LoggedIn":   true,
 		"categories": categories,
+		"posts" : posts,
 	}
 	isLogged, usermid := p.AuthMidlaware.IsUserLoggedIn(w, r)
 
-	var postsWithStatus []map[string]any
-	for _, post := range posts {
-		postData := map[string]any{
-			"PostID":        post.PostID,
-			"Title":         post.Title,
-			"Content":       post.Content,
-			"CreatedAt":     post.CreatedAt,
-			"UserID":        post.UserID,
-			"Username":      post.Username,
-			"Email":         post.Email,
-			"FormattedDate": post.FormattedDate,
-			"CategoryName":  post.CategoryName,
-			"CommentCount":  post.CommentCount,
-			"LikeCount":     post.LikeCount,
-			"DisLikeCount":  post.DisLikeCount,
-			"LoggedInP":     isLogged,
-		}
-		postsWithStatus = append(postsWithStatus, postData)
-	}
+	
 	if isLogged {
 		data["LoggedIn"] = isLogged
 		data["Username"] = usermid.Username
-		data["posts"] = postsWithStatus
 	} else {
 		data["LoggedIn"] = isLogged
-		data["posts"] = postsWithStatus
 	}
-
-	utils.OpenHtml("index.html", w, data)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(data)
 }
 
 func (p *PostHandler) PostCreation(w http.ResponseWriter, r *http.Request) {
@@ -225,7 +214,7 @@ func (p *PostHandler) PostFilter(w http.ResponseWriter, r *http.Request) {
 	var err error
 	categorie := r.URL.Query().Get("categories")
 
-	isLogged, usermid := p.AuthMidlaware.IsUserLoggedIn(w, r)
+	_, usermid := p.AuthMidlaware.IsUserLoggedIn(w, r)
 	if usermid != nil {
 		filterby = r.URL.Query().Get("filterby")
 	}
@@ -244,25 +233,6 @@ func (p *PostHandler) PostFilter(w http.ResponseWriter, r *http.Request) {
 		}
 
 	}
-	var postsWithStatus []map[string]any
-	for _, post := range posts {
-		postData := map[string]any{
-			"PostID":        post.PostID,
-			"Title":         post.Title,
-			"Content":       post.Content,
-			"CreatedAt":     post.CreatedAt,
-			"UserID":        post.UserID,
-			"Username":      post.Username,
-			"Email":         post.Email,
-			"FormattedDate": post.FormattedDate,
-			"CategoryName":  post.CategoryName,
-			"CommentCount":  post.CommentCount,
-			"LikeCount":     post.LikeCount,
-			"DisLikeCount":  post.DisLikeCount,
-			"LoggedInP":     isLogged,
-		}
-		postsWithStatus = append(postsWithStatus, postData)
-	}
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(postsWithStatus)
+	json.NewEncoder(w).Encode(posts)
 }

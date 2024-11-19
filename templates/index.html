@@ -1,136 +1,231 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="title" content="Forum01">
-    <meta name="robots" content="index, nofollow">
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <meta name="language" content="English">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="title" content="Forum01" />
+    <meta name="robots" content="index, nofollow" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="language" content="English" />
     <title>Forum01</title>
-    <link rel="icon" type="image/png" href="/static/img/forum.png">
-    <link href="/static/css/mystyle.css" rel="stylesheet" type="text/css">
-</head>
+    <link rel="icon" type="image/png" href="/static/img/forum.png" />
+    <link href="/static/css/mystyle.css" rel="stylesheet" type="text/css" />
+  </head>
 
-<body>
+  <body>
     <div class="top-bar">
-        <div class="container">
-            <div class="navbar-menu-left-side239">
-                <ul>
-                    <li><a href="/"><i aria-hidden="true"></i> Home</a></li>
-
-                    {{ if .LoggedIn }}
-                    <li><a href="/create"><i aria-hidden="true"></i> Create A Post</a></li>
-                    <li><a href="/logout"><i aria-hidden="true"></i> Log Out</a></li>
-                    {{ else }}
-                    <li><a href="/login"><i aria-hidden="true"></i> Login Area</a></li>
-                    {{ end }}
-                </ul>
-            </div>
+      <div class="container">
+        <div class="navbar-menu-left-side239">
+          <ul id="navbar-links"></ul>
         </div>
+      </div>
     </div>
     <section class="welcome-part-one">
-        <div class="container">
-            <h2>Welcome to Forum01, Your Hub for Insightful Discussions</h2>
-            <p>Have questions that need answers? Or perhaps an idea worth sharing? Forum01 is the perfect place to
-                exchange knowledge, get inspired, and explore new perspectives.</p>
-            {{ if .LoggedIn }}
-            {{ else }}
-            <div class="button0239-item">
-                <a href="/register">
-                    <button class="join92">Join Now</button>
-                </a>
-            </div>
-            {{ end }}
-        </div>
+      <div class="container">
+        <h2>Welcome to Forum01, Your Hub for Insightful Discussions</h2>
+        <p>
+          Have questions that need answers? Or perhaps an idea worth sharing?
+          Forum01 is the perfect place to exchange knowledge, get inspired, and
+          explore new perspectives.
+        </p>
+        <div id="join-now-button"></div>
+      </div>
     </section>
     <section class="main-content920 container">
-        <div id="main">
-            {{ range .posts }}
-            <div class="question-type2033">
-                <div class="row">
-
-                    <div class="right-description893">
-                        <h3><a href="detailsPost/{{ .PostID }}" target="_blank">{{ .Title }}</a></h3>
-                        <p>{{ .Content }}</p>
-                        <hr>
-                        <div class="ques-icon-info3293">
-                           <span> {{ .Username }} </span>
-                            <span> {{ .FormattedDate }}</span>
-                            <span> {{ .CategoryName }}</span>
-                        </div>
-                        <div class="right-section">
-                            {{ if .LoggedInP }}
-                            <a href="/like/{{ .PostID }}">
-                                <span>👍{{ .LikeCount }}</span>
-                            </a>
-                            <a href="/dislike/{{ .PostID }}">
-            
-                                <span>👎{{ .DisLikeCount }}</span>
-                            </a>
-                            {{ else }}
-                            <span>👍{{ .LikeCount }}</span>
-            
-                            <span>👎{{ .DisLikeCount }}</span>
-                            {{ end }}
-                        </div>
-                    </div>
-                    <div class="ques-type302">
-                        <a href='detailsPost/{{ .PostID }}'>
-                            <button>{{ .CommentCount }} Comments</button>
-                        </a>
-                    </div>
-                </div>
-            </div>
-            {{ end }}
+      <div id="main"></div>
+      <aside class="sidebar97239">
+        <div id="user-info"></div>
+        <div id="filter-posts-section"></div>
+        <div class="categori-part329">
+          <h4>Category</h4>
+          <ul id="category-list" class="cate"></ul>
+          <button class="resetCategorie userlogin320">Reset Category</button>
         </div>
-        <aside class="sidebar97239">
-            {{ if .LoggedIn }}
-            <div class="login-part2389">
-                <h4>Welcome, {{ .Username }}</h4>
-                <a href="/logout"><button type="button" class="userlogin320">Log Out</button></a>
-            </div>
-            {{ else }}
-            {{ end }}
-            {{ if .LoggedIn }}
-            <div class="categori-part329">
-                <h4>Filter Posts</h4>
-                <ul>
-                    <label>
-                        <input type="radio" name="filter" value="created" />
-                        <span class="custom-checkbox">Created Posts</span>
-                    </label>
-                    <label>
-                        <input type="radio" name="filter" value="liked"  />
-                        <span class="custom-checkbox">Liked Posts</span>
-                    </label>
-                    <button class="resetFilter userlogin320">Reset Filter</button>
-                </ul>
-            </div>
-            {{ end }}
-            <div class="categori-part329">
-                <h4>Category</h4>
-                <ul class="cate">
-                    {{ range .categories }}
-                    <label>
-                        <input type="radio" value="{{ .ID }}" name="categorie" />
-                        <span class="custom-checkbox">{{ .Name }}</span>
-                    </label>
-                    <br>
-                    {{ end }}
-                </ul>
-                <button class="resetCategorie userlogin320">Reset Category</button>
-            </div>
-        </aside>
+      </aside>
     </section>
 
     <section class="footer-part">
-        <div class="container">
-        </div>
+      <div class="container"></div>
     </section>
-</body>
-<script src="/static/js/filter.js"></script>
-<script src="/static/js/main.js"></script>
+  </body>
+  <script src="/static/js/filter.js"></script>
+  <script src="/static/js/main.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      fetch("/Posts")
+        .then((response) => response.json())
+        .then((data) => {
+          updateNavbar(data.LoggedIn);
+          updateWelcomeSection(data.LoggedIn);
+          populatePosts(data.LoggedIn, data.posts);
+          populateCategories(data.categories);
+          updateUserSection(data.LoggedIn, data.Username);
+          updateFilterPostsSection(data.LoggedIn);
+        });
+
+      function updateNavbar(loggedIn) {
+        const navbar = document.getElementById("navbar-links");
+        if (loggedIn) {
+          navbar.innerHTML = `
+                    <li><a href="/"><i aria-hidden="true"></i> Home</a></li>
+                    <li><a href="/create"><i aria-hidden="true"></i> Create A Post</a></li>
+                    <li><a href="/logout"><i aria-hidden="true"></i> Log Out</a></li>`;
+        } else {
+          navbar.innerHTML = `
+                    <li><a href="/"><i aria-hidden="true"></i> Home</a></li>
+                    <li><a href="/login"><i aria-hidden="true"></i> Login Area</a></li>`;
+        }
+      }
+
+      function updateWelcomeSection(loggedIn) {
+        const joinNowButton = document.getElementById("join-now-button");
+        if (!loggedIn) {
+          joinNowButton.innerHTML = `
+                    <a href="/register">
+                        <button class="join92">Join Now</button>
+                    </a>`;
+        }
+      }
+
+      function populatePosts(LoggedIn, posts) {
+        const main = document.getElementById("main");
+        main.innerHTML = posts
+          .map(
+            (post) => `
+                <div class="question-type2033">
+                    <div class="row">
+                        <div class="right-description893">
+                            <h3><a href="detailsPost/${
+                              post.PostID
+                            }" target="_blank">${post.Title}</a></h3>
+                            <p>${post.Content}</p>
+                            <hr>
+                            <div class="ques-icon-info3293">
+                                <span>${post.Username}</span>
+                                <span>${post.FormattedDate}</span>
+                                <span>${post.CategoryName}</span>
+                            </div>
+                            <div class="right-section">
+                                ${
+                                  LoggedIn
+                                    ? `
+                                  <button class="button like" onclick="handleLikeDislike('${post.PostID}', 'like', event)">
+                                    <span id='${post.PostID}-like' >👍${post.LikeCount}</span>
+                                </button>
+                                <button class="button like" onclick="handleLikeDislike('${post.PostID}','dislike', event)">
+                                    <span id='${post.PostID}-dislike' >👍${post.DisLikeCount}</span>
+                                </button>
+                                `
+                                    : `
+                                <span>👍${post.LikeCount}</span>
+                                <span>👎${post.DisLikeCount}</span>
+                                `
+                                }
+                            </div>
+                        </div>
+                        <div class="ques-type302">
+                            <a href="detailsPost/${post.PostID}">
+                                <button>${post.CommentCount} Comments</button>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            `
+          )
+          .join("");
+      }
+
+      function populateCategories(categories) {
+        const categoryList = document.getElementById("category-list");
+        categoryList.innerHTML = categories
+          .map(
+            (category) => `
+                <label>
+                    <input type="radio" value="${category.ID}" name="categorie" />
+                    <span class="custom-checkbox">${category.Name}</span>
+                </label>
+                <br>
+            `
+          )
+          .join("");
+      }
+
+      function updateUserSection(loggedIn, username) {
+        const userInfo = document.getElementById("user-info");
+        if (loggedIn) {
+          userInfo.innerHTML = `
+                    <div class="login-part2389">
+                        <h4>Welcome, ${username}</h4>
+                        <a href="/logout"><button type="button" class="userlogin320">Log Out</button></a>
+                    </div>`;
+        }
+      }
+      function updateFilterPostsSection(loggedIn) {
+        const filterPostsSection = document.getElementById(
+          "filter-posts-section"
+        );
+        if (loggedIn) {
+          filterPostsSection.innerHTML = `
+                    <div class="categori-part329">
+                        <h4>Filter Posts</h4>
+                        <ul>
+                            <label>
+                                <input type="radio" name="filter" value="created" />
+                                <span class="custom-checkbox">Created Posts</span>
+                            </label>
+                            <label>
+                                <input type="radio" name="filter" value="liked" />
+                                <span class="custom-checkbox">Liked Posts</span>
+                            </label>
+                            <button class="resetFilter userlogin320">Reset Filter</button>
+                        </ul>
+                    </div>
+                `;
+        } else {
+          filterPostsSection.innerHTML = "";
+        }
+      }
+    });
+
+    function handleLikeDislike(postID, action, event) {
+      const url = `/${action}/${postID}`;
+
+      fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(`Failed to ${action} the post.`);
+          }
+          return response.json();
+        })
+        .then((data) => {
+          console.log(data);
+
+          updatePostLikeDislikeCount(
+            data.postID,
+            data.likeCount,
+            data.dislikeCount
+          );
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        });
+    }
+
+    function updatePostLikeDislikeCount(postID, likeCount, dislikeCount) {
+      const likeSpan = document.querySelector(`#${CSS.escape(postID)}-like`);
+      const dislikeSpan = document.querySelector(`#${CSS.escape(postID)}-dislike`);
+      dislikeCount === undefined ||  dislikeCount === 0
+        ? (dislikeCount = 0)
+        : (dislikeCount = dislikeCount);
+      // likeCount === undefined ? (likeCount = 0) : (likeCount = likeCount);
+      if (likeSpan) likeSpan.textContent = `👍${likeCount}`;
+      if (dislikeSpan) dislikeSpan.textContent = `👎${dislikeCount}`;
+    }
+  </script>
 </html>

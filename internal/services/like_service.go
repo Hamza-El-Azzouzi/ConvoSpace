@@ -10,6 +10,14 @@ import (
 type LikeService struct {
 	LikeRepo *repositories.LikeReposetorie
 }
+func (l *LikeService) GetLikes(postID string,) (any,error) {
+	data ,err :=  l.LikeRepo.GetLikes(postID)
+	if err != nil{
+		return nil , err
+
+	}
+	return data, nil
+}
 
 func (l *LikeService) Create(userID uuid.UUID, postID, commentID, reactType string, isComment bool) error {
 	likeID := uuid.Must(uuid.NewV4())

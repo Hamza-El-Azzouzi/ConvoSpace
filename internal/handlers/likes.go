@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"encoding/json"
 	"net/http"
 	"strings"
 
@@ -16,14 +17,10 @@ type LikeHandler struct {
 }
 
 func (l *LikeHandler) LikePost(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
+	if r.Method != http.MethodPost {
 		utils.Error(w, http.StatusMethodNotAllowed)
 	}
-	referer := r.Header.Get("Referer")
 
-	if referer == "" {
-		referer = "/"
-	}
 	pathParts := strings.Split(r.URL.Path, "/")
 
 	if len(pathParts) != 3 {
@@ -40,14 +37,20 @@ func (l *LikeHandler) LikePost(w http.ResponseWriter, r *http.Request) {
 			utils.Error(w, http.StatusInternalServerError)
 			return
 		}
-		http.Redirect(w, r, referer, http.StatusSeeOther)
+		data, err := l.LikeService.GetLikes(postID)
+		if err != nil {
+			utils.Error(w, http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(data)
 	} else {
 		utils.Error(w, http.StatusForbidden)
 	}
 }
 
 func (l *LikeHandler) DisLikePost(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
+	if r.Method != http.MethodPost {
 		utils.Error(w, http.StatusMethodNotAllowed)
 	}
 	referer := r.Header.Get("Referer")
@@ -70,7 +73,13 @@ func (l *LikeHandler) DisLikePost(w http.ResponseWriter, r *http.Request) {
 			utils.Error(w, http.StatusInternalServerError)
 			return
 		}
-		http.Redirect(w, r, referer, http.StatusSeeOther)
+		data, err := l.LikeService.GetLikes(postID)
+		if err != nil {
+			utils.Error(w, http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(data)
 	} else {
 		utils.Error(w, http.StatusForbidden)
 	}

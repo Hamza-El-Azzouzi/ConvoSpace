@@ -57,3 +57,25 @@ func (l *LikeReposetorie) CreateLike(like *models.Like, liked string) error {
 	}
 	return nil
 }
+
+func (l *LikeReposetorie) GetLikes(postID string) (any, error) {
+	var like int
+	var dislike int
+	errLike := l.DB.QueryRow(
+		"SELECT COUNT(*) FROM likes WHERE post_id = ? AND react_type = 'like'",
+		postID,
+	).Scan(&like)
+	errDislike := l.DB.QueryRow(
+		"SELECT COUNT(*) FROM likes WHERE post_id = ? AND react_type = 'dislike'",
+		postID,
+	).Scan(&dislike)
+	if errDislike != nil || errLike != nil {
+		return nil, fmt.Errorf("error : %v , %v ",errDislike,errLike)
+	}
+	data := map[string]any{
+		"postID": postID,
+		"likeCount":    like,
+		"dislikeCount": dislike,
+	}
+	return data, nil
+}
