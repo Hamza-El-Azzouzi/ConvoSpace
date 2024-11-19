@@ -19,9 +19,10 @@
       <div class="modal-body modal-body-step-1 is-showing">
         <div class="title">Sign Up</div>
         <div class="description">Hello there, Register Form</div>
-        <span class="errorMsg">{{ .alreadyExist }}</span>
+        <span class="errorMsg">{{ .alreadyExistUsername }}</span>
+        <span class="errorMsg">{{ .alreadyExistEmail }}</span>
         <p class="errorMsg">{{ .empty }}</p>
-        <form action="/register" method="post">
+        <form action="/register" method="post" onsubmit="validateRegistrationForm(event)">
           <input type="text" name="Username"  autocomplete="on" placeholder="Username*" />
           <input type="email" name="email"  autocomplete="on" placeholder="E-Mail*" />
           <span class="errorMsg">{{ .email }}</span>
@@ -40,4 +41,5 @@
     </div>
   </div>
 </body>
+<script src="/static/js/login_registration_validation.js"></script>
 </html>

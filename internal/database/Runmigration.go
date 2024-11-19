@@ -11,7 +11,7 @@ import (
 
 func RunMigrations(db *sql.DB) error {
 	allExist := true
-	tables := []string{"users", "posts", "comments", "categories", "post_categories", "likes","sessions"}
+	tables := []string{"users", "posts", "comments", "categories", "post_categories", "likes", "sessions"}
 	for _, table := range tables {
 		if !tableExists(db, table) {
 			allExist = false
@@ -46,7 +46,6 @@ func RunMigrations(db *sql.DB) error {
 }
 
 func tableExists(db *sql.DB, tableName string) bool {
-
 	query := `SELECT name FROM sqlite_master WHERE type='table' AND name=?;`
 	var name string
 	err := db.QueryRow(query, tableName).Scan(&name)
@@ -54,7 +53,6 @@ func tableExists(db *sql.DB, tableName string) bool {
 }
 
 func InsertDefaultCategories(db *sql.DB) error {
-	
 	categories := []string{
 		"Announcements",
 		"General Discussion",

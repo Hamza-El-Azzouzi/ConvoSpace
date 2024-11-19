@@ -61,12 +61,14 @@ func (h *AuthHandler) LoginHandle(w http.ResponseWriter, r *http.Request) {
 
 		if email == "" || password == "" {
 			errFrom["password"] = "Fields can't be Empty"
-			utils.OpenHtml("login.html", w, errFrom)
-			return
 		}
 
 		if !h.AuthMidlaware.IsValidEmail(email) {
 			errFrom["email"] = "Invalid email"
+		}
+		
+		if len(errFrom) > 0 {
+			w.WriteHeader(http.StatusBadRequest)
 			utils.OpenHtml("login.html", w, errFrom)
 			return
 		}
@@ -126,17 +128,19 @@ func (h *AuthHandler) RegisterHandle(w http.ResponseWriter, r *http.Request) {
 			errFrom["password"] = "Invalid Password<br>At least 8 characters<br>Contains at least one letter<br>Contains at least one digit<br>Contains at least one special characte"
 		}
 		if userName == "" || email == "" || password == "" {
+			
 			errFrom["empty"] = "The Fields can't be Empty"
 		}
 		if len(errFrom) > 0 {
+			w.WriteHeader(http.StatusBadRequest)
 			utils.OpenHtml("signup.html", w, errFrom)
 			return
 		}
 		registrError := h.AuthService.Register(userName, email, password)
 		if registrError.Error() == "email already exist" {
-			errFrom["alreadyExist"] = "The Email Already Exist"
+			errFrom["alreadyExistEmail"] = "The Email Already Exist"
 		} else {
-			errFrom["alreadyExist"] = "The Usernames Already Exist"
+			errFrom["alreadyExistUsername"] = "The Usernames Already Exist"
 		}
 		if len(errFrom) > 0 {
 			utils.OpenHtml("signup.html", w, errFrom)
