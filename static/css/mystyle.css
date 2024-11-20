@@ -189,6 +189,7 @@ body {
   padding: 12px;
   border-radius: 4px;
   cursor: pointer;
+  margin-top: 10px;
   transition: background 0.3s ease;
 }
 
@@ -342,7 +343,7 @@ input[type="checkbox"]:checked::before {
   margin-right: 10px;
 }
 
-.post-footer .right-section button {
+.post-footer {
   background: none;
   border: none;
   color: #2c3e50;
@@ -393,7 +394,7 @@ input[type="checkbox"]:checked::before {
   margin-top: 10px;
 }
 
-.comment-footer button {
+.comment-footer {
   background: none;
   border: none;
   color: #666;
@@ -657,19 +658,16 @@ input[type="password"]:focus {
 }
 .like {
   padding: 4px 10px;
-  font-size: 14px;
   margin-top: 20px;
-  text-decoration: none;
-  border: none;
 }
 
 .button:hover {
   background-color: #005bb5;
 }
 
-.button + .button {
+/* .button + .button {
   margin-top: 10px;
-}
+} */
 
 a {
   text-decoration: none;
@@ -711,7 +709,7 @@ a {
   text-decoration: none;
 }
 
-.ques-type302 button {
+.ques-type302 .comment-button {
   padding: 8px 16px;
   background-color: #007bff;
   color: white;

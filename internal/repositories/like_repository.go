@@ -73,7 +73,7 @@ func (l *LikeReposetorie) GetLikesPost(postID string) (any, error) {
 		return nil, fmt.Errorf("error : %v , %v ",errDislike,errLike)
 	}
 	data := map[string]any{
-		"postID": postID,
+		"id": postID,
 		"likeCount":    like,
 		"dislikeCount": dislike,
 	}
@@ -94,7 +94,7 @@ func (l *LikeReposetorie) GetLikesComment(commentID string) (any, error) {
 		return nil, fmt.Errorf("error : %v , %v ",errDislike,errLike)
 	}
 	data := map[string]any{
-		"CommentID": commentID,
+		"id": commentID,
 		"likeCount":    like,
 		"dislikeCount": dislike,
 	}

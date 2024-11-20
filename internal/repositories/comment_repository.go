@@ -2,7 +2,6 @@ package repositories
 
 import (
 	"database/sql"
-	"fmt"
 
 	"forum/internal/models"
 )
@@ -19,18 +18,6 @@ func (c *CommentRepositorie) Create(comment *models.Comment) error {
 }
 
 func (c *CommentRepositorie) GetCommentByPost(postID string) ([]models.CommentDetails, error) {
-
-	// type CommentDetails struct {
-	// 	CommentID           uuid.UUID 
-	// 	PostIDcomment       uuid.UUID 
-	// 	Content             string    
-	// 	CreatedAt           time.Time 
-	// 	UserID              uuid.UUID 
-	// 	Username            string        
-	// 	FormattedDate       string    
-	// 	LikeCountComment    int64     
-	// 	DisLikeCountComment int64     
-	// }
 	var comments []models.CommentDetails
 	rows, err := c.DB.Query(`SELECT 
 		comments.id AS comment_id,
@@ -53,7 +40,6 @@ func (c *CommentRepositorie) GetCommentByPost(postID string) ([]models.CommentDe
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println(rows)
 	for rows.Next() {
 		var comment models.CommentDetails
 		err = rows.Scan(

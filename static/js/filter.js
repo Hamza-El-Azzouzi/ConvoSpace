@@ -1,14 +1,12 @@
 const btnResetFilter = document.querySelector(".resetFilter")
+console.log(btnResetFilter)
 const btnResetCategorie = document.querySelector(".resetCategorie")
-
-if(btnResetFilter){
-        btnResetFilter.addEventListener("click", () => {
-        const filterby = document.querySelector('input[name="filter"]:checked');
-        filterby.checked = false
-        handleFilterChange()
-
-    })
+function Resetfilter(){
+    const filterby = document.querySelector('input[name="filter"]:checked');
+    filterby.checked = false
+    handleFilterChange()
 }
+
 
 
 btnResetCategorie.addEventListener("click", () => {
@@ -114,10 +112,8 @@ const updateData = (data) => {
         col2.classList.add("col-md-2");
         col2.innerHTML = `
             <div class="ques-type302">
-                <a href='detailsPost/${post.PostID}'>
-                    <button type="button" class="q-type238">
-                        <i class="fa fa-comment" aria-hidden="true"> ${post.CommentCount} Comments</i>
-                    </button>
+                 <a href="detailsPost/${post.PostID}">
+                    <button class="comment-button">${post.CommentCount} Comments</button>
                 </a>
             </div>`;
     

@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"strings"
 
@@ -175,8 +174,7 @@ func (p *PostHandler) CommentSaver(w http.ResponseWriter, r *http.Request) {
 
 	err := json.NewDecoder(r.Body).Decode(&commentData)
 	if err != nil {
-		http.Error(w, "Invalid JSON payload", http.StatusBadRequest)
-		fmt.Println("Error decoding JSON:", err)
+		utils.Error(w, http.StatusBadRequest)
 		return
 	}
 

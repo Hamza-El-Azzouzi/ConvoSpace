@@ -1,245 +1,193 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="/static/css/mystyle.css" rel="stylesheet" type="text/css">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="/static/css/mystyle.css" rel="stylesheet" type="text/css" />
     <title>Forum01 - Post Details</title>
-    <link rel="icon" type="image/png" href="/static/img/forum.png">
+    <link rel="icon" type="image/png" href="/static/img/forum.png" />
+  </head>
 
-</head>
-
-<body>
-     <div class="top-bar">
-        <div class="container">
-            <div class="navbar-menu-left-side239">
-                <ul>
-                    <li><a href="/"><i class="fa fa-home" aria-hidden="true"></i> Home</a></li>
-                    {{ if .LoggedIn }}
-                    <li><a href="/create"><i class="fa fa-pencil" aria-hidden="true"></i> Create A Post</a></li>
-                    <li><a href="/logout"><i class="fa fa-user" aria-hidden="true"></i> Log Out</a></li>
-                    {{ else }}
-                    <li><a href="/login"><i class="fa fa-user" aria-hidden="true"></i> Login Area</a></li>
-                    {{ end }}
-                </ul>
-            </div>
+  <body>
+    <div class="top-bar">
+      <div class="container">
+        <div class="navbar-menu-left-side239">
+          <ul>
+            <li>
+              <a href="/"><i class="fa fa-home" aria-hidden="true"></i> Home</a>
+            </li>
+            {{ if .LoggedIn }}
+            <li>
+              <a href="/create"
+                ><i class="fa fa-pencil" aria-hidden="true"></i> Create A
+                Post</a
+              >
+            </li>
+            <li>
+              <a href="/logout"
+                ><i class="fa fa-user" aria-hidden="true"></i> Log Out</a
+              >
+            </li>
+            {{ else }}
+            <li>
+              <a href="/login"
+                ><i class="fa fa-user" aria-hidden="true"></i> Login Area</a
+              >
+            </li>
+            {{ end }}
+          </ul>
         </div>
+      </div>
     </div>
     <section class="main-content">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-9">
-                    <div class="post-details">
-                        <div class="details-header">
-                            <div class="row">
-                                <div class="col-md-8">
-                                    <h3>{{ .posts.Title }}</h3>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="post-details-content">
-                            <p>{{ .posts.Content }}</p>
-                            <div class="post-footer">
-                                <div class="left-section">
-                                    <i class="fa fa-user"> {{ .posts.Username }} </i>
-                                    <i class="fa fa-clock-o"> {{ .posts.FormattedDate }} </i>
-                                    <i class="fa fa-hashtag"> {{ .posts.CategoryNames }} </i>
-                                </div>
-                                <div class="right-section">
-                                    {{ if .LoggedIn }}
-                                    <a href="/like/{{ .posts.PostID }}">
-                                        <button class="btn-like" title="Like"></i></button>
-                                        <span>👍{{ .posts.LikeCount }}</span>
-                                    </a>
-                                    <a href="/dislike/{{ .posts.PostID }}">
-                                        <button class="btn-dislike" title="Dislike"></button>
-                                        <span>👎{{ .posts.DisLikeCount }}</span>
-                                    </a>
-                                    {{ else }}
-                                    <button class="btn-like" title="Like"></i></button>
-                                    <span>👍{{ .posts.LikeCount }}</span>
-                                    <button class="btn-dislike" title="Dislike"></button>
-                                    <span>👎{{ .posts.DisLikeCount }}</span>
-                                    {{ end }}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <hr>
-                    <div class="comment-section">
-                        {{ if .LoggedIn }}
-                        {{ if not .posts.Comments }}
-                        <div class="no-comments">
-                            <p>No comments yet. Be the first to comment!</p>
-                        </div>
-                        {{ else }}
-                        {{ range .posts.Comments }}
-                        <div class="comment">
-                            <div class="comment-header">
-                                <h6>{{ .Username }}</h6>
-                                <i class="fa fa-clock-o">{{ .FormattedDate }}</i>
-                            </div>
-                            <div class="comment-body">{{ .Content }}</div>
-                            <div class="comment-footer">
-                                <button class="button like" onclick="handleLikeDislike('{{ .CommentID }}', 'likeComment', event)">
-                                    <span id='{{ .CommentID }}-likecomment' >👍{{ .LikeCountComment }}</span>
-                                </button>
-                                 <button class="button like" onclick="handleLikeDislike('{{ .CommentID }}', 'dislikeComment', event)">
-                                    <span id='{{ .CommentID }}-dislikecomment' >👎{{.DisLikeCountComment}}</span>
-                                </button>
-                            </div>
-                        </div>
-                        {{ end }}
-                        {{ end }}
-                        {{ else }}
-                        {{ if not .posts.Comments }}
-                        <div class="no-comments">
-                            <p>No comments yet. Be the first to comment!</p>
-                        </div>
-                        {{ else }}
-                        {{ range .posts.Comments }}
-                        <div class="comment">
-                            <div class="comment-header">
-                                <h6>{{ .Username }}</h6>
-                                <i class="fa fa-clock-o">{{ .FormattedDate }}</i>
-                            </div>
-                            <div class="comment-body">{{ .Content }}</div>
-                            <div class="comment-footer">
-                                <button class="btn-like" title="Like"></button>
-                                <span>👍{{ .LikeCountComment }}</span>
-                                <button class="btn-dislike" title="Dislike"></button>
-                                <span>👎{{ .DisLikeCountComment }}</span>
-                            </div>
-                        </div>
-                        {{ end }}
-                        {{ end }}
-                        {{ end }}
-                    </div>
-
-                   <hr>
-                    <div class="comment-form">
-                        <h3>Leave A Reply</h3>
-                        <form method="post" id="commentForm" onsubmit="SubmitComment('{{.posts.PostID}}',event)">
-                            <textarea name="textarea" required placeholder="Enter Your Post" class="comment-textarea" id="textarea"></textarea>
-                            <div class="error-message" id="textarea-error"></div>
-                            {{ if .LoggedIn }}
-                            <button type="submit" class="btn-publish">Publish your Comment</button>
-                            {{ else }}
-                            <button type="button" onclick="clickToLogin(event)" class="btn-publish">You should Be Logged in</button>
-                            {{ end }}
-                        </form>
-                    </div>
+      <div class="container">
+        <div class="row">
+          <div class="col-md-9">
+            <div class="post-details">
+              <div class="details-header">
+                <div class="row">
+                  <div class="col-md-8">
+                    <h3>{{ .posts.Title }}</h3>
+                  </div>
                 </div>
+              </div>
+              <div class="post-details-content">
+                <p>{{ .posts.Content }}</p>
+                <hr>
+                <div class="post-footer">
+                  <div class="left-section">
+                    <i class="fa fa-user"> {{ .posts.Username }} </i>
+                    <i class="fa fa-clock-o"> {{ .posts.FormattedDate }} </i>
+                    <i class="fa fa-hashtag"> {{ .posts.CategoryNames }} </i>
+                  </div>
+                  <div class="right-section">
+                    {{ if .LoggedIn }}
+                    <button
+                      class="button like"
+                      onclick="handleLikeDislike('{{ .posts.PostID }}', 'like', event)"
+                    >
+                      <span id="{{ .posts.PostID }}-like"
+                        >👍{{.posts.LikeCount}}</span
+                      >
+                    </button>
+                    <button
+                      class="button like"
+                      onclick="handleLikeDislike('{{ .posts.PostID }}','dislike', event)"
+                    >
+                      <span id="{{ .posts.PostID }}-dislike"
+                        >👎{{ .posts.DisLikeCount }}</span
+                      >
+                    </button>
+                    {{ else }}
+                    <button class="button like">
+                      <span id="{{ .posts.PostID }}-like"
+                        >👍{{.post.LikeCount}}</span
+                      >
+                    </button>
+                    <button class="button like">
+                      <span id="{{ .posts.PostID }}-dislike"
+                        >👎{{ .post.DisLikeCount }}</span
+                      >
+                    </button>
+                    {{ end }}
+                  </div>
+                </div>
+              </div>
             </div>
+            <hr />
+            <div class="comment-section">
+              {{ if .LoggedIn }} {{ if not .posts.Comments }}
+              <div class="no-comments">
+                <p>No comments yet. Be the first to comment!</p>
+              </div>
+              {{ else }} {{ range .posts.Comments }}
+              <div class="comment">
+                <div class="comment-header">
+                  <h6>{{ .Username }}</h6>
+                  <i class="fa fa-clock-o">{{ .FormattedDate }}</i>
+                </div>
+                <div class="comment-body">{{ .Content }}</div>
+                <div class="comment-footer">
+                  <button
+                    class="button like"
+                    onclick="handleLikeDislike('{{ .CommentID }}', 'likeComment', event)"
+                  >
+                    <span id="{{ .CommentID }}-likecomment"
+                      >👍{{ .LikeCountComment }}</span
+                    >
+                  </button>
+                  <button
+                    class="button like"
+                    onclick="handleLikeDislike('{{ .CommentID }}', 'dislikeComment', event)"
+                  >
+                    <span id="{{ .CommentID }}-dislikecomment"
+                      >👎{{.DisLikeCountComment}}</span
+                    >
+                  </button>
+                </div>
+              </div>
+              {{ end }} {{ end }} {{ else }} {{ if not .posts.Comments }}
+              <div class="no-comments">
+                <p>No comments yet. Be the first to comment!</p>
+              </div>
+              {{ else }} {{ range .posts.Comments }}
+              <div class="comment">
+                <div class="comment-header">
+                  <h6>{{ .Username }}</h6>
+                  <i class="fa fa-clock-o">{{ .FormattedDate }}</i>
+                </div>
+                <div class="comment-body">{{ .Content }}</div>
+                <div class="comment-footer">
+                  <button class="btn-like" title="Like"></button>
+                  <span>👍{{ .LikeCountComment }}</span>
+                  <button class="btn-dislike" title="Dislike"></button>
+                  <span>👎{{ .DisLikeCountComment }}</span>
+                </div>
+              </div>
+              {{ end }} {{ end }} {{ end }}
+            </div>
+
+            <hr />
+            <div class="comment-form">
+              <h3>Leave A Reply</h3>
+              <form
+                method="post"
+                id="commentForm"
+                onsubmit="SubmitComment(event)"
+              >
+                <textarea
+                  name="textarea"
+                  required
+                  placeholder="Enter Your Post"
+                  class="comment-textarea"
+                  id="textarea"
+                ></textarea>
+                <div class="error-message" id="textarea-error"></div>
+                {{ if .LoggedIn }}
+                <button type="submit" class="btn-publish">
+                  Publish your Comment
+                </button>
+                {{ else }}
+                <button
+                  type="button"
+                  onclick="clickToLogin(event)"
+                  class="btn-publish"
+                >
+                  You should Be Logged in
+                </button>
+                {{ end }}
+              </form>
+            </div>
+          </div>
         </div>
+      </div>
     </section>
 
     <section class="footer-part">
-        <div class="container">
-        </div>
+      <div class="container"></div>
     </section>
-
-
-</body>
-<script src="/static/js/comment_validation.js"></script>
-<script src="/static/js/main.js"></script>
-<script>
-    function SubmitComment(postID, event){
-        event.preventDefault()
-        const textarea = document.querySelector("#textarea");
-        const formData = textarea.value;
-        console.log(formData)
-        fetch("/sendcomment", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ content: formData, postID : `${postID}`, })
-    })
-        .then((response) => {
-            if (!response.ok) {
-                throw new Error(`Failed to submit the comment.`);
-            }
-            return response.json();
-        })
-        .then((comments) => {
-
-            UpdateComment(comments);
-            textarea.value = ""
-        })
-        .catch((error) => {
-            console.error("Error:", error);
-        });
-    }
-    function UpdateComment(comments) {
-    const commentSection = document.querySelector(".comment-section");
-    const noComments = document.querySelector(".no-comments");
-
-    commentSection.innerHTML = "";
-
-    if (comments.length === 0) {
-        commentSection.innerHTML = `
-            <div class="no-comments">
-                <p>No comments yet. Be the first to comment!</p>
-            </div>`;
-        return;
-    }
-
-    comments.forEach((comment) => {
-        const commentElement = document.createElement("div");
-        commentElement.className = "comment";
-        commentElement.innerHTML = `
-            <div class="comment-header">
-                <h6>${comment.Username || "Anonymous"}</h6>
-                <i class="fa fa-clock-o">${comment.FormattedDate || new Date(comment.CreatedAt).toLocaleString()}</i>
-            </div>
-            <div class="comment-body">${comment.Content}</div>
-            <div class="comment-footer">
-                <button class="button like" onclick="handleLikeDislike('${comment.CommentID}', 'like', event)">
-                    <span id='${comment.CommentID}-like' >👍${comment.LikeCountComment}</span>
-                </button>
-                 <button class="button like" onclick="handleLikeDislike('${comment.CommentID}', 'dislike', event)">
-                    <span id='${comment.CommentID}-dislike' >👍${comment.DisLikeCountComment}</span>
-                </button>
-            </div>
-        `;
-        commentSection.appendChild(commentElement);
-    });
-}
-function handleLikeDislike(postID, action, event) {
-      const url = `/${action}/${postID}`;
-
-      fetch(url, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      })
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error(`Failed to ${action} the post.`);
-          }
-          return response.json();
-        })
-        .then((data) => {
-          updatePostLikeDislikeCount(
-            data.CommentID,
-            data.likeCount,
-            data.dislikeCount
-          );
-        })
-        .catch((error) => {
-          console.error("Error:", error);
-        });
-    }
-
-    function updatePostLikeDislikeCount(CommentID, likeCount, dislikeCount) {
-      const likeSpan = document.querySelector(`#${CSS.escape(CommentID)}-likecomment`);
-      const dislikeSpan = document.querySelector(`#${CSS.escape(CommentID)}-dislikecomment`);
-      if (likeSpan) likeSpan.textContent = `👍${likeCount}`;
-      if (dislikeSpan) dislikeSpan.textContent = `👎${dislikeCount}`;
-    }
-</script>
+  </body>
+  <script src="/static/js/comment_validation.js"></script>
+  <script src="/static/js/main.js"></script>
 </html>
