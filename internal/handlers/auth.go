@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"net/http"
+	"strings"
 	"time"
 
 	"forum/internal/middleware"
@@ -59,14 +60,18 @@ func (h *AuthHandler) LoginHandle(w http.ResponseWriter, r *http.Request) {
 		email := r.Form.Get("email")
 		password := r.Form.Get("password")
 
-		if email == "" || password == "" {
-			errFrom["password"] = "Fields can't be Empty"
+		if email == "" {
+			errFrom["email"] = "Email is required."
+		} else {
+			if !h.AuthMidlaware.IsValidEmail(email) {
+				errFrom["email"] = "Invalid email!"
+			}
 		}
 
-		if !h.AuthMidlaware.IsValidEmail(email) {
-			errFrom["email"] = "Invalid email"
+		if password == "" {
+			errFrom["password"] = "Password is required."
 		}
-		
+
 		if len(errFrom) > 0 {
 			w.WriteHeader(http.StatusBadRequest)
 			utils.OpenHtml("login.html", w, errFrom)
@@ -75,7 +80,11 @@ func (h *AuthHandler) LoginHandle(w http.ResponseWriter, r *http.Request) {
 		user, loginError := h.AuthService.Login(email, password)
 
 		if user == nil || loginError != nil {
-			errFrom["password"] = "Invalid email or password"
+			if strings.Contains(loginError.Error(), "email") {
+				errFrom["email"] = loginError.Error() + "!"
+			} else {
+				errFrom["password"] = "Wrong password!"
+			}
 			utils.OpenHtml("login.html", w, errFrom)
 			return
 		}
@@ -118,18 +127,29 @@ func (h *AuthHandler) RegisterHandle(w http.ResponseWriter, r *http.Request) {
 		password := r.Form.Get("password")
 		confirmPassword := r.Form.Get("Confirm-Password")
 
-		if password != confirmPassword {
-			errFrom["conPassowrd"] = "Passwords do not match!"
+		if userName == "" {
+			errFrom["username"] = "Username is required."
 		}
-		if !h.AuthMidlaware.IsValidEmail(email) {
-			errFrom["email"] = "Invalid email"
+		if email == "" {
+			errFrom["email"] = "Email is required."
+		} else {
+			if !h.AuthMidlaware.IsValidEmail(email) {
+				errFrom["email"] = "Invalid email!"
+			}
 		}
-		if !h.AuthMidlaware.IsValidPassword(password) {
-			errFrom["password"] = "Invalid Password<br>At least 8 characters<br>Contains at least one letter<br>Contains at least one digit<br>Contains at least one special characte"
+		if password == "" {
+			errFrom["password"] = "Password is required."
+		} else {
+			if !h.AuthMidlaware.IsValidPassword(password) {
+				errFrom["password"] = "Invalid Password<br>At least 8 characters<br>Contains at least one letter<br>Contains at least one digit<br>Contains at least one special characte"
+			}
 		}
-		if userName == "" || email == "" || password == "" {
-			
-			errFrom["empty"] = "The Fields can't be Empty"
+		if confirmPassword == "" {
+			errFrom["conPassowrd"] = "Confirm password is required."
+		} else {
+			if password != confirmPassword {
+				errFrom["conPassowrd"] = "Passwords do not match!"
+			}
 		}
 		if len(errFrom) > 0 {
 			w.WriteHeader(http.StatusBadRequest)
@@ -138,16 +158,15 @@ func (h *AuthHandler) RegisterHandle(w http.ResponseWriter, r *http.Request) {
 		}
 		registrError := h.AuthService.Register(userName, email, password)
 		if registrError.Error() == "email already exist" {
-			errFrom["alreadyExistEmail"] = "The Email Already Exist"
+			errFrom["email"] = "The Email Already Exist"
 		} else {
-			errFrom["alreadyExistUsername"] = "The Usernames Already Exist"
+			errFrom["username"] = "The Usernames Already Exist"
 		}
 		if len(errFrom) > 0 {
 			utils.OpenHtml("signup.html", w, errFrom)
 			return
 		}
 		http.Redirect(w, r, "/", http.StatusSeeOther)
-		// h.LoginHandle(w, r)
 	} else {
 		utils.Error(w, http.StatusMethodNotAllowed)
 	}

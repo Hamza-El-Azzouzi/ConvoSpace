@@ -138,7 +138,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     const btnResetFilter = document.querySelector(".resetFilter")
-    console.log(btnResetFilter)
 
 if(btnResetFilter){
         btnResetFilter.addEventListener("click", () => {

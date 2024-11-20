@@ -1,5 +1,4 @@
 const btnResetFilter = document.querySelector(".resetFilter")
-console.log(btnResetFilter)
 const btnResetCategorie = document.querySelector(".resetCategorie")
 function Resetfilter(){
     const filterby = document.querySelector('input[name="filter"]:checked');

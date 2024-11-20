@@ -58,43 +58,22 @@ func (l *LikeReposetorie) CreateLike(like *models.Like, liked string) error {
 	return nil
 }
 
-func (l *LikeReposetorie) GetLikesPost(postID string) (any, error) {
+func (l *LikeReposetorie) GetLikes(Id, liked string) (any, error) {
 	var like int
 	var dislike int
 	errLike := l.DB.QueryRow(
-		"SELECT COUNT(*) FROM likes WHERE post_id = ? AND react_type = 'like'",
-		postID,
+		"SELECT COUNT(*) FROM likes WHERE "+liked+"_id = ? AND react_type = 'like'",
+		Id,
 	).Scan(&like)
 	errDislike := l.DB.QueryRow(
-		"SELECT COUNT(*) FROM likes WHERE post_id = ? AND react_type = 'dislike'",
-		postID,
+		"SELECT COUNT(*) FROM likes WHERE "+liked+"_id = ? AND react_type = 'dislike'",
+		Id,
 	).Scan(&dislike)
 	if errDislike != nil || errLike != nil {
-		return nil, fmt.Errorf("error : %v , %v ",errDislike,errLike)
+		return nil, fmt.Errorf("error : %v , %v ", errDislike, errLike)
 	}
 	data := map[string]any{
-		"id": postID,
-		"likeCount":    like,
-		"dislikeCount": dislike,
-	}
-	return data, nil
-}
-func (l *LikeReposetorie) GetLikesComment(commentID string) (any, error) {
-	var like int
-	var dislike int
-	errLike := l.DB.QueryRow(
-		"SELECT COUNT(*) FROM likes WHERE comment_id = ? AND react_type = 'like'",
-		commentID,
-	).Scan(&like)
-	errDislike := l.DB.QueryRow(
-		"SELECT COUNT(*) FROM likes WHERE comment_id = ? AND react_type = 'dislike'",
-		commentID,
-	).Scan(&dislike)
-	if errDislike != nil || errLike != nil {
-		return nil, fmt.Errorf("error : %v , %v ",errDislike,errLike)
-	}
-	data := map[string]any{
-		"id": commentID,
+		"id":           Id,
 		"likeCount":    like,
 		"dislikeCount": dislike,
 	}

@@ -29,7 +29,7 @@ func (repo *UserRepository) FindByEmail(email string) (*models.User, error) {
 	err := row.Scan(&user.ID, &user.Username, &user.Email, &user.PasswordHash)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return nil, nil
+			return nil, fmt.Errorf("email don't exist")
 		}
 		return nil, err
 	}
@@ -84,7 +84,7 @@ func (r *UserRepository) CheckUserAlreadyLogged(UserID uuid.UUID) ([]models.User
 	}
 	for rows.Next() {
 		var userSession models.UserSession
-		err = rows.Scan(&userSession.ID, &userSession.USerID);
+		err = rows.Scan(&userSession.ID, &userSession.USerID)
 		if err != nil {
 			return nil, fmt.Errorf("error scanning sessions with user info filter: %v", err)
 		}

@@ -17,126 +17,49 @@ type LikeHandler struct {
 }
 
 func (l *LikeHandler) LikePost(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		utils.Error(w, http.StatusMethodNotAllowed)
-		return
-	}
-
-	pathParts := strings.Split(r.URL.Path, "/")
-
-	if len(pathParts) != 3 {
-		utils.Error(w, http.StatusNotFound)
-		return
-	}
-	postID := pathParts[2]
-
-	isLogged, usermid := l.AuthMidlaware.IsUserLoggedIn(w, r)
-
-	if isLogged {
-		err := l.LikeService.Create(usermid.ID, postID, "", "like", false)
-		if err != nil {
-			utils.Error(w, http.StatusInternalServerError)
-			return
-		}
-		data, err := l.LikeService.GetLikesPost(postID)
-		if err != nil {
-			utils.Error(w, http.StatusInternalServerError)
-			return
-		}
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(data)
-	} else {
-		utils.Error(w, http.StatusForbidden)
-	}
+	l.react(w, r, "post", "like")
 }
 
 func (l *LikeHandler) DisLikePost(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		utils.Error(w, http.StatusMethodNotAllowed)
-		return
-	}
-	pathParts := strings.Split(r.URL.Path, "/")
-
-	if len(pathParts) != 3 {
-		utils.Error(w,http.StatusNotFound)
-		return
-	}
-	postID := pathParts[2]
-
-	isLogged, usermid := l.AuthMidlaware.IsUserLoggedIn(w, r)
-	if isLogged {
-		err := l.LikeService.Create(usermid.ID, postID, "", "dislike", false)
-		if err != nil {
-			utils.Error(w, http.StatusInternalServerError)
-			return
-		}
-		data, err := l.LikeService.GetLikesPost(postID)
-		if err != nil {
-			utils.Error(w, http.StatusInternalServerError)
-			return
-		}
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(data)
-	} else {
-		utils.Error(w, http.StatusForbidden)
-	}
+	l.react(w, r, "post", "dislike")
 }
 
 func (l *LikeHandler) LikeComment(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		utils.Error(w, http.StatusMethodNotAllowed)
-		return
-	}
-	
-	pathParts := strings.Split(r.URL.Path, "/")
-
-	if len(pathParts) != 3 {
-		utils.Error(w,http.StatusNotFound)
-		return
-	}
-
-	commentID := pathParts[2]
-
-	isLogged, usermid := l.AuthMidlaware.IsUserLoggedIn(w, r)
-	if isLogged {
-		err := l.LikeService.Create(usermid.ID, "", commentID, "like", true)
-		if err != nil {
-			utils.Error(w, http.StatusInternalServerError)
-			return
-		}
-		data, err := l.LikeService.GetLikesComment(commentID)
-		if err != nil {
-			utils.Error(w, http.StatusInternalServerError)
-			return
-		}
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(data)
-	} else {
-		utils.Error(w, http.StatusForbidden)
-	}
+	l.react(w, r, "comment", "like")
 }
 
 func (l *LikeHandler) DisLikeComment(w http.ResponseWriter, r *http.Request) {
+	l.react(w, r, "comment", "dislike")
+}
+
+func (l *LikeHandler) react(w http.ResponseWriter, r *http.Request, liked, typeOf string) {
 	if r.Method != http.MethodPost {
 		utils.Error(w, http.StatusMethodNotAllowed)
+		return
 	}
 
 	pathParts := strings.Split(r.URL.Path, "/")
 
 	if len(pathParts) != 3 {
 		utils.Error(w, http.StatusNotFound)
+		return
 	}
 
-	commentID := pathParts[2]
+	ID := pathParts[2]
 
 	isLogged, usermid := l.AuthMidlaware.IsUserLoggedIn(w, r)
 	if isLogged {
-		err := l.LikeService.Create(usermid.ID, "", commentID, "dislike", true)
+		var err error
+		if liked == "post" {
+			err = l.LikeService.Create(usermid.ID, ID, "", typeOf, false)
+		} else {
+			err = l.LikeService.Create(usermid.ID, "", ID, typeOf, true)
+		}
 		if err != nil {
 			utils.Error(w, http.StatusInternalServerError)
 			return
 		}
-		data, err := l.LikeService.GetLikesComment(commentID)
+		data, err := l.LikeService.GetLikes(ID, liked)
 		if err != nil {
 			utils.Error(w, http.StatusInternalServerError)
 			return

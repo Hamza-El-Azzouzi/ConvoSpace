@@ -19,16 +19,14 @@
       <div class="modal-body modal-body-step-1 is-showing">
         <div class="title">Sign Up</div>
         <div class="description">Hello there, Register Form</div>
-        <span class="errorMsg">{{ .alreadyExistUsername }}</span>
-        <span class="errorMsg">{{ .alreadyExistEmail }}</span>
-        <p class="errorMsg">{{ .empty }}</p>
         <form action="/register" method="post" onsubmit="validateRegistrationForm(event)">
-          <input type="text" name="Username"  autocomplete="on" placeholder="Username*" />
-          <input type="email" name="email"  autocomplete="on" placeholder="E-Mail*" />
+          <input type="text" name="Username"  autocomplete="on" placeholder="Username*" required/>
+          <span class="errorMsg">{{ .username }}</span>
+          <input type="email" name="email"  autocomplete="on" placeholder="E-Mail*" required/>
           <span class="errorMsg">{{ .email }}</span>
-          <input type="password" name="password" placeholder="Password*" />
+          <input type="password" name="password" placeholder="Password*" required/>
           <span class="errorMsg">{{ .password }}</span>
-          <input type="password" name="Confirm-Password" placeholder="Confirm Password*" />
+          <input type="password" name="Confirm-Password" placeholder="Confirm Password*" required/>
           <span class="errorMsg">{{ .conPassowrd }}</span>
           <div class="text-center">
             <a href="/login">

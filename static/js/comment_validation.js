@@ -4,7 +4,6 @@
 function SubmitComment(event) {
     const pathname = window.location.pathname;
     const postID = pathname.split('/').pop();
-    console.log(postID)
     let isValid = true;
 
     document.getElementById('textarea-error').textContent = '';
@@ -101,7 +100,6 @@ function SubmitComment(event) {
         return response.json();
       })
       .then((data) => {
-          console.log(type)
         updatePostLikeDislikeCount(
           data.id,
           data.likeCount,
@@ -123,8 +121,6 @@ function SubmitComment(event) {
       const dislikeSpan = document.querySelector(
         `#${CSS.escape(id)}-dislikecomment`
       );
-      console.log(likeSpan)
-      console.log(dislikeSpan)
       if (likeSpan) likeSpan.textContent = `👍${likeCount}`;
       if (dislikeSpan) dislikeSpan.textContent = `👎${dislikeCount}`;
     } else {

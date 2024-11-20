@@ -80,7 +80,7 @@ func (r *PostRepository) AllPosts() ([]models.PostWithUser, error) {
 		if err != nil {
 			return nil, fmt.Errorf("error scanning post with user info: %v", err)
 		}
-		post.FormattedDate = post.CreatedAt.Format("January 2, 2006")
+		post.FormattedDate = post.CreatedAt.Format("01/02/2006, 3:04:05 PM")
 		posts = append(posts, post)
 	}
 	err = rows.Err()
@@ -137,7 +137,7 @@ func (r *PostRepository) GetPostById(PostId string) (models.PostDetails, error) 
 	defer rows.Close()
 
 	var postDetails models.PostDetails
-	postDetails.Comments = []models.CommentDetails{} // Initialize slice for comments
+	postDetails.Comments = []models.CommentDetails{}
 
 	for rows.Next() {
 		var (
@@ -193,7 +193,7 @@ func (r *PostRepository) GetPostById(PostId string) (models.PostDetails, error) 
 				CreatedAt:     createdAt,
 				UserID:        userID,
 				Username:      username,
-				FormattedDate: createdAt.Format("January 2, 2006"),
+				FormattedDate: createdAt.Format("01/02/2006, 3:04:05 PM"),
 				CategoryNames: categoryNames,
 				CommentCount:  commentCount,
 				LikeCount:     likeCount,
@@ -221,7 +221,7 @@ func (r *PostRepository) GetPostById(PostId string) (models.PostDetails, error) 
 				CreatedAt:           commentCreated.Time,
 				UserID:              parsedUserIDComment,
 				Username:            commentUsername.String,
-				FormattedDate:       commentCreated.Time.Format("January 2, 2006"),
+				FormattedDate:       commentCreated.Time.Format("01/02/2006, 3:04:05 PM"),
 				LikeCountComment:    commentLikesCount.Int64,
 				DisLikeCountComment: commentDislikeCount.Int64,
 			}
@@ -303,10 +303,10 @@ func (r *PostRepository) FilterPost(filterby, categorie string, userID uuid.UUID
 			&post.LikeCount,
 			&post.DisLikeCount,
 		)
-		if  err != nil {
+		if err != nil {
 			return nil, fmt.Errorf("error scanning post with user info filter: %v", err)
 		}
-		post.FormattedDate = post.CreatedAt.Format("January 2, 2006")
+		post.FormattedDate = post.CreatedAt.Format("01/02/2006, 3:04:05 PM")
 		posts = append(posts, post)
 	}
 	return posts, nil
