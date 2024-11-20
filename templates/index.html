@@ -98,7 +98,7 @@
                         <div class="right-description893">
                             <h3><a href="detailsPost/${
                               post.PostID
-                            }" target="_blank">${post.Title}</a></h3>
+                            }">${post.Title}</a></h3>
                             <p>${post.Content}</p>
                             <hr>
                             <div class="ques-icon-info3293">
@@ -118,8 +118,12 @@
                                 </button>
                                 `
                                     : `
-                                <span>👍${post.LikeCount}</span>
-                                <span>👎${post.DisLikeCount}</span>
+                               <button class="button like">
+                                    <span id='${post.PostID}-like' >👍${post.LikeCount}</span>
+                                </button>
+                                <button class="button like">
+                                    <span id='${post.PostID}-dislike' >👍${post.DisLikeCount}</span>
+                                </button>
                                 `
                                 }
                             </div>
@@ -220,10 +224,6 @@
     function updatePostLikeDislikeCount(postID, likeCount, dislikeCount) {
       const likeSpan = document.querySelector(`#${CSS.escape(postID)}-like`);
       const dislikeSpan = document.querySelector(`#${CSS.escape(postID)}-dislike`);
-      dislikeCount === undefined ||  dislikeCount === 0
-        ? (dislikeCount = 0)
-        : (dislikeCount = dislikeCount);
-      // likeCount === undefined ? (likeCount = 0) : (likeCount = likeCount);
       if (likeSpan) likeSpan.textContent = `👍${likeCount}`;
       if (dislikeSpan) dislikeSpan.textContent = `👎${dislikeCount}`;
     }

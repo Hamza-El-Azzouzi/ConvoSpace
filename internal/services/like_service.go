@@ -10,8 +10,16 @@ import (
 type LikeService struct {
 	LikeRepo *repositories.LikeReposetorie
 }
-func (l *LikeService) GetLikes(postID string,) (any,error) {
-	data ,err :=  l.LikeRepo.GetLikes(postID)
+func (l *LikeService) GetLikesPost(postID string) (any,error) {
+	data ,err :=  l.LikeRepo.GetLikesPost(postID)
+	if err != nil{
+		return nil , err
+
+	}
+	return data, nil
+}
+func (l *LikeService) GetLikesComment(postID string) (any,error) {
+	data ,err :=  l.LikeRepo.GetLikesComment(postID)
 	if err != nil{
 		return nil , err
 

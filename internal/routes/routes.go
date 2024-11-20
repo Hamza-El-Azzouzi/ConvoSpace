@@ -19,7 +19,7 @@ func SetupRoutes(mux *http.ServeMux, authHandler *handlers.AuthHandler, postHand
 	mux.HandleFunc("/Posts", postHandler.Posts)
 	mux.HandleFunc("/create", postHandler.PostCreation)
 	mux.HandleFunc("/createPost", postHandler.PostSaver)
-	mux.HandleFunc("/sendcomment/", postHandler.CommentSaver)
+	mux.HandleFunc("/sendcomment", postHandler.CommentSaver)
 	mux.HandleFunc("/detailsPost/", postHandler.DetailsPost)
 	mux.HandleFunc("/like/", likeHandler.LikePost)
 	mux.HandleFunc("/dislike/", likeHandler.DisLikePost)

@@ -21,3 +21,11 @@ func (c *CommentService) SaveComment(userID uuid.UUID, postID, content string) e
 	}
 	return c.CommentRepo.Create(comment)
 }
+
+func (c *CommentService) GetCommentByPost(postID string) ([]models.CommentDetails,error) {
+	comment , err := c.CommentRepo.GetCommentByPost(postID)
+	if err!= nil{
+		return nil,err
+	}
+	return comment,nil
+}

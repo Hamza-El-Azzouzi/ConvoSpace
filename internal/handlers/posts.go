@@ -51,11 +51,10 @@ func (p *PostHandler) Posts(w http.ResponseWriter, r *http.Request) {
 	data := map[string]any{
 		"LoggedIn":   true,
 		"categories": categories,
-		"posts" : posts,
+		"posts":      posts,
 	}
 	isLogged, usermid := p.AuthMidlaware.IsUserLoggedIn(w, r)
 
-	
 	if isLogged {
 		data["LoggedIn"] = isLogged
 		data["Username"] = usermid.Username
@@ -169,38 +168,36 @@ func (p *PostHandler) CommentSaver(w http.ResponseWriter, r *http.Request) {
 		utils.Error(w, http.StatusMethodNotAllowed)
 		return
 	}
-
-	pathParts := strings.Split(r.URL.Path, "/")
-
-	if len(pathParts) != 3 {
-		utils.Error(w, http.StatusNotFound)
-		return
+	var commentData struct {
+		Content string `json:"content"`
+		PostID  string `json:"postID"`
 	}
-	postID := pathParts[2]
-	err := r.ParseForm()
+
+	err := json.NewDecoder(r.Body).Decode(&commentData)
 	if err != nil {
-		utils.Error(w, http.StatusInternalServerError)
-		return
-	}
-	commetContent := r.Form.Get("textarea")
-	commetContentWithNewLines := strings.ReplaceAll(commetContent, "\n", "<br>")
-
-	if commetContentWithNewLines == "" {
-		utils.Error(w, http.StatusBadRequest)
+		http.Error(w, "Invalid JSON payload", http.StatusBadRequest)
+		fmt.Println("Error decoding JSON:", err)
 		return
 	}
 
+	commetContentWithNewLines := strings.ReplaceAll(commentData.Content, "\n", "<br>")
 	isLogged, usermid := p.AuthMidlaware.IsUserLoggedIn(w, r)
 
 	if isLogged {
-		err = p.CommentService.SaveComment(usermid.ID, postID, commetContentWithNewLines)
+		err = p.CommentService.SaveComment(usermid.ID, commentData.PostID, commetContentWithNewLines)
 		if err != nil {
 			utils.Error(w, http.StatusInternalServerError)
 			return
 		}
-	}
+		comment, err := p.CommentService.GetCommentByPost(commentData.PostID)
+		if err != nil {
+			utils.Error(w, http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(comment)
 
-	http.Redirect(w, r, fmt.Sprintf("/detailsPost/%v", postID), http.StatusSeeOther)
+	}
 }
 
 func (p *PostHandler) PostFilter(w http.ResponseWriter, r *http.Request) {
@@ -233,6 +230,7 @@ func (p *PostHandler) PostFilter(w http.ResponseWriter, r *http.Request) {
 		}
 
 	}
+
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(posts)
 }

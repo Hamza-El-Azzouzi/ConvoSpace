@@ -38,7 +38,6 @@ func (r *PostRepository) AllPosts() ([]models.PostWithUser, error) {
 		posts.created_at,
 		users.id AS user_id,
 		users.username,
-		users.email,
 		REPLACE(IFNULL(GROUP_CONCAT(DISTINCT categories.name), ''), ',', ' | ') AS category_names,
 		(SELECT COUNT(*) FROM comments WHERE comments.post_id = posts.id) AS comment_count,
 		(SELECT COUNT(*) FROM likes WHERE likes.post_id = posts.id AND likes.react_type = "like") AS likes_count,
@@ -73,7 +72,6 @@ func (r *PostRepository) AllPosts() ([]models.PostWithUser, error) {
 			&post.CreatedAt,
 			&post.UserID,
 			&post.Username,
-			&post.Email,
 			&post.CategoryName,
 			&post.CommentCount,
 			&post.LikeCount,
@@ -101,7 +99,6 @@ func (r *PostRepository) GetPostById(PostId string) (models.PostDetails, error) 
 	    posts.created_at AS post_created_at,
 	    post_user.id AS post_user_id,
 	    post_user.username AS post_username,
-	    post_user.email AS post_email,
 	    GROUP_CONCAT(DISTINCT categories.name) AS category_names,
 		(SELECT COUNT(*) FROM comments WHERE comments.post_id = posts.id) AS comment_count,
 		(SELECT COUNT(*) FROM likes WHERE likes.post_id = posts.id AND likes.react_type = "like") AS likes_count,
@@ -112,7 +109,6 @@ func (r *PostRepository) GetPostById(PostId string) (models.PostDetails, error) 
 	    comments.created_at AS comment_created_at,
 	    comment_user.id AS comment_user_id,
 	    comment_user.username AS comment_username,
-	    comment_user.email AS comment_email,
 		(SELECT COUNT(*) FROM likes WHERE likes.comment_id = comments.id AND likes.react_type = "like") AS comment_likes_count,
 	    (SELECT COUNT(*) FROM likes WHERE likes.comment_id = comments.id AND likes.react_type = "dislike") AS comment_dislike_count
 		FROM 
@@ -130,9 +126,9 @@ func (r *PostRepository) GetPostById(PostId string) (models.PostDetails, error) 
 		WHERE 
 			posts.id = ?
 		GROUP BY 
-			posts.id, comments.id
+			comments.id
 		ORDER BY 
-			posts.created_at DESC, comments.created_at ASC;`
+			comments.created_at DESC;`
 
 	rows, err := r.DB.Query(query, PostId)
 	if err != nil {
@@ -151,7 +147,6 @@ func (r *PostRepository) GetPostById(PostId string) (models.PostDetails, error) 
 			createdAt           time.Time
 			userID              uuid.UUID
 			username            string
-			email               string
 			categoryNames       string
 			commentCount        int
 			likeCount           int
@@ -162,7 +157,6 @@ func (r *PostRepository) GetPostById(PostId string) (models.PostDetails, error) 
 			commentCreated      sql.NullTime
 			commentUserID       sql.NullString
 			commentUsername     sql.NullString
-			commentEmail        sql.NullString
 			commentLikesCount   sql.NullInt64
 			commentDislikeCount sql.NullInt64
 		)
@@ -174,7 +168,6 @@ func (r *PostRepository) GetPostById(PostId string) (models.PostDetails, error) 
 			&createdAt,
 			&userID,
 			&username,
-			&email,
 			&categoryNames,
 			&commentCount,
 			&likeCount,
@@ -185,7 +178,6 @@ func (r *PostRepository) GetPostById(PostId string) (models.PostDetails, error) 
 			&commentCreated,
 			&commentUserID,
 			&commentUsername,
-			&commentEmail,
 			&commentLikesCount,
 			&commentDislikeCount,
 		)
@@ -201,7 +193,6 @@ func (r *PostRepository) GetPostById(PostId string) (models.PostDetails, error) 
 				CreatedAt:     createdAt,
 				UserID:        userID,
 				Username:      username,
-				Email:         email,
 				FormattedDate: createdAt.Format("January 2, 2006"),
 				CategoryNames: categoryNames,
 				CommentCount:  commentCount,
@@ -230,7 +221,6 @@ func (r *PostRepository) GetPostById(PostId string) (models.PostDetails, error) 
 				CreatedAt:           commentCreated.Time,
 				UserID:              parsedUserIDComment,
 				Username:            commentUsername.String,
-				Email:               commentEmail.String,
 				FormattedDate:       commentCreated.Time.Format("January 2, 2006"),
 				LikeCountComment:    commentLikesCount.Int64,
 				DisLikeCountComment: commentDislikeCount.Int64,
@@ -253,7 +243,6 @@ func (r *PostRepository) FilterPost(filterby, categorie string, userID uuid.UUID
 		posts.created_at,
 		users.id AS user_id,
 		users.username,
-		users.email,
 		IFNULL(GROUP_CONCAT(DISTINCT categories.name), '') AS category_names,
 		(SELECT COUNT(*) FROM comments WHERE comments.post_id = posts.id) AS comment_count,
 		(SELECT COUNT(*) FROM likes WHERE likes.post_id = posts.id AND likes.react_type = "like") AS likes_count,
@@ -309,7 +298,6 @@ func (r *PostRepository) FilterPost(filterby, categorie string, userID uuid.UUID
 			&post.CreatedAt,
 			&post.UserID,
 			&post.Username,
-			&post.Email,
 			&post.CategoryName,
 			&post.CommentCount,
 			&post.LikeCount,

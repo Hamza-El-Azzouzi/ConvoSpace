@@ -83,14 +83,12 @@
                             </div>
                             <div class="comment-body">{{ .Content }}</div>
                             <div class="comment-footer">
-                                <a href="/likeComment/{{ .CommentID }}">
-                                    <button class="btn-like" title="Like"></button>
-                                    <span>👍{{ .LikeCountComment }}</span>
-                                </a>
-                                <a href="/dislikeComment/{{ .CommentID }}">
-                                    <button class="btn-dislike" title="Dislike"></button>
-                                    <span>👎{{ .DisLikeCountComment }}</span>
-                                </a>
+                                <button class="button like" onclick="handleLikeDislike('{{ .CommentID }}', 'likeComment', event)">
+                                    <span id='{{ .CommentID }}-likecomment' >👍{{ .LikeCountComment }}</span>
+                                </button>
+                                 <button class="button like" onclick="handleLikeDislike('{{ .CommentID }}', 'dislikeComment', event)">
+                                    <span id='{{ .CommentID }}-dislikecomment' >👎{{.DisLikeCountComment}}</span>
+                                </button>
                             </div>
                         </div>
                         {{ end }}
@@ -123,7 +121,7 @@
                    <hr>
                     <div class="comment-form">
                         <h3>Leave A Reply</h3>
-                        <form action="/sendcomment/{{ .posts.PostID }}" method="post" id="commentForm">
+                        <form method="post" id="commentForm" onsubmit="SubmitComment('{{.posts.PostID}}',event)">
                             <textarea name="textarea" required placeholder="Enter Your Post" class="comment-textarea" id="textarea"></textarea>
                             <div class="error-message" id="textarea-error"></div>
                             {{ if .LoggedIn }}
@@ -147,4 +145,101 @@
 </body>
 <script src="/static/js/comment_validation.js"></script>
 <script src="/static/js/main.js"></script>
+<script>
+    function SubmitComment(postID, event){
+        event.preventDefault()
+        const textarea = document.querySelector("#textarea");
+        const formData = textarea.value;
+        console.log(formData)
+        fetch("/sendcomment", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ content: formData, postID : `${postID}`, })
+    })
+        .then((response) => {
+            if (!response.ok) {
+                throw new Error(`Failed to submit the comment.`);
+            }
+            return response.json();
+        })
+        .then((comments) => {
+
+            UpdateComment(comments);
+            textarea.value = ""
+        })
+        .catch((error) => {
+            console.error("Error:", error);
+        });
+    }
+    function UpdateComment(comments) {
+    const commentSection = document.querySelector(".comment-section");
+    const noComments = document.querySelector(".no-comments");
+
+    commentSection.innerHTML = "";
+
+    if (comments.length === 0) {
+        commentSection.innerHTML = `
+            <div class="no-comments">
+                <p>No comments yet. Be the first to comment!</p>
+            </div>`;
+        return;
+    }
+
+    comments.forEach((comment) => {
+        const commentElement = document.createElement("div");
+        commentElement.className = "comment";
+        commentElement.innerHTML = `
+            <div class="comment-header">
+                <h6>${comment.Username || "Anonymous"}</h6>
+                <i class="fa fa-clock-o">${comment.FormattedDate || new Date(comment.CreatedAt).toLocaleString()}</i>
+            </div>
+            <div class="comment-body">${comment.Content}</div>
+            <div class="comment-footer">
+                <button class="button like" onclick="handleLikeDislike('${comment.CommentID}', 'like', event)">
+                    <span id='${comment.CommentID}-like' >👍${comment.LikeCountComment}</span>
+                </button>
+                 <button class="button like" onclick="handleLikeDislike('${comment.CommentID}', 'dislike', event)">
+                    <span id='${comment.CommentID}-dislike' >👍${comment.DisLikeCountComment}</span>
+                </button>
+            </div>
+        `;
+        commentSection.appendChild(commentElement);
+    });
+}
+function handleLikeDislike(postID, action, event) {
+      const url = `/${action}/${postID}`;
+
+      fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(`Failed to ${action} the post.`);
+          }
+          return response.json();
+        })
+        .then((data) => {
+          updatePostLikeDislikeCount(
+            data.CommentID,
+            data.likeCount,
+            data.dislikeCount
+          );
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        });
+    }
+
+    function updatePostLikeDislikeCount(CommentID, likeCount, dislikeCount) {
+      const likeSpan = document.querySelector(`#${CSS.escape(CommentID)}-likecomment`);
+      const dislikeSpan = document.querySelector(`#${CSS.escape(CommentID)}-dislikecomment`);
+      if (likeSpan) likeSpan.textContent = `👍${likeCount}`;
+      if (dislikeSpan) dislikeSpan.textContent = `👎${dislikeCount}`;
+    }
+</script>
 </html>

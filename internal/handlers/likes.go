@@ -19,6 +19,7 @@ type LikeHandler struct {
 func (l *LikeHandler) LikePost(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		utils.Error(w, http.StatusMethodNotAllowed)
+		return
 	}
 
 	pathParts := strings.Split(r.URL.Path, "/")
@@ -37,7 +38,7 @@ func (l *LikeHandler) LikePost(w http.ResponseWriter, r *http.Request) {
 			utils.Error(w, http.StatusInternalServerError)
 			return
 		}
-		data, err := l.LikeService.GetLikes(postID)
+		data, err := l.LikeService.GetLikesPost(postID)
 		if err != nil {
 			utils.Error(w, http.StatusInternalServerError)
 			return
@@ -52,16 +53,12 @@ func (l *LikeHandler) LikePost(w http.ResponseWriter, r *http.Request) {
 func (l *LikeHandler) DisLikePost(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		utils.Error(w, http.StatusMethodNotAllowed)
-	}
-	referer := r.Header.Get("Referer")
-
-	if referer == "" {
-		referer = "/"
+		return
 	}
 	pathParts := strings.Split(r.URL.Path, "/")
 
 	if len(pathParts) != 3 {
-		http.Error(w, "Invalid URL", http.StatusNotFound)
+		utils.Error(w,http.StatusNotFound)
 		return
 	}
 	postID := pathParts[2]
@@ -73,7 +70,7 @@ func (l *LikeHandler) DisLikePost(w http.ResponseWriter, r *http.Request) {
 			utils.Error(w, http.StatusInternalServerError)
 			return
 		}
-		data, err := l.LikeService.GetLikes(postID)
+		data, err := l.LikeService.GetLikesPost(postID)
 		if err != nil {
 			utils.Error(w, http.StatusInternalServerError)
 			return
@@ -86,18 +83,16 @@ func (l *LikeHandler) DisLikePost(w http.ResponseWriter, r *http.Request) {
 }
 
 func (l *LikeHandler) LikeComment(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
+	if r.Method != http.MethodPost {
 		utils.Error(w, http.StatusMethodNotAllowed)
+		return
 	}
-	referer := r.Header.Get("Referer")
-
-	if referer == "" {
-		referer = "/"
-	}
+	
 	pathParts := strings.Split(r.URL.Path, "/")
 
 	if len(pathParts) != 3 {
-		http.Error(w, "Invalid URL", http.StatusNotFound)
+		utils.Error(w,http.StatusNotFound)
+		return
 	}
 
 	commentID := pathParts[2]
@@ -109,21 +104,23 @@ func (l *LikeHandler) LikeComment(w http.ResponseWriter, r *http.Request) {
 			utils.Error(w, http.StatusInternalServerError)
 			return
 		}
-		http.Redirect(w, r, referer, http.StatusSeeOther)
+		data, err := l.LikeService.GetLikesComment(commentID)
+		if err != nil {
+			utils.Error(w, http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(data)
 	} else {
 		utils.Error(w, http.StatusForbidden)
 	}
 }
 
 func (l *LikeHandler) DisLikeComment(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
+	if r.Method != http.MethodPost {
 		utils.Error(w, http.StatusMethodNotAllowed)
 	}
-	referer := r.Header.Get("Referer")
 
-	if referer == "" {
-		referer = "/"
-	}
 	pathParts := strings.Split(r.URL.Path, "/")
 
 	if len(pathParts) != 3 {
@@ -139,7 +136,13 @@ func (l *LikeHandler) DisLikeComment(w http.ResponseWriter, r *http.Request) {
 			utils.Error(w, http.StatusInternalServerError)
 			return
 		}
-		http.Redirect(w, r, referer, http.StatusSeeOther)
+		data, err := l.LikeService.GetLikesComment(commentID)
+		if err != nil {
+			utils.Error(w, http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(data)
 	} else {
 		utils.Error(w, http.StatusForbidden)
 	}
