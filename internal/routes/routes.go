@@ -29,6 +29,9 @@ func SetupRoutes(mux *http.ServeMux, authHandler *handlers.AuthHandler, postHand
 
 	mux.HandleFunc("/checker", authHandler.CheckDoubleLogging)
 
+	http.HandleFunc("/javascript", func(w http.ResponseWriter, r *http.Request) {
+		utils.Error(w, 1)
+	})
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		handler, pattern := mux.Handler(r)
 		if pattern == "" || pattern == "/" && r.URL.Path != "/" {
