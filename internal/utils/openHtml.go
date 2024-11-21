@@ -8,7 +8,7 @@ import (
 	"text/template"
 )
 
-func getPath() string {
+func GetPath() string {
 	basePath := ""
 	ex, err := os.Executable()
 	if err != nil {
@@ -23,7 +23,7 @@ func getPath() string {
 }
 
 func OpenHtml(fileName string, w http.ResponseWriter, data any) {
-	basePath := getPath()
+	basePath := GetPath()
 	temp, err := template.ParseFiles(basePath + "templates/" + fileName)
 	if err != nil {
 		Error(w, http.StatusInternalServerError)
@@ -38,7 +38,7 @@ func OpenHtml(fileName string, w http.ResponseWriter, data any) {
 
 func SetupStaticFilesHandlers(w http.ResponseWriter, r *http.Request) {
 	path := ""
-	basePath := getPath()
+	basePath := GetPath()
 	if basePath == "" {
 		path = "/app/"
 	} else {

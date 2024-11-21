@@ -29,7 +29,7 @@ func (repo *UserRepository) FindByEmail(email string) (*models.User, error) {
 	err := row.Scan(&user.ID, &user.Username, &user.Email, &user.PasswordHash)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return nil, fmt.Errorf("email don't exist")
+			return nil, nil
 		}
 		return nil, err
 	}

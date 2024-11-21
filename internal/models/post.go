@@ -26,7 +26,6 @@ type PostWithUser struct {
 	CreatedAt     time.Time
 	UserID        uuid.UUID
 	Username      string
-	Email         string
 	FormattedDate string
 	CategoryName  string
 	CommentCount  int
@@ -41,7 +40,6 @@ type PostDetails struct {
 	CreatedAt     time.Time
 	UserID        uuid.UUID
 	Username      string
-	Email         string
 	FormattedDate string
 	CategoryNames string
 	CommentCount  int
@@ -51,14 +49,13 @@ type PostDetails struct {
 }
 
 type CommentDetails struct {
-	CommentID           uuid.UUID 
-	PostIDcomment       uuid.UUID 
-	Content             string    
-	CreatedAt           time.Time 
-	UserID              uuid.UUID 
-	Username            string    
-	Email               string    
-	FormattedDate       string    
-	LikeCountComment    int64     
-	DisLikeCountComment int64     
+	CommentID           uuid.UUID
+	PostIDcomment       uuid.UUID
+	Content             string
+	CreatedAt           time.Time
+	UserID              uuid.UUID
+	Username            string
+	FormattedDate       string
+	LikeCountComment    int64
+	DisLikeCountComment int64
 }

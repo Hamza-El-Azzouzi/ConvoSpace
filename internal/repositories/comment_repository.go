@@ -54,8 +54,8 @@ func (c *CommentRepositorie) GetCommentByPost(postID string) ([]models.CommentDe
 		if err != nil {
 			return nil, err
 		}
+		comment.FormattedDate = comment.CreatedAt.Format("01/02/2006, 3:04:05 PM")
 		comments = append(comments, comment)
-
 	}
 	return comments, nil
 }

@@ -82,12 +82,12 @@
                     {{ else }}
                     <button class="button like">
                       <span id="{{ .posts.PostID }}-like"
-                        >👍{{.post.LikeCount}}</span
+                        >👍{{.posts.LikeCount}}</span
                       >
                     </button>
                     <button class="button like">
                       <span id="{{ .posts.PostID }}-dislike"
-                        >👎{{ .post.DisLikeCount }}</span
+                        >👎{{ .posts.DisLikeCount }}</span
                       >
                     </button>
                     {{ end }}
@@ -98,7 +98,7 @@
             <hr />
             <div class="comment-section">
               {{ if .LoggedIn }} {{ if not .posts.Comments }}
-              <div class="no-comments">
+              <div class="nothing">
                 <p>No comments yet. Be the first to comment!</p>
               </div>
               {{ else }} {{ range .posts.Comments }}
@@ -139,10 +139,16 @@
                 </div>
                 <div class="comment-body">{{ .Content }}</div>
                 <div class="comment-footer">
-                  <button class="btn-like" title="Like"></button>
-                  <span>👍{{ .LikeCountComment }}</span>
-                  <button class="btn-dislike" title="Dislike"></button>
-                  <span>👎{{ .DisLikeCountComment }}</span>
+                  <button class="button like">
+                    <span id="{{ .CommentID }}-likecomment"
+                      >👍{{ .LikeCountComment }}</span
+                    >
+                  </button>
+                  <button class="button like">
+                    <span id="{{ .CommentID }}-dislikecomment"
+                      >👎{{.DisLikeCountComment}}</span
+                    >
+                  </button>
                 </div>
               </div>
               {{ end }} {{ end }} {{ end }}

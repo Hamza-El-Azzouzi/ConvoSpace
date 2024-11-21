@@ -1,6 +1,3 @@
-// document.getElementById('commentForm').addEventListener('submit', function (event) {
-    
-// });
 function SubmitComment(event) {
     const pathname = window.location.pathname;
     const postID = pathname.split('/').pop();
@@ -44,13 +41,12 @@ function SubmitComment(event) {
   }
   function UpdateComment(comments) {
     const commentSection = document.querySelector(".comment-section");
-    const noComments = document.querySelector(".no-comments");
 
     commentSection.innerHTML = "";
 
     if (comments.length === 0) {
       commentSection.innerHTML = `
-          <div class="no-comments">
+          <div class="nothing">
               <p>No comments yet. Be the first to comment!</p>
           </div>`;
       return;
@@ -63,8 +59,7 @@ function SubmitComment(event) {
           <div class="comment-header">
               <h6>${comment.Username || "Anonymous"}</h6>
               <i class="fa fa-clock-o">${
-                comment.FormattedDate ||
-                new Date(comment.CreatedAt).toLocaleString()
+                comment.FormattedDate
               }</i>
           </div>
           <div class="comment-body">${comment.Content}</div>
@@ -81,7 +76,7 @@ function SubmitComment(event) {
       commentSection.appendChild(commentElement);
     });
   }
-  function handleLikeDislike(id, action, event) {
+  function handleLikeDislike(id, action) {
     const url = `/${action}/${id}`;
     var type = "post";
     if (action.includes("Comment")) {

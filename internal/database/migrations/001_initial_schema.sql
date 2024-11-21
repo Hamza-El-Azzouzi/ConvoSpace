@@ -4,7 +4,7 @@ CREATE TABLE
         username TEXT NOT NULL UNIQUE,
         email TEXT NOT NULL UNIQUE,
         password_hash TEXT NOT NULL,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        created_at TIMESTAMP DEFAULT (DATETIME('now', 'localtime'))
     );
 
 CREATE TABLE
@@ -13,7 +13,7 @@ CREATE TABLE
         user_id TEXT NOT NULL,
         title TEXT NOT NULL,
         content TEXT NOT NULL,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        created_at TIMESTAMP DEFAULT (DATETIME('now', 'localtime')),
         FOREIGN KEY (user_id) REFERENCES users (id) ON UPDATE CASCADE ON DELETE CASCADE
     );
 
@@ -23,7 +23,7 @@ CREATE TABLE
         user_id TEXT NOT NULL,
         post_id TEXT NOT NULL,
         content TEXT NOT NULL,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        created_at TIMESTAMP DEFAULT (DATETIME('now', 'localtime')),
         FOREIGN KEY (user_id) REFERENCES users (id) ON UPDATE CASCADE ON DELETE CASCADE,
         FOREIGN KEY (post_id) REFERENCES posts (id) ON UPDATE CASCADE ON DELETE CASCADE
     );
@@ -47,7 +47,7 @@ CREATE TABLE
         post_id TEXT,
         comment_id TEXT,
         react_type TEXT,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        created_at TIMESTAMP DEFAULT (DATETIME('now', 'localtime')),
         FOREIGN KEY (user_id) REFERENCES users (id) ON UPDATE CASCADE ON DELETE CASCADE,
         FOREIGN KEY (post_id) REFERENCES posts (id) ON UPDATE CASCADE ON DELETE CASCADE,
         FOREIGN KEY (comment_id) REFERENCES comments (id) ON UPDATE CASCADE ON DELETE CASCADE,
@@ -69,7 +69,7 @@ CREATE TABLE
         session_id TEXT PRIMARY KEY,
         user_id TEXT NOT NULL,
         expires_at TIMESTAMP NOT NULL,
-        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        created_at TIMESTAMP DEFAULT (DATETIME('now', 'localtime')),
         FOREIGN KEY (user_id) REFERENCES users (id) ON UPDATE CASCADE ON DELETE CASCADE
     );
 

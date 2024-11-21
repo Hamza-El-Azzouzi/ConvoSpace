@@ -209,7 +209,8 @@ func (p *PostHandler) PostFilter(w http.ResponseWriter, r *http.Request) {
 	var err error
 	categorie := r.URL.Query().Get("categories")
 
-	_, usermid := p.AuthMidlaware.IsUserLoggedIn(w, r)
+	isLogged, usermid := p.AuthMidlaware.IsUserLoggedIn(w, r)
+
 	if usermid != nil {
 		filterby = r.URL.Query().Get("filterby")
 	}
@@ -229,6 +230,17 @@ func (p *PostHandler) PostFilter(w http.ResponseWriter, r *http.Request) {
 
 	}
 
+	data := map[string]any{
+		"LoggedIn": false,
+		"posts":    posts,
+	}
+
+	if isLogged {
+		data["LoggedIn"] = isLogged
+	} else {
+		data["LoggedIn"] = isLogged
+	}
+
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(posts)
+	json.NewEncoder(w).Encode(data)
 }

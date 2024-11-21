@@ -37,7 +37,7 @@ function handleFilterChange() {
         })
         .then(response => response.json())
         .then(data => {
-            updateData(data);
+            updateData(data.posts,data.LoggedIn);
         })
         .catch((error) => {
             console.error('Error:', error);
@@ -46,7 +46,7 @@ function handleFilterChange() {
 
 document.body.addEventListener("change", debounce(handleFilterChange, 200));
 
-const updateData = (data) => {
+const updateData = (data,LoggedInP) => {
     const mainDiv = document.getElementById("main");
     mainDiv.innerHTML = "";
 
@@ -89,15 +89,23 @@ const updateData = (data) => {
                     <i class="fa fa-hashtag" aria-hidden="true"> ${post.CategoryName}</i>
                 </div>
                 <div class="right-section">
-                    ${post.LoggedInP ? `
-                        <a href="/like/${post.PostID}">
-                            <button class="btn-like" title="Like"></button>
-                            <span>👍${post.LikeCount}</span>
-                        </a>
-                        <a href="/dislike/${post.PostID}">
-                            <button class="btn-dislike" title="Dislike"></button>
-                            <span>👎${post.DisLikeCount}</span>
-                        </a>
+                    ${LoggedInP ? `
+                        <button
+                      class="button like"
+                      onclick="handleLikeDislike('${post.PostID}', 'like', event)"
+                    >
+                      <span id="${post.PostID}-like"
+                        >👍${post.LikeCount}</span
+                      >
+                    </button>
+                    <button
+                      class="button like"
+                      onclick="handleLikeDislike('${post.PostID}','dislike', event)"
+                    >
+                      <span id="${post.PostID}-dislike"
+                        >👎${post.DisLikeCount}</span
+                      >
+                    </button>
                     ` : `
                         <button class="btn-like" title="Like"></button>
                         <span>👍${post.LikeCount}</span>

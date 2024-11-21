@@ -157,10 +157,12 @@ func (h *AuthHandler) RegisterHandle(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		registrError := h.AuthService.Register(userName, email, password)
-		if registrError.Error() == "email already exist" {
-			errFrom["email"] = "The Email Already Exist"
-		} else {
-			errFrom["username"] = "The Usernames Already Exist"
+		if registrError != nil {
+			if registrError.Error() == "email already exist" {
+				errFrom["email"] = "The Email Already Exist"
+			} else {
+				errFrom["username"] = "The Usernames Already Exist"
+			}
 		}
 		if len(errFrom) > 0 {
 			utils.OpenHtml("signup.html", w, errFrom)
