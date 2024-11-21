@@ -107,10 +107,12 @@ const updateData = (data,LoggedInP) => {
                       >
                     </button>
                     ` : `
-                        <button class="btn-like" title="Like"></button>
-                        <span>👍${post.LikeCount}</span>
-                        <button class="btn-dislike" title="Dislike"></button>
-                        <span>👎${post.DisLikeCount}</span>
+                        <button class="button like">
+                            <span id="${post.PostID}-like">👍${post.LikeCount}</span>
+                        </button>
+                        <button class="button like">
+                            <span id="${post.PostID}-dislike">👎${post.DisLikeCount}</span>
+                        </button>
                     `}
                 </div>
             </div>`;
