@@ -22,7 +22,7 @@
       <div class="modal-body modal-body-step-1 is-showing">
         <div class="title">Sign Up</div>
         <div class="description">Hello there, Register Form</div>
-        <form action="/register" method="post" onsubmit="validateRegistrationForm(event)">
+        <form method="POST" onsubmit="validateRegistrationForm(event)">
           <input type="text" name="Username"  autocomplete="on" placeholder="Username*" required/>
           <span class="errorMsg">{{ .username }}</span>
           <input type="email" name="email"  autocomplete="on" placeholder="E-Mail*" required/>
@@ -32,10 +32,11 @@
           <input type="password" name="Confirm-Password" placeholder="Confirm Password*" required/>
           <span class="errorMsg">{{ .conPassowrd }}</span>
           <div class="text-center">
+            <button type="submit" class="button">Sign Up</button>
             <a href="/login">
               <div class="button">Already Have one ?</div>
             </a>
-            <button type="submit" class="button">Sign Up</button>
+          
           </div>
         </form>
       </div>

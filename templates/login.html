@@ -23,7 +23,7 @@
       <div class="modal-body modal-body-step-1 is-showing">
         <div class="title">Log In</div>
         <div class="description">Hello there, Log In</div>
-        <form action="/login" method="post" onsubmit="validateForm(event)">
+        <form method="post" onsubmit="validateForm(event)">
           <input type="email" name="email" placeholder="email" autocomplete="on" id="email" required />
           <span class="errorMsg">{{ .email }}</span>
           <input type="password" name="password" placeholder="password" id="password" required />

@@ -2,7 +2,9 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
+	"strconv"
 	"strings"
 
 	"forum/internal/middleware"
@@ -35,7 +37,22 @@ func (p *PostHandler) Posts(w http.ResponseWriter, r *http.Request) {
 		utils.Error(w, http.StatusMethodNotAllowed)
 		return
 	}
-	posts, err := p.PostService.AllPosts()
+	pathParts := strings.Split(r.URL.Path, "/")
+	if len(pathParts) != 3 {
+		utils.Error(w, http.StatusNotFound)
+		return
+	}
+	pagination := pathParts[2]
+	if pagination ==""{
+		utils.Error(w, http.StatusNotFound)
+		return
+	}
+	nPagination ,err:= strconv.Atoi(pagination)
+	if err != err{
+		utils.Error(w, http.StatusNotFound)
+		return
+	}
+	posts, err := p.PostService.AllPosts(nPagination-1)
 	if err != nil {
 		utils.Error(w, http.StatusInternalServerError)
 		return
@@ -140,8 +157,12 @@ func (p *PostHandler) DetailsPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	postID := pathParts[2]
+	if postID ==""{
+		utils.Error(w, http.StatusNotFound)
+		return
+	}
 	posts, err := p.PostService.GetPost(postID)
-	if err != nil {
+	if err != nil || posts.PostID == uuid.Nil {
 		utils.Error(w, http.StatusNotFound)
 		return
 	}
@@ -208,22 +229,29 @@ func (p *PostHandler) PostFilter(w http.ResponseWriter, r *http.Request) {
 	var posts []models.PostWithUser
 	var err error
 	categorie := r.URL.Query().Get("categories")
-
+	pagination := r.URL.Query().Get("pagination")
+	nPagination , err := strconv.Atoi(pagination)
+	if err != nil {
+		utils.Error(w, http.StatusBadRequest)
+		return
+	}
 	isLogged, usermid := p.AuthMidlaware.IsUserLoggedIn(w, r)
 
 	if usermid != nil {
 		filterby = r.URL.Query().Get("filterby")
 	}
 	if filterby != "" {
-		posts, err = p.PostService.FilterPost(filterby, categorie, usermid.ID)
+		posts, err = p.PostService.FilterPost(filterby, categorie, usermid.ID,nPagination)
 		if err != nil {
+			fmt.Println(err)
 			utils.Error(w, http.StatusInternalServerError)
 			return
 		}
 
 	} else {
-		posts, err = p.PostService.FilterPost(filterby, categorie, uuid.Nil)
+		posts, err = p.PostService.FilterPost(filterby, categorie, uuid.Nil,nPagination-1)
 		if err != nil {
+			fmt.Println(err)
 			utils.Error(w, http.StatusInternalServerError)
 			return
 		}

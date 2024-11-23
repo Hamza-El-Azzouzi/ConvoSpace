@@ -36,7 +36,7 @@ func (a *AuthService) Register(username, email, password string) error {
 func (a *AuthService) Login(email, password string) (*models.User, error) {
 	user, err := a.UserRepo.FindByEmail(email)
 	if err != nil || user == nil {
-		return nil, err
+		return nil, fmt.Errorf("email")
 	}
 	err = bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(password))
 	if err != nil {

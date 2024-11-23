@@ -30,7 +30,7 @@ func (r *PostRepository) PostCatgorie(postCategorie *models.PostCategory) error 
 	return err
 }
 
-func (r *PostRepository) AllPosts() ([]models.PostWithUser, error) {
+func (r *PostRepository) AllPosts(pagination int) ([]models.PostWithUser, error) {
 	query := `SELECT 
 		posts.id AS post_id,
 		posts.title,
@@ -50,12 +50,10 @@ func (r *PostRepository) AllPosts() ([]models.PostWithUser, error) {
 			post_categories ON posts.id = post_categories.post_id
 		LEFT JOIN 
 			categories ON post_categories.category_id = categories.id
-		LEFT JOIN 
-			comments ON posts.id = comments.post_id
 		GROUP BY 
 			posts.id
-		ORDER BY posts.created_at DESC;`
-	rows, err := r.DB.Query(query)
+		ORDER BY posts.created_at DESC LIMIT 20 OFFSET ?;`
+	rows, err := r.DB.Query(query, pagination)
 	if err != nil {
 		fmt.Println(err)
 		return nil, fmt.Errorf("error querying posts with user info: %v", err)
@@ -99,12 +97,11 @@ func (r *PostRepository) GetPostById(PostId string) (models.PostDetails, error) 
 	    posts.created_at AS post_created_at,
 	    post_user.id AS post_user_id,
 	    post_user.username AS post_username,
-	    GROUP_CONCAT(DISTINCT categories.name) AS category_names,
-		(SELECT COUNT(*) FROM comments WHERE comments.post_id = posts.id) AS comment_count,
+	    REPLACE(IFNULL(GROUP_CONCAT(DISTINCT categories.name), ''), ',', ' | ') AS category_names,
+
 		(SELECT COUNT(*) FROM likes WHERE likes.post_id = posts.id AND likes.react_type = "like") AS likes_count,
 		(SELECT COUNT(*) FROM likes WHERE likes.post_id = posts.id AND likes.react_type = "dislike") AS dislike_count,
 	    comments.id AS comment_id,
-		comments.post_id as post_id,
 	    comments.content AS comment_content,
 	    comments.created_at AS comment_created_at,
 	    comment_user.id AS comment_user_id,
@@ -148,7 +145,6 @@ func (r *PostRepository) GetPostById(PostId string) (models.PostDetails, error) 
 			userID              uuid.UUID
 			username            string
 			categoryNames       string
-			commentCount        int
 			likeCount           int
 			disLikeCount        int
 			commentID           sql.NullString
@@ -169,7 +165,6 @@ func (r *PostRepository) GetPostById(PostId string) (models.PostDetails, error) 
 			&userID,
 			&username,
 			&categoryNames,
-			&commentCount,
 			&likeCount,
 			&disLikeCount,
 			&commentID,
@@ -195,7 +190,6 @@ func (r *PostRepository) GetPostById(PostId string) (models.PostDetails, error) 
 				Username:      username,
 				FormattedDate: createdAt.Format("01/02/2006, 3:04:05 PM"),
 				CategoryNames: categoryNames,
-				CommentCount:  commentCount,
 				LikeCount:     likeCount,
 				DisLikeCount:  disLikeCount,
 			}
@@ -235,7 +229,7 @@ func (r *PostRepository) GetPostById(PostId string) (models.PostDetails, error) 
 	return postDetails, nil
 }
 
-func (r *PostRepository) FilterPost(filterby, categorie string, userID uuid.UUID) ([]models.PostWithUser, error) {
+func (r *PostRepository) FilterPost(filterby, categorie string, userID uuid.UUID, pagination int) ([]models.PostWithUser, error) {
 	baseQuery := `SELECT 
 		posts.id AS post_id,
 		posts.title,
@@ -243,7 +237,7 @@ func (r *PostRepository) FilterPost(filterby, categorie string, userID uuid.UUID
 		posts.created_at,
 		users.id AS user_id,
 		users.username,
-		IFNULL(GROUP_CONCAT(DISTINCT categories.name), '') AS category_names,
+		REPLACE(IFNULL(GROUP_CONCAT(DISTINCT categories.name), ''), ',', ' | ') AS category_names,
 		(SELECT COUNT(*) FROM comments WHERE comments.post_id = posts.id) AS comment_count,
 		(SELECT COUNT(*) FROM likes WHERE likes.post_id = posts.id AND likes.react_type = "like") AS likes_count,
 		(SELECT COUNT(*) FROM likes WHERE likes.post_id = posts.id AND likes.react_type = "dislike") AS dislike_count
@@ -255,8 +249,6 @@ func (r *PostRepository) FilterPost(filterby, categorie string, userID uuid.UUID
 			post_categories ON posts.id = post_categories.post_id
 		LEFT JOIN 
 			categories ON post_categories.category_id = categories.id
-		LEFT JOIN 
-			comments ON posts.id = comments.post_id
 		LEFT JOIN 
 		likes ON posts.id = likes.post_id`
 
@@ -280,8 +272,10 @@ func (r *PostRepository) FilterPost(filterby, categorie string, userID uuid.UUID
 		WhereClause += decider + " post_categories.category_id = ?"
 		args = append(args, categorie)
 	}
-	orderQuery := " ORDER BY posts.created_at DESC;"
-	finalQuery := baseQuery + WhereClause + groupQuery + orderQuery
+	orderQuery := " ORDER BY posts.created_at DESC"
+	limitQuery := " LIMIT 20 OFFSET ?;"	
+	args = append(args, pagination)
+	finalQuery := baseQuery + WhereClause + groupQuery + orderQuery+ limitQuery
 	rows, err := r.DB.Query(finalQuery, args...)
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute query in filter: %w", err)

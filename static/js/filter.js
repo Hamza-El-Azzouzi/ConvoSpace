@@ -1,4 +1,4 @@
-const btnResetFilter = document.querySelector(".resetFilter")
+
 const btnResetCategorie = document.querySelector(".resetCategorie")
 function Resetfilter(){
     const filterby = document.querySelector('input[name="filter"]:checked');
@@ -25,11 +25,13 @@ function debounce(func, wait) {
 function handleFilterChange() {
     const filterby = document.querySelector('input[name="filter"]:checked');
     const categorie = document.querySelector('input[name="categorie"]:checked');
+    const pagination = currentPage
     const categoryVal = categorie ? categorie.value : "";
     const filterbyVal = filterby ? filterby.value : "";
     const queryParams = new URLSearchParams({
         filterby: filterbyVal,
-        categories: categoryVal
+        categories: categoryVal,
+        pagination :pagination
     });
 
     fetch('/filters?' + queryParams.toString(), {
@@ -131,6 +133,27 @@ const updateData = (data,LoggedInP) => {
         rowDiv.appendChild(col2);
         postDiv.appendChild(rowDiv);
         mainDiv.appendChild(postDiv);
+       
     });
+    main.innerHTML += `
+    <div class="pagination">
+      <button id="prev-btn" class="button" onclick="PreviousFilter()">Previous</button>
+      <span id="page-info"></span>
+      <button id="next-btn " class="button" onclick="NextFilter()">Next</button>
+    </div>`;
     
 };
+function NextFilter() {
+    currentPage++;
+    console.log(currentPage)
+    handleFilterChange()
+    scrollToTop()
+  }
+  function PreviousFilter() {
+    if (currentPage > 1) {
+      currentPage--;
+      console.log(currentPage)
+      handleFilterChange()
+      scrollToTop()
+    }
+  }

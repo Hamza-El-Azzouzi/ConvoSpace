@@ -68,7 +68,7 @@ function SubmitComment(event) {
                   <span id='${comment.CommentID}-likecomment' >👍${comment.LikeCountComment}</span>
               </button>
                <button class="button like" onclick="handleLikeDislike('${comment.CommentID}', 'dislikeComment', event)">
-                  <span id='${comment.CommentID}-dislikecomment' >👍${comment.DisLikeCountComment
+                  <span id='${comment.CommentID}-dislikecomment' >👎${comment.DisLikeCountComment
       }</span>
               </button>
           </div>
