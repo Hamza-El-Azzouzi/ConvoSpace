@@ -1,30 +1,32 @@
-let currentPage = 1;
-  const postsPerPage = 20;
-  
+let currentPage = 0;
+const postsPerPage = 5;
+const nextBtn = document.querySelector("#next-btn");
+const prevBtn = document.querySelector("#prev-btn");
+
 function Next() {
   currentPage++;
-  console.log(currentPage)
+  console.log(currentPage);
   pagination(currentPage);
-  scrollToTop()
+  // scrollToTop();
 }
 
 // Handle Previous button click
 function Previous() {
   if (currentPage > 1) {
     currentPage--;
-    console.log(currentPage)
+    console.log(currentPage);
     pagination(currentPage);
-    scrollToTop()
+    scrollToTop();
   }
 }
 function scrollToTop() {
   window.scrollTo({
     top: 0,
-    behavior: "auto"
+    behavior: "auto",
   });
 }
 function pagination(page) {
-  const offset = (page - 1) * postsPerPage;
+  const offset = page * postsPerPage;
   fetchData(offset);
 }
 function fetchData(offset) {
@@ -37,15 +39,31 @@ function fetchData(offset) {
       populatePosts(data.LoggedIn, data.posts);
       updateUserSection(data.LoggedIn, data.Username);
       updateFilterPostsSection(data.LoggedIn);
-      updatePaginationControls(data.total_pages);
+      updatePaginationControls(data.posts[0].TotalCount);
     });
 }
+
 function updatePaginationControls(totalPages) {
-  const pageInfo = document.querySelector('#page-info');
-  const nextBtn = document.querySelector('#next-btn');
-  pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
-  nextBtn.disabled = currentPage >= totalPages;
+
+  const pageInfo = document.querySelector("#page-info");
+
+  pageInfo.textContent = `Page ${currentPage + 1} of ${
+    totalPages / postsPerPage
+  }`;
+  // console.log("current Page "+ Number(currentPage+1))
+  // console.log("what the next should be   "+Number(currentPage+1) < totalPages/postsPerPage ? false : true);
+  // console.log(currentPage > 1 ? false : true);
+  // console.log(prevBtn);
+ 
+  const isNextDisabled = Number(currentPage+1) > Number(Math.ceil(totalPages / postsPerPage));
+  console.log("Disabling Next Button:", isNextDisabled);
+
+  nextBtn.disabled = isNextDisabled;
+  console.log("Next Button Disabled State:", nextBtn.disabled);
+
+  prevBtn.disabled = Number(currentPage+1) >= 1 ? true : false;
 }
+
 function updateNavbar(loggedIn) {
   const navbar = document.getElementById("navbar-links");
   if (loggedIn) {
@@ -109,7 +127,9 @@ function populatePosts(loggedIn, posts) {
               </div>
               <div class="ques-type302">
                 <a href="detailsPost/${post.PostID}">
-                  <button class="comment-button">${post.CommentCount} Comments</button>
+                  <button class="comment-button">${
+                    post.CommentCount
+                  } Comments</button>
                 </a>
               </div>
             </div>
@@ -122,7 +142,7 @@ function populatePosts(loggedIn, posts) {
       <div class="pagination">
         <button id="prev-btn" class="button" onclick="Previous()">Previous</button>
         <span id="page-info"></span>
-        <button id="next-btn " class="button" onclick="Next()">Next</button>
+        <button id="next-btn" class="button next-btn" onclick="Next()">Next</button>
       </div>`;
   } else {
     main.innerHTML = `<div class="no-results">No Results Found.</div>`;
@@ -158,9 +178,7 @@ function updateUserSection(loggedIn, username) {
   }
 }
 function updateFilterPostsSection(loggedIn) {
-  const filterPostsSection = document.getElementById(
-    "filter-posts-section"
-  );
+  const filterPostsSection = document.getElementById("filter-posts-section");
   if (loggedIn) {
     filterPostsSection.innerHTML = `
                 <div class="categori-part329">
@@ -183,14 +201,14 @@ function updateFilterPostsSection(loggedIn) {
   }
 }
 
-const btnResetFilter = document.querySelector(".resetFilter")
+const btnResetFilter = document.querySelector(".resetFilter");
 
 if (btnResetFilter) {
   btnResetFilter.addEventListener("click", () => {
     const filterby = document.querySelector('input[name="filter"]:checked');
-    filterby.checked = false
-    handleFilterChange(currentPage)
-  })
+    filterby.checked = false;
+    handleFilterChange(currentPage);
+  });
 }
 function handleLikeDislike(postID, action, event) {
   const url = `/${action}/${postID}`;
@@ -208,11 +226,7 @@ function handleLikeDislike(postID, action, event) {
       return response.json();
     })
     .then((data) => {
-      updatePostLikeDislikeCount(
-        data.id,
-        data.likeCount,
-        data.dislikeCount
-      );
+      updatePostLikeDislikeCount(data.id, data.likeCount, data.dislikeCount);
     })
     .catch((error) => {
       console.error("Error:", error);

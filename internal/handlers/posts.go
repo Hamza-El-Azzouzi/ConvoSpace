@@ -52,7 +52,7 @@ func (p *PostHandler) Posts(w http.ResponseWriter, r *http.Request) {
 		utils.Error(w, http.StatusNotFound)
 		return
 	}
-	posts, err := p.PostService.AllPosts(nPagination-1)
+	posts, err := p.PostService.AllPosts(nPagination)
 	if err != nil {
 		utils.Error(w, http.StatusInternalServerError)
 		return
@@ -157,7 +157,7 @@ func (p *PostHandler) DetailsPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	postID := pathParts[2]
-	if postID ==""{
+	if postID == ""{
 		utils.Error(w, http.StatusNotFound)
 		return
 	}
@@ -249,7 +249,7 @@ func (p *PostHandler) PostFilter(w http.ResponseWriter, r *http.Request) {
 		}
 
 	} else {
-		posts, err = p.PostService.FilterPost(filterby, categorie, uuid.Nil,nPagination-1)
+		posts, err = p.PostService.FilterPost(filterby, categorie, uuid.Nil,nPagination)
 		if err != nil {
 			fmt.Println(err)
 			utils.Error(w, http.StatusInternalServerError)

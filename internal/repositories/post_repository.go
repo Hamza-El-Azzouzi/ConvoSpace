@@ -41,7 +41,8 @@ func (r *PostRepository) AllPosts(pagination int) ([]models.PostWithUser, error)
 		REPLACE(IFNULL(GROUP_CONCAT(DISTINCT categories.name), ''), ',', ' | ') AS category_names,
 		(SELECT COUNT(*) FROM comments WHERE comments.post_id = posts.id) AS comment_count,
 		(SELECT COUNT(*) FROM likes WHERE likes.post_id = posts.id AND likes.react_type = "like") AS likes_count,
-		(SELECT COUNT(*) FROM likes WHERE likes.post_id = posts.id AND likes.react_type = "dislike") AS dislike_count
+		(SELECT COUNT(*) FROM likes WHERE likes.post_id = posts.id AND likes.react_type = "dislike") AS dislike_count,
+		total_posts.total_count
 		FROM 
 			posts
 		JOIN 
@@ -50,9 +51,11 @@ func (r *PostRepository) AllPosts(pagination int) ([]models.PostWithUser, error)
 			post_categories ON posts.id = post_categories.post_id
 		LEFT JOIN 
 			categories ON post_categories.category_id = categories.id
+		CROSS JOIN 
+    		(SELECT COUNT(*) AS total_count FROM posts) AS total_posts
 		GROUP BY 
 			posts.id
-		ORDER BY posts.created_at DESC LIMIT 20 OFFSET ?;`
+		ORDER BY posts.created_at DESC LIMIT 5 OFFSET ?;`
 	rows, err := r.DB.Query(query, pagination)
 	if err != nil {
 		fmt.Println(err)
@@ -74,8 +77,10 @@ func (r *PostRepository) AllPosts(pagination int) ([]models.PostWithUser, error)
 			&post.CommentCount,
 			&post.LikeCount,
 			&post.DisLikeCount,
+			&post.TotalCount,
 		)
 		if err != nil {
+			fmt.Println(err)
 			return nil, fmt.Errorf("error scanning post with user info: %v", err)
 		}
 		post.FormattedDate = post.CreatedAt.Format("01/02/2006, 3:04:05 PM")
@@ -148,7 +153,6 @@ func (r *PostRepository) GetPostById(PostId string) (models.PostDetails, error) 
 			likeCount           int
 			disLikeCount        int
 			commentID           sql.NullString
-			postIDcomment       sql.NullString
 			commentContent      sql.NullString
 			commentCreated      sql.NullTime
 			commentUserID       sql.NullString
@@ -168,7 +172,6 @@ func (r *PostRepository) GetPostById(PostId string) (models.PostDetails, error) 
 			&likeCount,
 			&disLikeCount,
 			&commentID,
-			&postIDcomment,
 			&commentContent,
 			&commentCreated,
 			&commentUserID,
@@ -200,17 +203,13 @@ func (r *PostRepository) GetPostById(PostId string) (models.PostDetails, error) 
 			if err != nil {
 				return models.PostDetails{}, fmt.Errorf("error f parse com id : %v", err)
 			}
-			parsedposttID, err := uuid.FromString(postIDcomment.String)
-			if err != nil {
-				return models.PostDetails{}, fmt.Errorf("error f parse com id : %v", err)
-			}
+			
 			parsedUserIDComment, err := uuid.FromString(commentUserID.String)
 			if err != nil {
 				return models.PostDetails{}, fmt.Errorf("error f parse : %v", err)
 			}
 			comment := models.CommentDetails{
 				CommentID:           parsedCommentID,
-				PostIDcomment:       parsedposttID,
 				Content:             commentContent.String,
 				CreatedAt:           commentCreated.Time,
 				UserID:              parsedUserIDComment,
@@ -273,7 +272,7 @@ func (r *PostRepository) FilterPost(filterby, categorie string, userID uuid.UUID
 		args = append(args, categorie)
 	}
 	orderQuery := " ORDER BY posts.created_at DESC"
-	limitQuery := " LIMIT 20 OFFSET ?;"	
+	limitQuery := " LIMIT 5 OFFSET ?;"	
 	args = append(args, pagination)
 	finalQuery := baseQuery + WhereClause + groupQuery + orderQuery+ limitQuery
 	rows, err := r.DB.Query(finalQuery, args...)
