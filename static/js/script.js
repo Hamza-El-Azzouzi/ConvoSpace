@@ -1,23 +1,22 @@
 let currentPage = 0;
 const postsPerPage = 5;
 
-// Fetch and display data for the current page
+
 function fetchData(page) {
   const offset = page * postsPerPage;
   fetch(`/Posts/${offset}`)
     .then((response) => response.json())
     .then((data) => {
-      // Update all sections with fetched data
       updateNavbar(data.LoggedIn);
       updateWelcomeSection(data.LoggedIn);
       populateCategories(data.categories);
       populatePosts(data.LoggedIn, data.posts);
       updateUserSection(data.LoggedIn, data.Username);
       updateFilterPostsSection(data.LoggedIn);
-
-      // Initialize pagination controls after posts are populated
-      const totalPosts = data.posts.length > 0 ? data.posts[0].TotalCount : 0;
-      updatePaginationControls(totalPosts);
+      if (data.posts){
+        const totalPosts = data.posts.length > 0 ? data.posts[0].TotalCount : 0;
+        updatePaginationControls(totalPosts,currentPage);
+      }
     })
     .catch((error) => {
       console.error("Error fetching data:", error);
@@ -213,7 +212,7 @@ function updatePostLikeDislikeCount(id, likeCount, dislikeCount, type) {
 }
 
 // Update the state of pagination buttons and page info
-function updatePaginationControls(totalPages) {
+function updatePaginationControls(totalPages,currentPage) {
   const pageInfo = document.querySelector("#page-info");
   const nextBtn = document.querySelector("#next-btn");
   const prevBtn = document.querySelector("#prev-btn");

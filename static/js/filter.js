@@ -1,3 +1,4 @@
+let filterCurentPage = 0
 
 const btnResetCategorie = document.querySelector(".resetCategorie")
 function Resetfilter(){
@@ -5,8 +6,6 @@ function Resetfilter(){
     filterby.checked = false
     handleFilterChange()
 }
-
-
 
 btnResetCategorie.addEventListener("click", () => {
     const categories = document.querySelector('input[name="categorie"]:checked');
@@ -25,7 +24,7 @@ function debounce(func, wait) {
 function handleFilterChange() {
     const filterby = document.querySelector('input[name="filter"]:checked');
     const categorie = document.querySelector('input[name="categorie"]:checked');
-    const pagination = currentPage
+    const pagination = filterCurentPage
     const categoryVal = categorie ? categorie.value : "";
     const filterbyVal = filterby ? filterby.value : "";
     const queryParams = new URLSearchParams({
@@ -39,17 +38,18 @@ function handleFilterChange() {
         })
         .then(response => response.json())
         .then(data => {
-          console.log(data)
+            console.log(data)
             updateData(data.posts,data.LoggedIn);
-            const totalPosts = data.posts.length > 0 ? data.posts[0].TotalCount : 0
-            console.log(totalPosts)
-            updatePaginationControls(totalPosts)
+            if (data.posts != null){
+              const totalPosts = data.posts.length > 0 ? data.posts[0].TotalCount : 0
+              updatePaginationControls(totalPosts,filterCurentPage)
+            }
         })
         .catch((error) => {
             console.error('Error:', error);
         });
 }
-function updatePaginationControls(totalPages) {
+function updatePaginationControls(totalPages,currentPage) {
     const pageInfo = document.querySelector("#page-info");
     const nextBtn = document.querySelector("#next-btn");
     const prevBtn = document.querySelector("#prev-btn");
@@ -177,13 +177,13 @@ const updateData = (data,LoggedInP) => {
     
 };
 function NextFilter() {
-    currentPage++;
+    filterCurentPage++;
     handleFilterChange()
     scrollToTop()
   }
   function PreviousFilter() {
-    if (currentPage > 0) {
-      currentPage--;
+    if (filterCurentPage > 0) {
+      filterCurentPage--;
       handleFilterChange()
       scrollToTop()
     }
