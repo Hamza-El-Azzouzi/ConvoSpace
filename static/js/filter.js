@@ -40,7 +40,8 @@ function handleFilterChange() {
         .then(response => response.json())
         .then(data => {
             updateData(data.posts,data.LoggedIn);
-            const totalPosts = data.posts.length > 0 ? data.posts[0].totalPosts : 0
+            const totalPosts = data.posts.length > 0 ? data.posts[0].TotalCount : 0
+            console.log(totalPosts)
             updatePaginationControls(totalPosts)
         })
         .catch((error) => {

@@ -243,7 +243,7 @@ func (r *PostRepository) FilterPost(filterby, category string, userID uuid.UUID,
 			(SELECT COUNT(*) FROM comments WHERE comments.post_id = posts.id) AS comment_count,
 			(SELECT COUNT(*) FROM likes WHERE likes.post_id = posts.id AND likes.react_type = "like") AS likes_count,
 			(SELECT COUNT(*) FROM likes WHERE likes.post_id = posts.id AND likes.react_type = "dislike") AS dislike_count,
-			(SELECT COUNT(*) FROM posts) AS total_count
+			COUNT(*) OVER() AS total_count
 		FROM 
 			posts
 		JOIN 
@@ -282,8 +282,6 @@ func (r *PostRepository) FilterPost(filterby, category string, userID uuid.UUID,
 	args = append(args, pagination)
 
 	finalQuery := baseQuery + whereQuery + groupQuery + orderQuery + limitQuery
-
-	fmt.Println("Executing Query:", finalQuery)
 
 	rows, err := r.DB.Query(finalQuery, args...)
 	if err != nil {
