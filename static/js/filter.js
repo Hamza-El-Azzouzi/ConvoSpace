@@ -31,7 +31,7 @@ function handleFilterChange() {
     const queryParams = new URLSearchParams({
         filterby: filterbyVal,
         categories: categoryVal,
-        pagination :pagination
+        pagination :pagination*postsPerPage,
     });
 
     fetch('/filters?' + queryParams.toString(), {
@@ -39,6 +39,7 @@ function handleFilterChange() {
         })
         .then(response => response.json())
         .then(data => {
+          console.log(data)
             updateData(data.posts,data.LoggedIn);
             const totalPosts = data.posts.length > 0 ? data.posts[0].TotalCount : 0
             console.log(totalPosts)
@@ -169,22 +170,20 @@ const updateData = (data,LoggedInP) => {
     });
     main.innerHTML += `
     <div class="pagination">
-        <button id="prev-btn" class="button" onclick="Previous()">Previous</button>
+        <button id="prev-btn" class="button" onclick="PreviousFilter()">Previous</button>
         <span id="page-info"></span>
-        <button id="next-btn" class="button next-btn" onclick="Next()">Next</button>
+        <button id="next-btn" class="button next-btn" onclick="NextFilter()">Next</button>
       </div>`;
     
 };
 function NextFilter() {
     currentPage++;
-    console.log(currentPage)
     handleFilterChange()
     scrollToTop()
   }
   function PreviousFilter() {
-    if (currentPage > 1) {
+    if (currentPage > 0) {
       currentPage--;
-      console.log(currentPage)
       handleFilterChange()
       scrollToTop()
     }

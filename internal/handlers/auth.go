@@ -86,7 +86,7 @@ func (h *AuthHandler) LoginHandle(w http.ResponseWriter, r *http.Request) {
 
 		if user == nil || loginError != nil {
 			if strings.Contains(loginError.Error(), "email") {
-				errFrom["email"] = "Invalid email!"
+				errFrom["email"] = "There is no account linked to this email!"
 			} else {
 				errFrom["password"] = "Wrong password!"
 			}
