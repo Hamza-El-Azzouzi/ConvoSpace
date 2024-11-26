@@ -40,11 +40,42 @@ function handleFilterChange() {
         .then(response => response.json())
         .then(data => {
             updateData(data.posts,data.LoggedIn);
+            const totalPosts = data.posts.length > 0 ? data.posts[0].totalPosts : 0
+            updatePaginationControls(totalPosts)
         })
         .catch((error) => {
             console.error('Error:', error);
         });
 }
+function updatePaginationControls(totalPages) {
+    const pageInfo = document.querySelector("#page-info");
+    const nextBtn = document.querySelector("#next-btn");
+    const prevBtn = document.querySelector("#prev-btn");
+  
+    if (!pageInfo || !nextBtn || !prevBtn) {
+      console.error("Pagination controls not found in the DOM.");
+      return;
+    }
+  
+    // Update page info
+    pageInfo.textContent = `Page ${currentPage + 1} of ${Math.ceil(
+      totalPages / postsPerPage
+    )}`;
+  
+    // Enable/disable Next button
+    if (currentPage + 1 >= Math.ceil(totalPages / postsPerPage)) {
+      nextBtn.disabled = true;
+    } else {
+      nextBtn.disabled = false;
+    }
+  
+    // Enable/disable Prev button
+    if (currentPage === 0) {
+      prevBtn.disabled = true;
+    } else {
+      prevBtn.disabled = false;
+    }
+  }
 
 document.body.addEventListener("change", debounce(handleFilterChange, 200));
 
@@ -137,10 +168,10 @@ const updateData = (data,LoggedInP) => {
     });
     main.innerHTML += `
     <div class="pagination">
-      <button id="prev-btn" class="button" onclick="PreviousFilter()">Previous</button>
-      <span id="page-info"></span>
-      <button id="next-btn " class="button" onclick="NextFilter()">Next</button>
-    </div>`;
+        <button id="prev-btn" class="button" onclick="Previous()">Previous</button>
+        <span id="page-info"></span>
+        <button id="next-btn" class="button next-btn" onclick="Next()">Next</button>
+      </div>`;
     
 };
 function NextFilter() {

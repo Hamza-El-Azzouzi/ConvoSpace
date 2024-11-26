@@ -3,6 +3,7 @@ package repositories
 import (
 	"database/sql"
 	"fmt"
+	"strings"
 	"time"
 
 	"forum/internal/models"
@@ -203,7 +204,7 @@ func (r *PostRepository) GetPostById(PostId string) (models.PostDetails, error) 
 			if err != nil {
 				return models.PostDetails{}, fmt.Errorf("error f parse com id : %v", err)
 			}
-			
+
 			parsedUserIDComment, err := uuid.FromString(commentUserID.String)
 			if err != nil {
 				return models.PostDetails{}, fmt.Errorf("error f parse : %v", err)
@@ -228,18 +229,21 @@ func (r *PostRepository) GetPostById(PostId string) (models.PostDetails, error) 
 	return postDetails, nil
 }
 
-func (r *PostRepository) FilterPost(filterby, categorie string, userID uuid.UUID, pagination int) ([]models.PostWithUser, error) {
-	baseQuery := `SELECT 
-		posts.id AS post_id,
-		posts.title,
-		posts.content,
-		posts.created_at,
-		users.id AS user_id,
-		users.username,
-		REPLACE(IFNULL(GROUP_CONCAT(DISTINCT categories.name), ''), ',', ' | ') AS category_names,
-		(SELECT COUNT(*) FROM comments WHERE comments.post_id = posts.id) AS comment_count,
-		(SELECT COUNT(*) FROM likes WHERE likes.post_id = posts.id AND likes.react_type = "like") AS likes_count,
-		(SELECT COUNT(*) FROM likes WHERE likes.post_id = posts.id AND likes.react_type = "dislike") AS dislike_count
+func (r *PostRepository) FilterPost(filterby, category string, userID uuid.UUID, pagination int) ([]models.PostWithUser, error) {
+	// Base Query
+	baseQuery := `
+		SELECT 
+			posts.id AS post_id,
+			posts.title,
+			posts.content,
+			posts.created_at,
+			users.id AS user_id,
+			users.username,
+			REPLACE(IFNULL(GROUP_CONCAT(DISTINCT categories.name), ''), ',', ' | ') AS category_names,
+			(SELECT COUNT(*) FROM comments WHERE comments.post_id = posts.id) AS comment_count,
+			(SELECT COUNT(*) FROM likes WHERE likes.post_id = posts.id AND likes.react_type = "like") AS likes_count,
+			(SELECT COUNT(*) FROM likes WHERE likes.post_id = posts.id AND likes.react_type = "dislike") AS dislike_count,
+			(SELECT COUNT(*) FROM posts) AS total_count
 		FROM 
 			posts
 		JOIN 
@@ -249,35 +253,41 @@ func (r *PostRepository) FilterPost(filterby, categorie string, userID uuid.UUID
 		LEFT JOIN 
 			categories ON post_categories.category_id = categories.id
 		LEFT JOIN 
-		likes ON posts.id = likes.post_id`
+			likes ON posts.id = likes.post_id`
 
-	groupQuery := " GROUP BY posts.id"
-
+	// Query Components
+	var whereClauses []string
 	args := []any{}
-	WhereClause := ""
-	decider := " WHERE"
-
 	if filterby == "created" {
-		WhereClause = decider + " posts.user_id = ? "
-		decider = " AND"
+		whereClauses = append(whereClauses, "posts.user_id = ?")
 		args = append(args, userID)
 	} else if filterby == "liked" {
-		WhereClause = decider + " likes.user_id = ? AND likes.comment_id IS NULL"
-		decider = " AND"
+		whereClauses = append(whereClauses, "likes.user_id = ? AND likes.comment_id IS NULL")
 		args = append(args, userID)
 	}
 
-	if categorie != "" {
-		WhereClause += decider + " post_categories.category_id = ?"
-		args = append(args, categorie)
+	if category != "" {
+		whereClauses = append(whereClauses, "post_categories.category_id = ?")
+		args = append(args, category)
 	}
+
+	whereQuery := ""
+	if len(whereClauses) > 0 {
+		whereQuery = " WHERE " + strings.Join(whereClauses, " AND ")
+	}
+
+	groupQuery := " GROUP BY posts.id"
 	orderQuery := " ORDER BY posts.created_at DESC"
-	limitQuery := " LIMIT 5 OFFSET ?;"	
+	limitQuery := " LIMIT 5 OFFSET ?"
 	args = append(args, pagination)
-	finalQuery := baseQuery + WhereClause + groupQuery + orderQuery+ limitQuery
+
+	finalQuery := baseQuery + whereQuery + groupQuery + orderQuery + limitQuery
+
+	fmt.Println("Executing Query:", finalQuery)
+
 	rows, err := r.DB.Query(finalQuery, args...)
 	if err != nil {
-		return nil, fmt.Errorf("failed to execute query in filter: %w", err)
+		return nil, fmt.Errorf("failed to execute query: %w", err)
 	}
 	defer rows.Close()
 
@@ -295,12 +305,14 @@ func (r *PostRepository) FilterPost(filterby, categorie string, userID uuid.UUID
 			&post.CommentCount,
 			&post.LikeCount,
 			&post.DisLikeCount,
+			&post.TotalCount,
 		)
 		if err != nil {
-			return nil, fmt.Errorf("error scanning post with user info filter: %v", err)
+			return nil, fmt.Errorf("error scanning post data: %w", err)
 		}
 		post.FormattedDate = post.CreatedAt.Format("01/02/2006, 3:04:05 PM")
 		posts = append(posts, post)
 	}
+
 	return posts, nil
 }
