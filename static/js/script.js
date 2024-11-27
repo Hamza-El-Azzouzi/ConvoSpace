@@ -265,6 +265,3 @@ function scrollToTop() {
     behavior: "auto",
   });
 }
-
-// Initial load
-fetchData(currentPage);

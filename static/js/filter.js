@@ -38,7 +38,6 @@ function handleFilterChange() {
         })
         .then(response => response.json())
         .then(data => {
-            console.log(data)
             updateData(data.posts,data.LoggedIn);
             if (data.posts != null){
               const totalPosts = data.posts.length > 0 ? data.posts[0].TotalCount : 0
