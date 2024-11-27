@@ -46,6 +46,13 @@ func (h *AuthHandler) LogoutHandle(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *AuthHandler) LoginHandle(w http.ResponseWriter, r *http.Request) {
+	isLogged, _ := h.AuthMidlaware.IsUserLoggedIn(w, r)
+
+	if isLogged {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
+	}
+
 	if r.Method == http.MethodGet {
 		utils.OpenHtml("login.html", w, nil)
 		return
@@ -118,6 +125,13 @@ func (h *AuthHandler) LoginHandle(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *AuthHandler) RegisterHandle(w http.ResponseWriter, r *http.Request) {
+	isLogged, _ := h.AuthMidlaware.IsUserLoggedIn(w, r)
+
+	if isLogged {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
+	}
+
 	if r.Method == http.MethodGet {
 		utils.OpenHtml("signup.html", w, nil)
 		return
@@ -191,6 +205,7 @@ func (h *AuthHandler) RegisterHandle(w http.ResponseWriter, r *http.Request) {
 func (h *AuthHandler) CheckDoubleLogging(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		utils.Error(w, http.StatusMethodNotAllowed)
+		return
 	}
 
 	isLogged, user := h.AuthMidlaware.IsUserLoggedIn(w, r)
@@ -199,6 +214,7 @@ func (h *AuthHandler) CheckDoubleLogging(w http.ResponseWriter, r *http.Request)
 		userSEssion, errSession := h.AuthService.UserRepo.CheckUserAlreadyLogged(user.ID)
 		if errSession != nil {
 			utils.Error(w, http.StatusInternalServerError)
+			return
 		}
 
 		if len(userSEssion) > 1 {
