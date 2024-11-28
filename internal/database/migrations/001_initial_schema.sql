@@ -26,6 +26,7 @@ CREATE TABLE
         created_at TIMESTAMP DEFAULT (DATETIME ('now', 'localtime')),
         FOREIGN KEY (user_id) REFERENCES users (id) ON UPDATE CASCADE ON DELETE CASCADE,
         FOREIGN KEY (post_id) REFERENCES posts (id) ON UPDATE CASCADE ON DELETE CASCADE
+        
     );
 
 CREATE TABLE
