@@ -123,9 +123,8 @@ func (p *PostHandler) PostSaver(w http.ResponseWriter, r *http.Request) {
 	title := r.Form.Get("title")
 	categories := r.Form["category"]
 	subject := r.Form.Get("textarea")
-	contentWithBreaks := strings.ReplaceAll(subject, "\n", "<br>")
 
-	if title == "" || contentWithBreaks == "" || len(categories) == 0 {
+	if title == "" || subject == "" || len(categories) == 0 {
 		utils.Error(w, http.StatusBadRequest)
 		return
 	}
@@ -133,7 +132,7 @@ func (p *PostHandler) PostSaver(w http.ResponseWriter, r *http.Request) {
 	if isLogged {
 		data["LoggedIn"] = isLogged
 		data["Username"] = usermid.Username
-		err = p.PostService.PostSave(usermid.ID, title, contentWithBreaks, categories)
+		err = p.PostService.PostSave(usermid.ID, title, subject, categories)
 		if err != nil {
 			utils.Error(w, http.StatusInternalServerError)
 		} else {

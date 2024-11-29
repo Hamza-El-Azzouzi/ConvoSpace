@@ -58,19 +58,16 @@ function updatePaginationControls(totalPages,currentPage) {
       return;
     }
   
-    // Update page info
     pageInfo.textContent = `Page ${currentPage + 1} of ${Math.ceil(
       totalPages / postsPerPage
     )}`;
   
-    // Enable/disable Next button
     if (currentPage + 1 >= Math.ceil(totalPages / postsPerPage)) {
       nextBtn.disabled = true;
     } else {
       nextBtn.disabled = false;
     }
   
-    // Enable/disable Prev button
     if (currentPage === 0) {
       prevBtn.disabled = true;
     } else {

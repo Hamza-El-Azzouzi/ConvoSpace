@@ -95,7 +95,6 @@ function updateFilterPostsSection(loggedIn) {
   }
 }
 
-// Populate posts and dynamically add pagination controls
 function populatePosts(loggedIn, posts) {
   const main = document.getElementById("main");
   if (posts && posts.length > 0) {
@@ -106,7 +105,7 @@ function populatePosts(loggedIn, posts) {
             <div class="row">
               <div class="right-description893">
                 <h3><a href="detailsPost/${post.PostID}">${post.Title}</a></h3>
-                <p>${post.Content}</p>
+                <pre>${post.Content}</pre>
                 <hr>
                 <div class="ques-icon-info3293">
                   <span>${post.Username}</span>
@@ -147,7 +146,6 @@ function populatePosts(loggedIn, posts) {
       )
       .join("");
 
-    // Add pagination controls at the bottom
     main.innerHTML += `
       <div class="pagination">
         <button id="prev-btn" class="button" onclick="Previous()">Previous</button>
@@ -211,7 +209,6 @@ function updatePostLikeDislikeCount(id, likeCount, dislikeCount, type) {
   }
 }
 
-// Update the state of pagination buttons and page info
 function updatePaginationControls(totalPages,currentPage) {
   const pageInfo = document.querySelector("#page-info");
   const nextBtn = document.querySelector("#next-btn");
@@ -222,19 +219,16 @@ function updatePaginationControls(totalPages,currentPage) {
     return;
   }
 
-  // Update page info
   pageInfo.textContent = `Page ${currentPage + 1} of ${Math.ceil(
     totalPages / postsPerPage
   )}`;
 
-  // Enable/disable Next button
   if (currentPage + 1 >= Math.ceil(totalPages / postsPerPage)) {
     nextBtn.disabled = true;
   } else {
     nextBtn.disabled = false;
   }
 
-  // Enable/disable Prev button
   if (currentPage === 0) {
     prevBtn.disabled = true;
   } else {
@@ -242,14 +236,12 @@ function updatePaginationControls(totalPages,currentPage) {
   }
 }
 
-// Handle Next button click
 function Next() {
   currentPage++;
   fetchData(currentPage);
   scrollToTop();
 }
 
-// Handle Previous button click
 function Previous() {
   if (currentPage > 0) {
     currentPage--;
@@ -258,7 +250,6 @@ function Previous() {
   }
 }
 
-// Scroll to top of the page
 function scrollToTop() {
   window.scrollTo({
     top: 0,
