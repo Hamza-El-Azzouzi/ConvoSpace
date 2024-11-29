@@ -62,7 +62,7 @@ function SubmitComment(event) {
                 comment.FormattedDate
               }</i>
           </div>
-          <div class="comment-body">${comment.Content}</div>
+          <div class="comment-body"><pre>${comment.Content}</pre></div>
           <div class="comment-footer">
               <button class="button like" onclick="handleLikeDislike('${comment.CommentID}', 'likeComment', event)">
                   <span id='${comment.CommentID}-likecomment' >👍${comment.LikeCountComment}</span>

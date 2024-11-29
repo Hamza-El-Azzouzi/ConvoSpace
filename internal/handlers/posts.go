@@ -199,11 +199,11 @@ func (p *PostHandler) CommentSaver(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	commetContentWithNewLines := strings.ReplaceAll(commentData.Content, "\n", "<br>")
+	// commetContentWithNewLines := strings.ReplaceAll(commentData.Content, "\n", "<br>")
 	isLogged, usermid := p.AuthMidlaware.IsUserLoggedIn(w, r)
 
 	if isLogged {
-		err = p.CommentService.SaveComment(usermid.ID, commentData.PostID, commetContentWithNewLines)
+		err = p.CommentService.SaveComment(usermid.ID, commentData.PostID, commentData.Content)
 		if err != nil {
 			utils.Error(w, http.StatusInternalServerError)
 			return

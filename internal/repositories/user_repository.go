@@ -3,6 +3,7 @@ package repositories
 import (
 	"database/sql"
 	"fmt"
+	"html"
 
 	"forum/internal/models"
 
@@ -14,6 +15,7 @@ type UserRepository struct {
 }
 
 func (r *UserRepository) Create(user *models.User) error {
+	user.Username = html.EscapeString(user.Username)
 	_, err := r.DB.Exec(
 		"INSERT INTO users (id, username, email, password_hash) VALUES (?, ?, ?, ?)",
 		user.ID, user.Username, user.Email, user.PasswordHash,

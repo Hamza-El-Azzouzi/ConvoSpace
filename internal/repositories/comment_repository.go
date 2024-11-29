@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"database/sql"
+	"html"
 
 	"forum/internal/models"
 )
@@ -11,6 +12,7 @@ type CommentRepositorie struct {
 }
 
 func (c *CommentRepositorie) Create(comment *models.Comment) error {
+	comment.Content = html.EscapeString(comment.Content)
 	_, err := c.DB.Exec(
 		"INSERT INTO comments (id, user_id, post_id, Content) VALUES (?, ?, ?, ?)",
 		comment.ID, comment.UserID, comment.PostID, comment.Content)

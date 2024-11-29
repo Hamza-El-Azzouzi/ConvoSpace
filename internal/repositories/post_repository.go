@@ -3,6 +3,7 @@ package repositories
 import (
 	"database/sql"
 	"fmt"
+	"html"
 	"strings"
 	"time"
 
@@ -16,6 +17,8 @@ type PostRepository struct {
 }
 
 func (r *PostRepository) Create(post *models.Post) error {
+	post.Content = html.EscapeString(post.Content)
+	post.Title = html.EscapeString(post.Title)
 	_, err := r.DB.Exec(
 		"INSERT INTO posts (ID, user_id, Title, Content) VALUES (?, ?, ?, ?)",
 		post.ID, post.UserID, post.Title, post.Content,
