@@ -3,13 +3,21 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	"net/http"
 	"os"
 	"strings"
+
+	"Forum_izahid/handlers"
 
 	_ "github.com/mattn/go-sqlite3"
 )
 
 func main() {
+	http.HandleFunc("/", handlers.HandleIndex)
+	http.HandleFunc("/register", handlers.HandleSignUp)
+	http.HandleFunc("/login", handlers.HandleLogin)
+	fmt.Println("http://localhost:6060/")
+	http.ListenAndServe(":6060", nil)
 	db, err := sql.Open("sqlite3", "data.db")
 	if err != nil {
 		fmt.Println(err)

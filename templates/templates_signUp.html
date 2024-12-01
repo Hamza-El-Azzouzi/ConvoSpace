@@ -4,15 +4,55 @@
 <head>
     <meta charset="UTF-8">
     <title>Sign Up</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+        }
+
+        .singUpForm {
+            border: 1px solid #ccc;
+            padding: 16px;
+            /* width: 90%; */
+            max-width: 500px;
+            background-color: white;
+        }
+
+        .singUpForm label {
+            display: block;
+            margin-bottom: 5px;
+        }
+    </style>
+
 </head>
+
 <body>
-    <form method="post">
+    <form action="/register" method="POST" class="singUpForm">
         <div class="signUp">
-            <input type="text" name="username">
-            <input type="email" name="email">
-            <input type="password" name="passwd"> 
+            <h1>Sign Up</h1>
+            <div>
+                {{if .ErrMessage}}
+                <h6 style="color: red;">{{.ErrMessage}}</h6>
+                {{end}}
+                <label>username</label>
+                <input type="text" placeholder="Enter your name..." name="username">
+            </div>
+            <div>
+                <label>email</label>
+                <input type="email" placeholder="Enter your email address..." name="email">
+            </div>
+            <div>
+                <label>password</label>
+                <input type="password" placeholder="Enter your password..." name="passwd">
+            </div>
             <input type="submit">
         </div>
     </form>
 </body>
+
 </html>

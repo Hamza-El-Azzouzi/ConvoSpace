@@ -1,4 +1,4 @@
-CREATE TABLE users (
+CREATE TABLE IF NOT  users (
  id INTEGER PRIMARY KEY AUTOINCREMENT,
  username text NOT NULL,
  email text NOT NULL,
