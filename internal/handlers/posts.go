@@ -193,6 +193,7 @@ func (p *PostHandler) CommentSaver(w http.ResponseWriter, r *http.Request) {
 	}
 
 	err := json.NewDecoder(r.Body).Decode(&commentData)
+	defer r.Body.Close()
 	if err != nil {
 		utils.Error(w, http.StatusBadRequest)
 		return

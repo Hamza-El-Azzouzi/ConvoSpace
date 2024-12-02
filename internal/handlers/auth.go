@@ -66,6 +66,7 @@ func (h *AuthHandler) LoginHandle(w http.ResponseWriter, r *http.Request) {
 			Password string `json:"password"`
 		}
 		err := json.NewDecoder(r.Body).Decode(&userData)
+		defer r.Body.Close()
 		if err != nil {
 			fmt.Println(err)
 			utils.Error(w, http.StatusBadRequest)
@@ -146,8 +147,8 @@ func (h *AuthHandler) RegisterHandle(w http.ResponseWriter, r *http.Request) {
 			ConfirmePassword string `json:"confirmPassword"`
 		}
 		err := json.NewDecoder(r.Body).Decode(&userDataRegister)
+		defer r.Body.Close()
 		if err != nil {
-			fmt.Println(err)
 			utils.Error(w, http.StatusBadRequest)
 			return
 		}
@@ -180,7 +181,6 @@ func (h *AuthHandler) RegisterHandle(w http.ResponseWriter, r *http.Request) {
 			w.Header().Set("Content-Type", "application/json")
 			json.NewEncoder(w).Encode(errFrom)
 			return
-
 		}
 		registrError := h.AuthService.Register(userDataRegister.Username, userDataRegister.Email, userDataRegister.Password)
 		if registrError != nil {
