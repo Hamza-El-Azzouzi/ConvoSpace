@@ -63,22 +63,3 @@ CREATE TABLE
             )
         )
     );
-
-CREATE TABLE
-    sessions (
-        session_id TEXT PRIMARY KEY,
-        user_id TEXT NOT NULL,
-        expires_at TIMESTAMP NOT NULL,
-        created_at TIMESTAMP DEFAULT (DATETIME ('now', 'localtime')),
-        FOREIGN KEY (user_id) REFERENCES users (id) ON UPDATE CASCADE ON DELETE CASCADE
-    );
-
-CREATE INDEX idx_user_id_session ON sessions (user_id);
-
-CREATE INDEX idx_post_categories_post_id ON post_categories (post_id);
-
-CREATE INDEX idx_post_categories_category_id ON post_categories (category_id);
-
-CREATE INDEX idx_likes_post_id ON likes (post_id);
-
-CREATE INDEX idx_likes_comment_id ON likes (comment_id);
