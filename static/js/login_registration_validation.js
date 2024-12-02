@@ -41,6 +41,10 @@ function validateForm(event) {
       })
       .then((err) => {
         if (err) {
+          if (err.activeSession){
+            alert(err.activeSession)
+            window.location.href = "/";
+          }
           if (err.email){
             emailError.textContent = err.email
           }
@@ -139,11 +143,13 @@ function validateRegistrationForm(event) {
         return response.json();
       })
       .then((err) => {
-        console.log(err)
         if (err) {
+          if (err.activeSession){
+            alert(err.activeSession)
+            window.location.href = "/";
+          }
           if (err.username){
             const errPart =  document.querySelector(fields.username.error)
-            console.log(errPart)
             showError(fields.username.error,err.username)
           }
           if (err.email){

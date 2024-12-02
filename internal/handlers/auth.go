@@ -48,12 +48,11 @@ func (h *AuthHandler) LogoutHandle(w http.ResponseWriter, r *http.Request) {
 func (h *AuthHandler) LoginHandle(w http.ResponseWriter, r *http.Request) {
 	isLogged, _ := h.AuthMidlaware.IsUserLoggedIn(w, r)
 
-	if isLogged {
-		http.Redirect(w, r, "/", http.StatusSeeOther)
-		return
-	}
-
 	if r.Method == http.MethodGet {
+		if isLogged {
+			http.Redirect(w, r, "/", http.StatusSeeOther)
+			return
+		}
 		utils.OpenHtml("login.html", w, nil)
 		return
 	}
@@ -61,6 +60,12 @@ func (h *AuthHandler) LoginHandle(w http.ResponseWriter, r *http.Request) {
 	errFrom := map[string]string{}
 
 	if r.Method == http.MethodPost {
+		if isLogged {
+			errFrom["activeSession"] = "You can't login to another account while you have an active session in the same browser."
+			w.Header().Set("Content-Type", "application/json")
+			json.NewEncoder(w).Encode(errFrom)
+			return
+		}
 		var userData struct {
 			Email    string `json:"email"`
 			Password string `json:"password"`
@@ -128,18 +133,23 @@ func (h *AuthHandler) LoginHandle(w http.ResponseWriter, r *http.Request) {
 func (h *AuthHandler) RegisterHandle(w http.ResponseWriter, r *http.Request) {
 	isLogged, _ := h.AuthMidlaware.IsUserLoggedIn(w, r)
 
-	if isLogged {
-		http.Redirect(w, r, "/", http.StatusSeeOther)
-		return
-	}
-
 	if r.Method == http.MethodGet {
+		if isLogged {
+			http.Redirect(w, r, "/", http.StatusSeeOther)
+			return
+		}
 		utils.OpenHtml("signup.html", w, nil)
 		return
 	}
 
 	errFrom := map[string]string{}
 	if r.Method == http.MethodPost {
+		if isLogged {
+			errFrom["activeSession"] = "You can't register while you have an active session in the same browser."
+			w.Header().Set("Content-Type", "application/json")
+			json.NewEncoder(w).Encode(errFrom)
+			return
+		}
 		var userDataRegister struct {
 			Username         string `json:"username"`
 			Email            string `json:"email"`

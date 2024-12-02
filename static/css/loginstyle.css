@@ -108,3 +108,7 @@ input[type="password"]:focus {
 .errorMsg {
   color: red;
 }
+
+.sessionErrorMsg {
+  color: red;
+}
