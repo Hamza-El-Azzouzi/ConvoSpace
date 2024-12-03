@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"net/http"
 	"text/template"
+
+	"Forum_izahid/dataBase"
 )
 
 type SignUpData struct {
@@ -52,7 +54,12 @@ func HandleSignUp(w http.ResponseWriter, r *http.Request) {
 		if !VerifyData(&info) {
 			HandleError(w, 400)
 		} else {
-			fmt.Println("test ", info)
+			fmt.Println("--------")
+			_, err = dataBase.Db.Exec(`INSERT INTO users (username,email,passwd)  VALUES (?,?,?) `, info.Username, info.Email, info.Passwd)
+			if err != nil {
+				fmt.Println("--------error")
+				HandleError(w, 500)
+			}
 		}
 		w.Header().Set("Content-Type", "application/json")
 		response := &SendReply{
