@@ -6,7 +6,6 @@ import (
 
 	"forum/internal/models"
 	"forum/internal/services"
-	"forum/internal/utils"
 )
 
 type AuthMiddleware struct {
@@ -15,25 +14,6 @@ type AuthMiddleware struct {
 }
 
 func (h *AuthMiddleware) IsUserLoggedIn(w http.ResponseWriter, r *http.Request) (bool, *models.User) {
-	cookie, err := r.Cookie("session_id")
-	if err != nil {
-		return false, nil
-	}
-
-	sessionID := cookie.Value
-
-	var userID string
-	userID, err = h.SessionService.GetUserService(sessionID)
-	if err != nil {
-		return false, nil
-	}
-
-	user, err := h.AuthService.UserRepo.FindByID(userID)
-	if err != nil || user == nil {
-		return false, nil
-	}
-
-	return true, user
 }
 
 func (h *AuthMiddleware) IsValidEmail(email string) bool {
@@ -60,24 +40,5 @@ func (h *AuthMiddleware) IsValidPassword(password string) bool {
 
 func (h *AuthMiddleware) CheckDoubleLogging(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		isLogged, user := h.IsUserLoggedIn(w, r)
-
-		if !isLogged {
-			next.ServeHTTP(w, r)
-			return
-		}
-
-		userSessions, errSession := h.AuthService.CheckUserAlreadyLogged(user.ID)
-		if errSession != nil {
-			utils.Error(w, http.StatusInternalServerError)
-			return
-		}
-
-		if len(userSessions) > 1 {
-			http.Redirect(w, r, "/logout", http.StatusSeeOther)
-			return
-		}
-
-		next.ServeHTTP(w, r)
 	})
 }
