@@ -13,8 +13,8 @@ import (
 )
 
 func main() {
-	http.HandleFunc("/", handlers.HandleIndex)
-	http.HandleFunc("/register", handlers.HandleSignUp)
+	// http.HandleFunc("/", handlers.HandleIndex)
+	http.HandleFunc("/", handlers.HandleSignUp)
 	http.HandleFunc("/login", handlers.HandleLogin)
 	fmt.Println("http://localhost:6060/")
 	http.ListenAndServe(":6060", nil)

@@ -12,11 +12,10 @@ const (
 )
 
 func VerifyData(info *SignUpData) bool {
-	fmt.Println("TEST ", info.Email, info.Passwd, info.Username)
 	isValidEmail, _ := regexp.MatchString(ExpEmail, info.Email)
 	isValidName, _ := regexp.MatchString(ExpName, info.Username)
-	isValidPsswd, _ := regexp.MatchString(ExpEmail, info.Passwd)
-	fmt.Println(isValidEmail, isValidName, isValidPsswd)
+	isValidPsswd, _ := regexp.MatchString(ExpPasswd, info.Passwd)
+	fmt.Printf("email=%v %v,pqsswd=%v %v, user=%v %v\n", info.Email, isValidEmail, info.Passwd, isValidPsswd, info.Username, isValidName)
 	if !isValidEmail || !isValidName || !isValidPsswd {
 		return false
 	}
