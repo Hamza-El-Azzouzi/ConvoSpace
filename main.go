@@ -12,17 +12,13 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-func main() {
-	// http.HandleFunc("/", handlers.HandleIndex)
-	http.HandleFunc("/", handlers.HandleSignUp)
-	http.HandleFunc("/login", handlers.HandleLogin)
-	fmt.Println("http://localhost:6060/")
-	http.ListenAndServe(":6060", nil)
+func ProcessDB() {
 	db, err := sql.Open("sqlite3", "data.db")
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
+	defer db.Close()
 	err = db.Ping()
 	if err != nil {
 		fmt.Println(err)
@@ -50,4 +46,13 @@ func main() {
 		fmt.Println(err)
 		return
 	}
+}
+
+func main() {
+	ProcessDB()
+	http.HandleFunc("/", handlers.HandleSignUp)
+	http.HandleFunc("/login", handlers.HandleLogin)
+	http.HandleFunc("/index", handlers.HandleIndex)
+	fmt.Println("http://localhost:6060/")
+	http.ListenAndServe(":6060", nil)
 }

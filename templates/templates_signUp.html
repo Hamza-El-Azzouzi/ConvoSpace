@@ -52,6 +52,11 @@
             </div>
             <input type="submit">
         </div>
+        <div>
+            <p style="font-size: 12px;">Already registered?
+                <a href="/login">Login here!</a>
+            </p>
+        </div>
     </form>
 </body>
 <script>
@@ -105,7 +110,7 @@
             .then(response => response.json())
             .then(reply => {
                 console.log("reply => ", reply.REplyMssg)
-                if (reply.REplyMssg == "Done") {
+                if (reply.REplyMssg == "Sign Done") {
                     window.location.href = "/login"
                 }
             })

@@ -13,8 +13,19 @@ type SignUpData struct {
 	Email    string `json:"email"`
 	// ErrMessage string
 }
-type Reply struct {
+type SendReply struct {
 	REplyMssg string
+}
+
+func HandleIndex(w http.ResponseWriter, r *http.Request) {
+	tmpl, err := template.ParseFiles("templates/templates_index.html")
+	if err != nil {
+		HandleError(w, 404)
+	}
+	err = tmpl.Execute(w, "hello")
+	if err != nil {
+		HandleError(w, 500)
+	}
 }
 
 func HandleSignUp(w http.ResponseWriter, r *http.Request) {
@@ -44,57 +55,9 @@ func HandleSignUp(w http.ResponseWriter, r *http.Request) {
 			fmt.Println("test ", info)
 		}
 		w.Header().Set("Content-Type", "application/json")
-		response := &Reply{
-			REplyMssg: "Done",
+		response := &SendReply{
+			REplyMssg: "Sign Done",
 		}
 		json.NewEncoder(w).Encode(&response)
 	}
-
-	// fmt.Println("test ", info)
-	// info := &SignUpData{
-	// 	Username: r.FormValue("username"),
-	// 	Email:    r.FormValue("email"),
-	// 	Passwd:   r.FormValue("passwd"),
-	// }
-
-	// if !VerifyData(info) {
-	// 	fmt.Println("errorData")
-	// 	// info.ErrMessage = "invalid DATA"
-	// 	// http.Redirect(w, r, "/", 200)
-	// 	tmpl, err = template.ParseFiles("templates/templates_signUp.html")
-	// 	if err != nil {
-	// 		HandleError(w, 404)
-	// 	}
-	// }
-}
-
-func HandleLogin(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("testLOGIN")
-	switch true {
-	case r.URL.Path != "/login":
-		HandleError(w, 404)
-	case r.Method == http.MethodGet:
-		tmpl, err := template.ParseFiles("templates/templates_login.html")
-		if err != nil {
-			HandleError(w, 404)
-		}
-		// fmt.Println("test ", info)
-		err = tmpl.Execute(w, "info1")
-		if err != nil {
-			HandleError(w, 500)
-		}
-	case r.Method == http.MethodPost:
-		tmpl, err := template.ParseFiles("templates/templates_login.html")
-		if err != nil {
-			HandleError(w, 404)
-		}
-		// fmt.Println("test ", info)
-		err = tmpl.Execute(w, "info2")
-		if err != nil {
-			HandleError(w, 500)
-		}
-
-	}
-
-	// http.Redirect(w, r, "/", 200)
 }
