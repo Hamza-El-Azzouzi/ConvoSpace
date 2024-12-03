@@ -18,10 +18,13 @@ func HandleError(w http.ResponseWriter, code int) {
 		error.Message = "Page Not Found"
 	case 405:
 		error.StatusCode = code
-		error.Message = "Method not Allowd"
+		error.Message = "Method not Allowdr"
 	case 500:
 		error.StatusCode = code
 		error.Message = "Internal Server Error"
+	case 400:
+		error.StatusCode = code
+		error.Message = "Bad Request"
 	}
 	w.WriteHeader(error.StatusCode)
 
@@ -30,7 +33,6 @@ func HandleError(w http.ResponseWriter, code int) {
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
 		return
 	}
-
 	err = tmpl.Execute(w, error)
 	if err != nil {
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
