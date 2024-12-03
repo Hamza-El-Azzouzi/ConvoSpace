@@ -6,7 +6,6 @@ CREATE TABLE
         password_hash TEXT NOT NULL,
         created_at TIMESTAMP DEFAULT (DATETIME ('now', 'localtime'))
     );
-
 CREATE TABLE
     posts (
         id TEXT PRIMARY KEY,
@@ -15,29 +14,6 @@ CREATE TABLE
         content TEXT NOT NULL,
         created_at TIMESTAMP DEFAULT (DATETIME ('now', 'localtime')),
         FOREIGN KEY (user_id) REFERENCES users (id) ON UPDATE CASCADE ON DELETE CASCADE
-    );
-
-CREATE TABLE
-    comments (
-        id TEXT PRIMARY KEY,
-        user_id TEXT NOT NULL,
-        post_id TEXT NOT NULL,
-        content TEXT NOT NULL,
-        created_at TIMESTAMP DEFAULT (DATETIME ('now', 'localtime')),
-        FOREIGN KEY (user_id) REFERENCES users (id) ON UPDATE CASCADE ON DELETE CASCADE,
-        FOREIGN KEY (post_id) REFERENCES posts (id) ON UPDATE CASCADE ON DELETE CASCADE
-    );
-
-CREATE TABLE
-    categories (id TEXT PRIMARY KEY, name TEXT NOT NULL UNIQUE);
-
-CREATE TABLE
-    post_categories (
-        post_id TEXT NOT NULL,
-        category_id TEXT NOT NULL,
-        PRIMARY KEY (post_id, category_id),
-        FOREIGN KEY (post_id) REFERENCES posts (id) ON UPDATE CASCADE ON DELETE CASCADE,
-        FOREIGN KEY (category_id) REFERENCES categories (id) ON UPDATE CASCADE ON DELETE CASCADE
     );
 
 CREATE TABLE
