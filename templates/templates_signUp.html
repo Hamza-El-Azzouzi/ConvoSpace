@@ -32,27 +32,85 @@
 </head>
 
 <body>
-    <form action="/register" method="POST" class="singUpForm">
+    <form class="singUpForm">
         <div class="signUp">
             <h1>Sign Up</h1>
             <div>
-                {{if .ErrMessage}}
-                <h6 style="color: red;">{{.ErrMessage}}</h6>
-                {{end}}
                 <label>username</label>
                 <input type="text" placeholder="Enter your name..." name="username">
+                <p id="nameErr"></p>
             </div>
             <div>
                 <label>email</label>
                 <input type="email" placeholder="Enter your email address..." name="email">
+                <p id="emailErr"></p>
             </div>
             <div>
                 <label>password</label>
                 <input type="password" placeholder="Enter your password..." name="passwd">
+                <p id="passwdErr"></p>
             </div>
             <input type="submit">
         </div>
     </form>
 </body>
+<script>
+    const username = document.querySelector("input[name='username']")
+    const email = document.querySelector("input[name='email']")
+    const password = document.querySelector("input[name='passwd']")
+    const button = document.querySelector("input[type='submit']")
+    const ErrMessageName = document.getElementById("nameErr")
+    const ErrMessageEmail = document.getElementById("emailErr")
+    const ErrMessagePasswd = document.getElementById("passwdErr")
+
+    const ExpName = /^[A-Za-z0-9]{3,20}$/
+    const ExpEmail = /^[a-zA-Z0-9._+-=]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+    const ExpPasswd = /^[A-Za-z0-9]{8,20}$/
+    const Error = (elem, errorMssg) => {
+        elem.textContent = errorMssg
+        elem.style.color = "red"
+        elem.style.fontSize = "12px"
+    }
+
+    const VerifyData = () => {
+        ErrMessageName.textContent = ""
+        ErrMessageEmail.textContent = ""
+        ErrMessagePasswd.textContent = ""
+        switch (true) {
+            case (!ExpName.test(username.value)):
+                console.log("test ", ExpName.test(username.value), username.value)
+                Error(ErrMessageName, "invalid Name!! enter a valid name")
+                break
+            case (!ExpEmail.test(email.value)):
+                Error(ErrMessageEmail, "invalid e,ail!! enter a valid email")
+                break
+            case (!ExpPasswd.test(password.value)):
+                Error(ErrMessagePasswd, "invalid password!! enter a valid password")
+        }
+    }
+
+    button.addEventListener("click", (event) => {
+        event.preventDefault()
+        VerifyData()
+
+        console.log(username.value, email.value, password.value)
+
+        fetch("/", {
+            headers: {
+                "Content-Type": "application/json",
+            },
+            method: "POST",
+            body: JSON.stringify({ username: username.value, email: email.value, password: password.value }),
+        })
+            .then(response => response.json())
+            .then(reply => {
+                console.log("reply => ", reply.REplyMssg)
+                if (reply.REplyMssg == "Done") {
+                    window.location.href = "/login"
+                }
+            })
+    })
+
+</script>
 
 </html>
