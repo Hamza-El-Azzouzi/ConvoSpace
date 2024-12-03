@@ -1,44 +1,55 @@
 function SubmitComment(event) {
-    const pathname = window.location.pathname;
-    const postID = pathname.split('/').pop();
-    let isValid = true;
+  // 1. Extract Post ID from Current URL
+  const pathname = window.location.pathname;
+  const postID = pathname.substring(pathname.lastIndexOf('/') +1)
+  // 2. Validation Setup
+  let isValid = true;
+  document.getElementById('textarea-error').textContent = '';
 
-    document.getElementById('textarea-error').textContent = '';
+  // 3. Textarea Validation
+  const textareaInput = document.querySelector('textarea[name="textarea"]');
+  if (!textareaInput.value.trim()) {
+      document.getElementById('textarea-error').textContent = 'Comment is required.';
+      isValid = false;
+  }
 
-    const textareaInput = document.querySelector('textarea[name="textarea"]');
-    if (!textareaInput.value.trim()) {
-        document.getElementById('textarea-error').textContent = 'Comment is required.';
-        isValid = false;
-    }
-    
-    if (!isValid) {
-        event.preventDefault();
-        return
-    }
-    event.preventDefault();
-    const formData = textareaInput.value;
-      
-    fetch("/sendcomment", {
+  // 4. Prevent Form Submission if Invalid
+  if (!isValid) {
+      event.preventDefault();
+      return;
+  }
+
+  // 5. Prevent Default Form Submission
+  event.preventDefault();
+
+  // 6. Prepare Form Data
+  const formData = textareaInput.value;
+
+  // 7. Send Comment via Fetch API
+  fetch("/sendcomment", {
       method: "POST",
       headers: {
-        "Content-Type": "application/json",
+          "Content-Type": "application/json",
       },
       body: JSON.stringify({ content: formData, postID: postID }),
-    })
-      .then((response) => {
-        if (!response.ok) {
+  })
+  .then((response) => {
+      // 8. Check Response Validity
+      if (!response.ok) {
           throw new Error(`Failed to submit the comment.`);
-        }
-        return response.json();
-      })
-      .then((comments) => {
-        UpdateComment(comments);
-        textarea.value = "";
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
-  }
+      }
+      return response.json();
+  })
+  .then((comments) => {
+      // 9. Update Comment Section
+      UpdateComment(comments);
+      textarea.value = "";
+  })
+  .catch((error) => {
+      // 10. Error Handling
+      console.error("Error:", error);
+  });
+}
   function UpdateComment(comments) {
     const commentSection = document.querySelector(".comment-section");
 

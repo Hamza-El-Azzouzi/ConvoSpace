@@ -74,6 +74,8 @@ CREATE TABLE
         FOREIGN KEY (user_id) REFERENCES users (id) ON UPDATE CASCADE ON DELETE CASCADE
     );
 
+DELETE FROM users = WHERE id = c7b879b3-81f0-46a9-a9e5-a53362cfc6e8;
+
 CREATE INDEX idx_user_id_session ON sessions (user_id);
 
 CREATE INDEX idx_post_categories_post_id ON post_categories (post_id);
