@@ -1,13 +1,11 @@
 function SubmitComment(event) {
-    // 1. Extract Post ID from Current URL
+
     const pathname = window.location.pathname;
     const postID = pathname.substring(pathname.lastIndexOf('/') + 1)
 
-    // 2. Validation Setup
     const errdisplay = document.getElementById('textarea-error');
     errdisplay.textContent = '';
 
-    // 3. Textarea Validation & Prevent Form Submission if Invalid
     const textareaInput = document.querySelector('textarea[name="textarea"]');
     const comvalue = textareaInput.value.trim();
     if (!comvalue) {
@@ -16,13 +14,10 @@ function SubmitComment(event) {
         return
     }
 
-    // 4. Prevent Default Form Submission
     event.preventDefault();
 
-    // 5. Prepare Form Data
     const formData = textareaInput.value;
 
-    // 6. Send Comment via Fetch API
     fetch("/sendcomment", {
         method: "POST",
         headers: {
@@ -31,19 +26,16 @@ function SubmitComment(event) {
         body: JSON.stringify({ content: formData, postID: postID }),
     })
         .then((response) => {
-            // 8. Check Response Validity
             if (!response.ok) {
                 throw new Error(`Failed to submit the comment.`);
             }
             return response.json();
         })
         .then((comments) => {
-            // 9. Update Comment Section
             UpdateComment(comments);
             textarea.value = "";
         })
         .catch((error) => {
-            // 10. Error Handling
             console.error("Error:", error);
         });
 }

@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"strconv"
 	"strings"
@@ -43,12 +44,12 @@ func (p *PostHandler) Posts(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	pagination := pathParts[2]
-	if pagination ==""{
+	if pagination == "" {
 		utils.Error(w, http.StatusNotFound)
 		return
 	}
-	nPagination ,err:= strconv.Atoi(pagination)
-	if err != err{
+	nPagination, err := strconv.Atoi(pagination)
+	if err != err {
 		utils.Error(w, http.StatusNotFound)
 		return
 	}
@@ -157,7 +158,7 @@ func (p *PostHandler) DetailsPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	postID := pathParts[2]
-	if postID == ""{
+	if postID == "" {
 		utils.Error(w, http.StatusNotFound)
 		return
 	}
@@ -193,17 +194,24 @@ func (p *PostHandler) CommentSaver(w http.ResponseWriter, r *http.Request) {
 		PostID  string `json:"postID"`
 	}
 
-	err := json.NewDecoder(r.Body).Decode(&commentData)
+	//
+	readbody, err := io.ReadAll(r.Body)
+	if err != nil {
+		utils.Error(w, http.StatusBadRequest)
+		return
+	}
+	defer r.Body.Close()
+	err = json.Unmarshal(readbody, &commentData)
 	if err != nil {
 		utils.Error(w, http.StatusBadRequest)
 		return
 	}
 
-	commetContentWithNewLines := strings.ReplaceAll(commentData.Content, "\n", "<br>")
+	// commetContentWithNewLines := strings.ReplaceAll(commentData.Content, "\n", "<br>")
 	isLogged, usermid := p.AuthMidlaware.IsUserLoggedIn(w, r)
 
 	if isLogged {
-		err = p.CommentService.SaveComment(usermid.ID, commentData.PostID, commetContentWithNewLines)
+		err = p.CommentService.SaveComment(usermid.ID, commentData.PostID, commentData.Content)
 		if err != nil {
 			utils.Error(w, http.StatusInternalServerError)
 			return
@@ -230,7 +238,7 @@ func (p *PostHandler) PostFilter(w http.ResponseWriter, r *http.Request) {
 	var err error
 	categorie := r.URL.Query().Get("categories")
 	pagination := r.URL.Query().Get("pagination")
-	nPagination , err := strconv.Atoi(pagination)
+	nPagination, err := strconv.Atoi(pagination)
 	if err != nil {
 		utils.Error(w, http.StatusBadRequest)
 		return
@@ -241,7 +249,7 @@ func (p *PostHandler) PostFilter(w http.ResponseWriter, r *http.Request) {
 		filterby = r.URL.Query().Get("filterby")
 	}
 	if filterby != "" {
-		posts, err = p.PostService.FilterPost(filterby, categorie, usermid.ID,nPagination)
+		posts, err = p.PostService.FilterPost(filterby, categorie, usermid.ID, nPagination)
 		if err != nil {
 			fmt.Println(err)
 			utils.Error(w, http.StatusInternalServerError)
@@ -249,7 +257,7 @@ func (p *PostHandler) PostFilter(w http.ResponseWriter, r *http.Request) {
 		}
 
 	} else {
-		posts, err = p.PostService.FilterPost(filterby, categorie, uuid.Nil,nPagination)
+		posts, err = p.PostService.FilterPost(filterby, categorie, uuid.Nil, nPagination)
 		if err != nil {
 			fmt.Println(err)
 			utils.Error(w, http.StatusInternalServerError)
