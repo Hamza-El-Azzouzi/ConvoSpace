@@ -13,9 +13,9 @@ function fetchData(page) {
       populatePosts(data.LoggedIn, data.posts);
       updateUserSection(data.LoggedIn, data.Username);
       updateFilterPostsSection(data.LoggedIn);
-      if (data.posts){
+      if (data.posts) {
         const totalPosts = data.posts.length > 0 ? data.posts[0].TotalCount : 0;
-        updatePaginationControls(totalPosts,currentPage);
+        updatePaginationControls(totalPosts, currentPage);
       }
     })
     .catch((error) => {
@@ -32,7 +32,7 @@ function updateNavbar(loggedIn) {
   } else {
     navbar.innerHTML = `
                 <li><a href="/"><i aria-hidden="true"></i> Home</a></li>
-                <li><a href="/login"><i aria-hidden="true"></i> Login Area</a></li>`;
+                <li><a href="/register"><i aria-hidden="true"></i> Login Area</a></li>`;
   }
 }
 
@@ -113,9 +113,8 @@ function populatePosts(loggedIn, posts) {
                   <span>${post.CategoryName}</span>
                 </div>
                 <div class="right-section">
-                  ${
-                    loggedIn
-                      ? `
+                  ${loggedIn
+            ? `
                         <button class="button like" onclick="handleLikeDislike('${post.PostID}', 'like', event)">
                           <span id='${post.PostID}-like'>👍${post.LikeCount}</span>
                         </button>
@@ -123,7 +122,7 @@ function populatePosts(loggedIn, posts) {
                           <span id='${post.PostID}-dislike'>👎${post.DisLikeCount}</span>
                         </button>
                         `
-                      : `
+            : `
                         <button class="button like">
                           <span id='${post.PostID}-like'>👍${post.LikeCount}</span>
                         </button>
@@ -131,14 +130,13 @@ function populatePosts(loggedIn, posts) {
                           <span id='${post.PostID}-dislike'>👎${post.DisLikeCount}</span>
                         </button>
                         `
-                  }
+          }
                 </div>
               </div>
               <div class="ques-type302">
                 <a href="detailsPost/${post.PostID}">
-                  <button class="comment-button">${
-                    post.CommentCount
-                  } Comments</button>
+                  <button class="comment-button">${post.CommentCount
+          } Comments</button>
                 </a>
               </div>
             </div>
@@ -190,7 +188,7 @@ function handleLikeDislike(id, action) {
 
 function updatePostLikeDislikeCount(id, likeCount, dislikeCount, type) {
   if (type === "comment") {
-    
+
     const likeSpan = document.querySelector(
       `#${CSS.escape(id)}-likecomment`
     );
@@ -209,7 +207,7 @@ function updatePostLikeDislikeCount(id, likeCount, dislikeCount, type) {
   }
 }
 
-function updatePaginationControls(totalPages,currentPage) {
+function updatePaginationControls(totalPages, currentPage) {
   const pageInfo = document.querySelector("#page-info");
   const nextBtn = document.querySelector("#next-btn");
   const prevBtn = document.querySelector("#prev-btn");

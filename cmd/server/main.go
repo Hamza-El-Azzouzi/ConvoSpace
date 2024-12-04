@@ -18,6 +18,7 @@ func main() {
 		log.Fatalf("error in DB : %v", err)
 		return
 	}
+	
 	err = database.RunMigrations(db)
 	if err != nil {
 		fmt.Printf("Error running migrations: %v", err)
@@ -41,7 +42,7 @@ func main() {
 		likeRepo,
 		sessionRepo)
 
-	authMiddleware := &middleware.AuthMiddleware{AuthService: authService,SessionService: sessionService}
+	authMiddleware := &middleware.AuthMiddleware{AuthService: authService, SessionService: sessionService}
 
 	authHandler, postHandler, likeHandler := internal.InitHandlers(authService,
 		postService,
@@ -61,5 +62,5 @@ func main() {
 
 	fmt.Println("Starting the forum server...\nWelcome http://localhost:8082/")
 
-	log.Fatal(http.ListenAndServe("0.0.0.0:8082", mux))
+	log.Fatal(http.ListenAndServe("0.0.0.0:8082", nil))
 }

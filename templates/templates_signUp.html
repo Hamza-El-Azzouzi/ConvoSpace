@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="language" content="English">
+    <title>Forum | Sign Up</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+        }
+
+        .singUpForm {
+            border: 1px solid #ccc;
+            padding: 16px;
+            /* width: 90%; */
+            max-width: 500px;
+            background-color: white;
+        }
+
+        .singUpForm label {
+            display: block;
+            margin-bottom: 5px;
+        }
+    </style>
+
+</head>
+
+<body>
+    <form class="singUpForm">
+        <div class="signUp">
+            <h1>Sign Up</h1>
+            <div>
+                <label>username</label>
+                <input type="text" placeholder="Enter your name..." name="username" required>
+                <p id="nameErr"></p>
+            </div>
+            <div>
+                <label>email</label>
+                <input type="email" placeholder="Enter your email address..." name="email" required>
+                <p id="emailErr"></p>
+            </div>
+            <div>
+                <label>password</label>
+                <input type="password" placeholder="Enter your password..." name="passwd" required>
+                <p id="passwdErr"></p>
+            </div>
+            <div>
+                <label>Confirm password</label>
+                <input type="password" placeholder="Confirm your password..." name="confirmPasswd" required>
+                <p id="confirmPasswdErr"></p>
+            </div>
+            <input type="submit" value="Sign Up">
+        </div>
+        <div>
+            <p style="font-size: 12px;">Already registered?
+                <a href="/login">Login here!</a>
+            </p>
+        </div>
+    </form>
+</body>
+<script>
+    const username = document.querySelector("input[name='username']")
+    const email = document.querySelector("input[name='email']")
+    const password = document.querySelector("input[name='passwd']")
+    const confirmPassword = document.querySelector("input[name='confirmPasswd']")
+    const button = document.querySelector("input[type='submit']")
+    const ErrMessageName = document.getElementById("nameErr")
+    const ErrMessageEmail = document.getElementById("emailErr")
+    const ErrMessagePasswd = document.getElementById("passwdErr")
+    const ErrMessageConfirmPasswd = document.getElementById('confirmPasswdErr')
+    console.log("--------", confirmPassword.value)
+    const ExpName = /^[A-Za-z0-9]{3,20}$/
+    const ExpEmail = /^[a-zA-Z0-9._+-=]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+    // const ExpPasswd = /^[A-Za-z0-9]{8,20}$/
+    const IsValidPsswd = (passwd) => {
+        secure = true
+        let ExpPasswd = [/.{7,}/, /[a-z]/, /[A-Z]/, /[0-9]/, /[^\\d\\w]/]
+        console.log("passwd ", ExpPasswd)
+        for (let elem of ExpPasswd) {
+            if (!elem.test(passwd)) {
+                secure = false
+                break
+            }
+        }
+        return secure
+    }
+    const Error = (elem, errorMssg) => {
+        elem.textContent = errorMssg
+        elem.style.color = "red"
+        elem.style.fontSize = "12px"
+    }
+
+    const VerifyData = () => {
+        ErrMessageName.textContent = ""
+        ErrMessageEmail.textContent = ""
+        ErrMessagePasswd.textContent = ""
+        ErrMessageConfirmPasswd.textContent = ""
+        switch (true) {
+            case (!ExpName.test(username.value)):
+                console.log("test ", ExpName.test(username.value), username.value)
+                Error(ErrMessageName, "invalid Name!! enter a valid name")
+                break
+            case (!ExpEmail.test(email.value)):
+                Error(ErrMessageEmail, "invalid e,ail!! enter a valid email")
+                break
+            case (!IsValidPsswd(password.value)):
+                Error(ErrMessagePasswd, "invalid password!! enter a valid password")
+                break
+            case (!IsValidPsswd(confirmPassword.value)):
+                Error(ErrMessageConfirmPasswd, "invalid password!! enter a valid password")
+                break
+            case (password.value !== confirmPassword.value):
+                console.log(password.value, confirmPassword.value)
+                Error(ErrMessageConfirmPasswd, "password confirmation doesn't match!!")
+        }
+    }
+
+    button.addEventListener("click", (event) => {
+        event.preventDefault()
+        VerifyData()
+
+        console.log(username.value, email.value, password.value, confirmPassword.value)
+
+        fetch("/register", {
+            headers: {
+                "Content-Type": "application/json",
+            },
+            method: "POST",
+            body: JSON.stringify({
+                username: username.value,
+                email: email.value,
+                password: password.value,
+                confirmPassword: confirmPassword.value
+            }),
+        })
+            .then(response => response.json())
+            .then(reply => {
+                console.log("reply => ", reply.REplyMssg)
+                if (reply.REplyMssg == "Sign Done") {
+                    window.location.href = "/login"
+                }
+            })
+    })
+
+</script>
+
+</html>

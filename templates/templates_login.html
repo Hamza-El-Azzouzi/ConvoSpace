@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>LOGIN</title>
+</head>
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background-color: #f4f4f4;
+    }
+
+    .top {
+        position: absolute;
+        top: 0px;
+        left: 5px;
+    }
+
+    .loginForm {
+        border: 1px solid #ccc;
+        padding: 16px;
+        /* width: 90%; */
+        max-width: 500px;
+        background-color: white;
+    }
+
+    .loginForm label {
+        display: block;
+        margin-bottom: 5px;
+    }
+</style>
+
+<body>
+    <div class="top">
+        <h6>{{.}}</h6>
+    </div>
+
+    <form class="loginForm">
+        <div class="login">
+            <h1>Login</h1>
+            <div>
+                <label>email</label>
+                <input type="email" placeholder="Enter your email address..." name="email">
+                <p id="emailErr"></p>
+            </div>
+            <div>
+                <label>password</label>
+                <input type="password" placeholder="Enter your LOgin password..." name="passwd">
+                <p id="passwdErr"></p>
+            </div>
+            <input type="submit" value="Login">
+        </div>
+        <div>
+            <p style="font-size: 12px;">New here?
+                <a href="/register">Sign up here!</a>
+            </p>
+        </div>
+    </form>
+</body>
+<script>
+    const email = document.querySelector("input[name='email']")
+    const password = document.querySelector("input[name='passwd']")
+    const submitBtn = document.querySelector("input[type='submit']")
+    const ErrMessageEmail = document.getElementById("emailErr")
+    const ErrMessagePasswd = document.getElementById("passwdErr")
+    const ExpEmail = /^[a-zA-Z0-9._+-=]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+    console.log("test7")
+    const IsValidPsswd = (passwd) => {
+        secure = true
+        let ExpPasswd = [/.{7,}/, /[a-z]/, /[A-Z]/, /[0-9]/, /[^\\d\\w]/]
+        console.log("passwd ", ExpPasswd)
+        for (let elem of ExpPasswd) {
+            if (!elem.test(passwd)) {
+                secure = false
+                break
+            }
+        }
+        return secure
+    }
+    const Error = (elem, errorMssg) => {
+        elem.textContent = errorMssg
+        elem.style.color = "red"
+        elem.style.fontSize = "12px"
+    }
+
+    const VerifyData = () => {
+        ErrMessageEmail.textContent = ""
+        ErrMessagePasswd.textContent = ""
+        switch (true) {
+            case (!ExpEmail.test(email.value)):
+                Error(ErrMessageEmail, "invalid e,ail!! enter a valid email")
+                break
+            case (!IsValidPsswd(password.value)):
+                Error(ErrMessagePasswd, "invalid password!! enter a valid password")
+        }
+    }
+
+    submitBtn.addEventListener("click", (event) => {
+        event.preventDefault()
+        VerifyData()
+
+        fetch("/login", {
+            headers: {
+                "Content-Type": "application/json",
+            },
+            method: "POST",
+            body: JSON.stringify({ email: email.value, password: password.value, })
+        })
+            .then(response => response.json())
+            .then(reply => {
+                if (reply.REplyMssg == "login Done") {
+                    window.location.href = "/"
+                }
+            })
+    })
+</script>
+
+</html>
