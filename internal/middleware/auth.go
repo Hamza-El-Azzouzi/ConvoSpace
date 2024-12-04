@@ -12,7 +12,7 @@ type AuthMiddleware struct {
 	AuthService    *services.AuthService
 	SessionService *services.SessionService
 }
-
+// check if the user is logged retunr true/false & userData || nil
 func (h *AuthMiddleware) IsUserLoggedIn(w http.ResponseWriter, r *http.Request) (bool, *models.User) {
 }
 
@@ -37,7 +37,7 @@ func (h *AuthMiddleware) IsValidPassword(password string) bool {
 
 	return secure
 }
-
+// midlware to check if the user has already an session opend
 func (h *AuthMiddleware) CheckDoubleLogging(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 	})

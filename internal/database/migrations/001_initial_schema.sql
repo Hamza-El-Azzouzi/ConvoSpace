@@ -15,7 +15,7 @@ CREATE TABLE
         content TEXT NOT NULL,
         created_at TIMESTAMP DEFAULT (DATETIME ('now', 'localtime')),
         FOREIGN KEY (user_id) REFERENCES users (id) ON UPDATE CASCADE ON DELETE CASCADE
-    );
+    ) ;
 
 CREATE TABLE
     comments (
