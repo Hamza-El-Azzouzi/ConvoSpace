@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"encoding/json"
 	"net/http"
 	"strings"
 
@@ -9,6 +8,14 @@ import (
 	"forum/internal/services"
 	"forum/internal/utils"
 )
+
+// import (
+// 	"encoding/json"
+// 	"net/http"
+
+// 	"forum/internal/middleware"
+// 	"forum/internal/services"
+// )
 
 type LikeHandler struct {
 	LikeService   *services.LikeService
@@ -33,50 +40,36 @@ func (l *LikeHandler) DisLikeComment(w http.ResponseWriter, r *http.Request) {
 }
 
 func (l *LikeHandler) react(w http.ResponseWriter, r *http.Request, liked, typeOf string) {
-
 	if r.Method != http.MethodPost {
 		utils.Error(w, http.StatusMethodNotAllowed)
 		return
 	}
-
-	pathParts := strings.Split(r.URL.Path, "/")
-
-	if len(pathParts) != 3 {
+	postid := r.URL.Path
+	POSTid := strings.Split(postid, "/")
+	if len(POSTid) != 3 {
 		utils.Error(w, http.StatusNotFound)
-		return
 	}
+	ID := POSTid[2]
 
-	ID := pathParts[2]
+	_, user := l.AuthMidlaware.IsUserLoggedIn(w, r)
 
-	isLogged, usermid := l.AuthMidlaware.IsUserLoggedIn(w, r)
-
-	if isLogged {
-		var err error
-
-		if liked == "post" {
-			err = l.LikeService.Create(usermid.ID, ID, "", typeOf, false)
-		} else {
-			err = l.LikeService.Create(usermid.ID, "", ID, typeOf, true)
-		}
+	if liked == "post" {
+		err := l.LikeService.Create(user.ID, ID, "", typeOf, false)
 
 		if err != nil {
 			utils.Error(w, http.StatusInternalServerError)
 			return
 		}
-
-		data, err := l.LikeService.GetLikes(ID, liked)
-		if err != nil {
-			utils.Error(w, http.StatusInternalServerError)
-			return
-		}
-
-		// header to indicate that the content being sent is JSON
-		w.Header().Set("Content-Type", "application/json")
-		// Creates a JSON encoder that writes to the HTTP response writer
-		// Converts the data into a JSON-formatted string
-		// Writes the JSON directly to the HTTP response
-		json.NewEncoder(w).Encode(data)
 	} else {
-		utils.Error(w, http.StatusForbidden)
+		err := l.LikeService.Create(user.ID, "", ID, typeOf, true)
+		if err != nil {
+			utils.Error(w, http.StatusInternalServerError)
+			return
+		}
 	}
+
+	// data, err := l.LikeService.GetLikes(ID, liked)
+	// w.Header().Set("Content-Type", "application/json")
+	// json.NewEncoder(w).Encode(data)
+
 }
