@@ -182,7 +182,9 @@ func (p *PostHandler) DetailsPost(w http.ResponseWriter, r *http.Request) {
 
 	utils.OpenHtml("post-deatils.html", w, data)
 }
-
+//if the user is logged
+//recieve the request from the front end check the http method if not post show error 405 
+//then save it to the database and fetch all comments about the post to show them in the detailpost page using json
 func (p *PostHandler) CommentSaver(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		utils.Error(w, http.StatusMethodNotAllowed)
