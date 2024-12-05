@@ -3,7 +3,6 @@ package handlers
 import (
 	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
 	"strconv"
 	"strings"
@@ -194,14 +193,8 @@ func (p *PostHandler) CommentSaver(w http.ResponseWriter, r *http.Request) {
 		PostID  string `json:"postID"`
 	}
 
-	//
-	readbody, err := io.ReadAll(r.Body)
-	if err != nil {
-		utils.Error(w, http.StatusBadRequest)
-		return
-	}
+	err := json.NewDecoder(r.Body).Decode(&commentData)
 	defer r.Body.Close()
-	err = json.Unmarshal(readbody, &commentData)
 	if err != nil {
 		utils.Error(w, http.StatusBadRequest)
 		return
