@@ -5,7 +5,6 @@ import (
 
 	"github.com/gofrs/uuid/v5"
 )
-
 type Like struct {
 	ID        uuid.UUID
 	UserID    uuid.UUID
