@@ -205,8 +205,16 @@ func (p *PostHandler) CommentSaver(w http.ResponseWriter, r *http.Request) {
 	if isloged {
 		err := p.CommentService.SaveComment(userId.ID, commentData.PostId, commentData.Content)
 		if err != nil {
+			utils.Error(w, http.StatusInternalServerError)
+			return
 		}
-		utils.Error(w, http.StatusInternalServerError)
+		comment, err := p.CommentService.GetCommentByPost(commentData.PostId)
+		if err != nil {
+			utils.Error(w, http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(comment)
 	}
 }
 

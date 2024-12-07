@@ -28,6 +28,10 @@ func (c *CommentService) SaveComment(userID uuid.UUID, postID, content string) e
 }
 
 // get all comments about a post that just got a new comment by calling the methode in repository
-// func (c *CommentService) GetCommentByPost(postID string) ([]models.CommentDetails,error) {
-
-// }
+func (c *CommentService) GetCommentByPost(postID string) ([]models.CommentDetails, error) {
+	comment, err := c.CommentRepo.GetCommentByPost(postID)
+	if err != nil {
+		return nil, err
+	}
+	return comment, nil
+}
