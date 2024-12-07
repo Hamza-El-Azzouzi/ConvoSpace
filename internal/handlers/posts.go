@@ -198,11 +198,16 @@ func (p *PostHandler) CommentSaver(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
 	err := decoder.Decode(&commentData)
 	if err != nil {
-		http.Error(w, "Invalid Json", http.StatusBadRequest)
+		utils.Error(w, http.StatusBadRequest)
 		return
 	}
-	
-	// fmt.Println("re:", commentData)
+	isloged, userId := p.AuthMidlaware.IsUserLoggedIn(w, r)
+	if isloged {
+		err := p.CommentService.SaveComment(userId.ID, commentData.PostId, commentData.Content)
+		if err != nil {
+		}
+		utils.Error(w, http.StatusInternalServerError)
+	}
 }
 
 func (p *PostHandler) PostFilter(w http.ResponseWriter, r *http.Request) {

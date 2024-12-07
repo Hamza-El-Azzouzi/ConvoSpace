@@ -9,7 +9,7 @@ function SubmitComment(event) {
     const textarea = document.querySelector('.comment-textarea');
 
     if (textarea.value.trim() === "") {
-        alert('please enter text !!!')
+        document.getElementById('textarea-error').textContent = 'Comment is required.';
         return
     }
     const currentValue = textarea.value
