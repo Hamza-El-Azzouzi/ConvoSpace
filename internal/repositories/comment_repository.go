@@ -14,9 +14,7 @@ type CommentRepositorie struct {
 // save the comment in the data base and return error
 func (c *CommentRepositorie) Create(comment *models.Comment) error {
 	comment.Content = html.EscapeString(comment.Content)
-	data, _ := c.DB.Prepare("INSERT INTO comments (id, user_id, post_id, content, created_at) VALUES (?, ?, ?, ?, ?)")
-	defer data.Close()
-	_, err := data.Exec(
+	_, err := c.DB.Exec("INSERT INTO comments (id, user_id, post_id, content, created_at) VALUES (?, ?, ?, ?, ?)",
 		comment.ID,
 		comment.UserID,
 		comment.PostID,
