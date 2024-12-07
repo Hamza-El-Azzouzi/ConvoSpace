@@ -12,7 +12,7 @@ function SubmitComment(event) {
         alert('please enter text !!!')
         return
     }
-    const currentValue = textarea.value.trim()
+    const currentValue = textarea.value
 
     async function fetchData() {
 
@@ -20,20 +20,21 @@ function SubmitComment(event) {
             const response = await fetch('/sendcomment',{
                 method: "POST",
                 headers: {
-                    'content-Type': 'application/json',
+                    'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({content: currentValue, postId: currentPostId })
             })
             if (!response.ok) {
                 throw new Error('http error')
             }
+            textarea.value = ''
             const data = await response.json()
             return data
-            textarea.value = ''
+        } catch (error) {
+            console.error('There was a problem in fetch :', error);
         }
-    } catch (error) {
-        console.error('There was a problem in fetch :', error);
-    }
+    } 
+    fetchData()
 }
 
 

@@ -187,6 +187,22 @@ func (p *PostHandler) DetailsPost(w http.ResponseWriter, r *http.Request) {
 // recieve the request from the front end check the http method if not post show error 405
 // then save it to the database and fetch all comments about the post to show them in the detailpost page using json
 func (p *PostHandler) CommentSaver(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		utils.Error(w, http.StatusMethodNotAllowed)
+		return
+	}
+	var commentData struct {
+		Content string `json:"content"`
+		PostId  string `json:"postId"`
+	}
+	decoder := json.NewDecoder(r.Body)
+	err := decoder.Decode(&commentData)
+	if err != nil {
+		http.Error(w, "Invalid Json", http.StatusBadRequest)
+		return
+	}
+	
+	// fmt.Println("re:", commentData)
 }
 
 func (p *PostHandler) PostFilter(w http.ResponseWriter, r *http.Request) {
