@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"encoding/json"
+	"fmt"
 	"net/http"
 	"strings"
 
@@ -8,14 +10,6 @@ import (
 	"forum/internal/services"
 	"forum/internal/utils"
 )
-
-// import (
-// 	"encoding/json"
-// 	"net/http"
-
-// 	"forum/internal/middleware"
-// 	"forum/internal/services"
-// )
 
 type LikeHandler struct {
 	LikeService   *services.LikeService
@@ -39,7 +33,7 @@ func (l *LikeHandler) DisLikeComment(w http.ResponseWriter, r *http.Request) {
 	l.react(w, r, "comment", "dislike")
 }
 
-func (l *LikeHandler) react(w http.ResponseWriter, r *http.Request, liked, typeOfReact string ) {
+func (l *LikeHandler) react(w http.ResponseWriter, r *http.Request, liked, typeOfReact string) {
 	if r.Method != http.MethodPost {
 		utils.Error(w, http.StatusMethodNotAllowed)
 		return
@@ -57,21 +51,27 @@ func (l *LikeHandler) react(w http.ResponseWriter, r *http.Request, liked, typeO
 	logedd, user := l.AuthMidlaware.IsUserLoggedIn(w, r)
 	if logedd {
 		if liked == "post" {
-			err := l.LikeService.Create(user.ID, ID, "", typeOfReact , liked )
+			err := l.LikeService.Create(user.ID, ID, "", typeOfReact, liked)
 			if err != nil {
 				utils.Error(w, http.StatusInternalServerError)
 				return
 			}
 		} else {
-			err := l.LikeService.Create(user.ID, "", ID, typeOfReact , liked)
+			err := l.LikeService.Create(user.ID, "", ID, typeOfReact, liked)
 			if err != nil {
 				utils.Error(w, http.StatusInternalServerError)
 				return
 			}
 		}
+		data, err := l.LikeService.GetLikes(ID, liked)
+		if err != nil {
+			utils.Error(w, http.StatusInternalServerError)
+			return
+		}
+		fmt.Println("ss", data)
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(data)
+	} else {
+		utils.Error(w, http.StatusForbidden)
 	}
-
-	// data, err := l.LikeService.GetLikes(ID, liked)
-	// w.Header().Set("Content-Type", "application/json")
-	// json.NewEncoder(w).Encode(data)
 }
