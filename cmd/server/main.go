@@ -41,7 +41,7 @@ func main() {
 		likeRepo,
 		sessionRepo)
 
-	authMiddleware := &middleware.AuthMiddleware{AuthService: authService,SessionService: sessionService}
+	authMiddleware := &middleware.AuthMiddleware{AuthService: authService, SessionService: sessionService}
 
 	authHandler, postHandler, likeHandler := internal.InitHandlers(authService,
 		postService,
@@ -59,7 +59,7 @@ func main() {
 
 	routes.SetupRoutes(mux, authHandler, postHandler, likeHandler, authMiddleware)
 
-	fmt.Println("Starting the forum server...\nWelcome http://localhost:8082/")
+	fmt.Println("Starting the forum server...\nWelcome http://localhost:8080/")
 
-	log.Fatal(http.ListenAndServe("0.0.0.0:8082", nil))
+	log.Fatal(http.ListenAndServe("0.0.0.0:8080", nil))
 }
