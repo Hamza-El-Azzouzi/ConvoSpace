@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"strings"
 
@@ -44,6 +43,7 @@ func (l *LikeHandler) react(w http.ResponseWriter, r *http.Request, liked, typeO
 
 	if len(POSTid) != 3 {
 		utils.Error(w, http.StatusNotFound)
+		return
 	}
 
 	ID := POSTid[2]
@@ -68,7 +68,6 @@ func (l *LikeHandler) react(w http.ResponseWriter, r *http.Request, liked, typeO
 			utils.Error(w, http.StatusInternalServerError)
 			return
 		}
-		fmt.Println("ss", data)
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(data)
 	} else {

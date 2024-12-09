@@ -28,13 +28,17 @@ func (l *LikeService) Create(userID uuid.UUID, postID, commentID string, typeOfR
 	}
 
 	var postIDPtr, commentIDPtr *string
-	postIDPtr = &postID
-	commentIDPtr = &commentID
+	if postID != ""{
+		postIDPtr = &postID
+	}
+	if commentID != ""{
+		commentIDPtr = &commentID
+	}
 
-	fmt.Println("l", postIDPtr)
-	fmt.Println("f", commentID)
-	fmt.Println("o", likeID)
-	fmt.Println("m", typeOfReact)
+	// fmt.Println("l", postIDPtr)
+	// fmt.Println("f", commentID)
+	// fmt.Println("o", likeID)
+	// fmt.Println("m", typeOfReact)
 
 	like := &models.Like{
 		ID:        likeID,
