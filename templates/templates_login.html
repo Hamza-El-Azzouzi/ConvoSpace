@@ -3,64 +3,43 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>LOGIN</title>
+    <title>Forum | Login</title>
+    <link rel="icon" type="image/png" href="/static/img/forum.png">
+    <link rel="stylesheet" href="/static/css/css_signUp.css">
+    <noscript>
+        <meta http-equiv="refresh" content="0;url=/javascript">
+    </noscript>
 </head>
-<style>
-    body {
-        margin: 0;
-        padding: 0;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        background-color: #f4f4f4;
-    }
-
-    .top {
-        position: absolute;
-        top: 0px;
-        left: 5px;
-    }
-
-    .loginForm {
-        border: 1px solid #ccc;
-        padding: 16px;
-        /* width: 90%; */
-        max-width: 500px;
-        background-color: white;
-    }
-
-    .loginForm label {
-        display: block;
-        margin-bottom: 5px;
-    }
-</style>
 
 <body>
     <div class="top">
-        <h6>{{.}}</h6>
+        <h1><span style="color: blue;">01</span>-<img src="/static/img/letter-f.png"
+                style="width: 35px; height: auto; vertical-align: text-top;">orum
+        </h1>
     </div>
 
     <form class="loginForm">
         <div class="login">
-            <h1>Login</h1>
+
+            <h1>Welcome back</h1>
+            <span class="welcome">Whe're so excited to see you again!</span>
             <p id="otherErr"></p>
             <div>
-                <label>email</label>
-                <input type="email" placeholder="Enter your email address..." name="email">
+                <label>EMAIL <span style="color: red;">*</span></label>
+                <input type="email" placeholder="Enter your email address..." name="email" required>
                 <p id="emailErr"></p>
             </div>
             <div>
-                <label>password</label>
-                <input type="password" placeholder="Enter your Login password..." name="passwd">
+                <label>PASSWORD <span style="color: red;">*</span></label>
+                <input type="password" placeholder="Enter your Login password..." name="passwd" required>
                 <p id="passwdErr"></p>
             </div>
             <input type="submit" value="Login">
         </div>
-        <div>
-            <p style="font-size: 12px;">New here?
-                <a href="/register">Sign up here!</a>
-            </p>
+        <div class="info">
+            <span>New here?
+                <a href="/register">Sign up here <span style="font-size: 20px;font-weight: bolder;">→</span></a>
+            </span>
         </div>
     </form>
 </body>
