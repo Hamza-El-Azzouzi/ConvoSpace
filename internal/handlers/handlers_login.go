@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -21,7 +22,9 @@ type LoginReply struct {
 }
 
 func (h *AuthHandler) LoginHandle(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("test00")
 	ActiveUser, _ := h.AuthMidlaware.IsUserLoggedIn(w, r)
+	fmt.Println("test01")
 	if ActiveUser {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
@@ -59,7 +62,9 @@ func (h *AuthHandler) LoginHandle(w http.ResponseWriter, r *http.Request) {
 			} else {
 				sessionExpires := time.Now().Add(5 * 60 * time.Minute)
 				sessionId := uuid.Must(uuid.NewV4()).String()
+				fmt.Println("test02")
 				userSession := h.SessionService.CreateSession(sessionId, sessionExpires, user.ID)
+				fmt.Println("test03")
 				if userSession != nil {
 					utils.Error(w, http.StatusInternalServerError)
 					return
@@ -69,26 +74,6 @@ func (h *AuthHandler) LoginHandle(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 	}
-}
-
-// expire the cookies time and delete sessionId from the session table
-func (h *AuthHandler) LogoutHandle(w http.ResponseWriter, r *http.Request) {
-	activeUser, _ := h.AuthMidlaware.IsUserLoggedIn(w, r)
-	if !activeUser {
-		utils.Error(w, http.StatusBadRequest)
-		return
-	}
-	sessionId, err := r.Cookie("sessionId")
-	if err == nil || sessionId.Value != "" {
-		err := h.SessionService.DeleteSession(sessionId.Value)
-		if err != nil {
-			utils.Error(w, http.StatusInternalServerError)
-			return
-		}
-	}
-
-	SetCookies(w, "sessionId", "", time.Now().Add(-1*time.Hour))
-	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
 func sendResponse(w http.ResponseWriter, reply string) {
@@ -114,4 +99,24 @@ func SetCookies(w http.ResponseWriter, name, value string, expires time.Time) {
 	}
 
 	http.SetCookie(w, cookie)
+}
+
+// expire the cookies time and delete sessionId from the session table
+func (h *AuthHandler) LogoutHandle(w http.ResponseWriter, r *http.Request) {
+	activeUser, _ := h.AuthMidlaware.IsUserLoggedIn(w, r)
+	if !activeUser {
+		utils.Error(w, http.StatusBadRequest)
+		return
+	}
+	sessionId, err := r.Cookie("sessionId")
+	if err == nil || sessionId.Value != "" {
+		err := h.SessionService.DeleteSession(sessionId.Value)
+		if err != nil {
+			utils.Error(w, http.StatusInternalServerError)
+			return
+		}
+	}
+
+	SetCookies(w, "sessionId", "", time.Now().Add(-1*time.Hour))
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }

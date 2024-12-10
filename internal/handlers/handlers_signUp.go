@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"forum/internal/middleware"
@@ -46,7 +47,7 @@ func (h *AuthHandler) RegisterHandle(w http.ResponseWriter, r *http.Request) {
 			!h.AuthMidlaware.IsValidPassword(info.Passwd) ||
 			!h.AuthMidlaware.IsValidPassword(info.ConfirmPasswd) ||
 			!h.AuthMidlaware.IsmatchPassword(info.Passwd, info.ConfirmPasswd) {
-
+			fmt.Println("test", h.AuthMidlaware.IsValidName(info.Username))
 			utils.Error(w, http.StatusBadRequest)
 		} else {
 			userExist := h.AuthService.Register(info.Username, info.Email, info.Passwd)

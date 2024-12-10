@@ -1,14 +1,3 @@
-// function validateForm(event) {
-
-// }
-
-// function validateRegistrationForm(event) {
-
-// }
-
-// function showError(selector, message) {
-
-// }
 const username = document.querySelector("input[name='username']")
 const email = document.querySelector("input[name='email']")
 const password = document.querySelector("input[name='passwd']")
@@ -16,8 +5,10 @@ const submitBtn = document.querySelector("input[type='submit']")
 const ErrMessageEmail = document.getElementById("emailErr")
 const ErrMessagePasswd = document.getElementById("passwdErr")
 // const Err = document.getElementById("otherErr")
+
 const InvalidEmail = "invalid email!! enter a valid email"
 const InvalidPsswd = "invalid password!! enter a valid password"
+
 const ExpEmail = /^[a-zA-Z0-9._+-=]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
 const ExpPasswd = /^(?=(.*[a-z]))(?=(.*[A-Z]))(?=(.*[0-9]))(?=(.*[^a-zA-Z0-9]))(.{7,})$/
 

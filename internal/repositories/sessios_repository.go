@@ -57,8 +57,8 @@ func (s *SessionsRepositorie) GetUser(sessionID string) (string, error) {
 
 func (s *SessionsRepositorie) CheckUserAlreadyLogged(UserID uuid.UUID) error {
 	var sessionID string
-	query := `SELECT session_id 
-	FROM sessions
+	query := `SELECT session_id
+	 FROM sessions
 	WHERE  user_id = ?`
 	row := s.DB.QueryRow(query, UserID)
 	err := row.Scan(&sessionID)

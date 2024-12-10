@@ -1,7 +1,3 @@
-window.addEventListener('load', function () {
-    navigator.sendBeacon("http://localhost:8082/checker")
-})
-
 function getCurrentYearAsMax() {
     const currentYear = new Date().getFullYear();
     const  footer = document.querySelector(".footer-part").childNodes[1]
