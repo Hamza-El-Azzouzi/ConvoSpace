@@ -1,6 +1,7 @@
 package services
 
 import (
+	"database/sql"
 	"time"
 
 	"forum/internal/repositories"
@@ -17,17 +18,26 @@ func (s *SessionService) DeleteSession(sessionID string) error {
 }
 
 func (s *SessionService) CreateSession(sessionID string, expiration time.Time, userID uuid.UUID) error {
-	return s.SessionRepo.Createession(sessionID, expiration, userID)
+	err := s.SessionRepo.CheckUserAlreadyLogged(userID)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return s.SessionRepo.Createession(sessionID, expiration, userID)
+		} else {
+			return err
+		}
+	}
+
+	return s.SessionRepo.UpdateSession(sessionID, expiration, userID)
 }
-func (s * SessionService) DeleteSessionByDate(time time.Time) error {
+
+func (s *SessionService) DeleteSessionByDate(time time.Time) error {
 	return s.SessionRepo.DeleteSessionByDate(time)
 }
 
-func (s *SessionService) GetUserService(sessionId string)(string,error){
+func (s *SessionService) GetUserService(sessionId string) (string, error) {
 	userID, err := s.SessionRepo.GetUser(sessionId)
-	if err != nil{
-		return "" , err
+	if err != nil {
+		return "", err
 	}
 	return userID, nil
-	
 }

@@ -32,7 +32,7 @@ function updateNavbar(loggedIn) {
   } else {
     navbar.innerHTML = `
                 <li><a href="/"><i aria-hidden="true"></i> Home</a></li>
-                <li><a href="/register"><i aria-hidden="true"></i> Login Area</a></li>`;
+                <li><a href="/login"><i aria-hidden="true"></i> Login Area</a></li>`;
   }
 }
 

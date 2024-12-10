@@ -18,7 +18,7 @@ func main() {
 		log.Fatalf("error in DB : %v", err)
 		return
 	}
-	
+
 	err = database.RunMigrations(db)
 	if err != nil {
 		fmt.Printf("Error running migrations: %v", err)

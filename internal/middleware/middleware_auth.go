@@ -21,7 +21,22 @@ const (
 
 // check if the user is logged retunr true/false & userData || nil
 func (h *AuthMiddleware) IsUserLoggedIn(w http.ResponseWriter, r *http.Request) (bool, *models.User) {
-	return false, nil
+	cookie, err := r.Cookie("sessionId")
+	if err != nil {
+		return false, nil
+	}
+	// fmt.Println("CHECK Cookie", cookie, cookie.Value)
+	sessionId := cookie.Value
+	userBySession, err := h.SessionService.GetUserService(sessionId)
+	if err != nil {
+		// fmt.Println("expired session or not exist")
+		return false, nil
+	}
+	userById, err := h.AuthService.UserRepo.FindUser(userBySession, "byId")
+	if err != nil || userById == nil {
+		return false, nil
+	}
+	return true, userById
 }
 
 func (h *AuthMiddleware) IsValidEmail(email string) bool {
@@ -41,7 +56,6 @@ func (h *AuthMiddleware) IsmatchPassword(password string, confirmPassword string
 
 func (h *AuthMiddleware) IsValidPassword(password string) bool {
 	secure := true
-
 	ExpPasswd := []string{".{7,}", "[a-z]", "[A-Z]", "[0-9]", "[^\\d\\w]"}
 	for _, test := range ExpPasswd {
 		isValid, _ := regexp.MatchString(test, password)
@@ -52,10 +66,4 @@ func (h *AuthMiddleware) IsValidPassword(password string) bool {
 	}
 
 	return secure
-}
-
-// midlware to check if the user has already an session opend
-func (h *AuthMiddleware) CheckDoubleLogging(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-	})
 }

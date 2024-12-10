@@ -36,6 +36,7 @@
     <form class="singUpForm">
         <div class="signUp">
             <h1>Sign Up</h1>
+            <p id="otherErr"></p>
             <div>
                 <label>username</label>
                 <input type="text" placeholder="Enter your name..." name="username" required>
@@ -75,22 +76,17 @@
     const ErrMessageEmail = document.getElementById("emailErr")
     const ErrMessagePasswd = document.getElementById("passwdErr")
     const ErrMessageConfirmPasswd = document.getElementById('confirmPasswdErr')
-    console.log("--------", confirmPassword.value)
+    const Err = document.getElementById("otherErr")
     const ExpName = /^[A-Za-z0-9]{3,20}$/
     const ExpEmail = /^[a-zA-Z0-9._+-=]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
-    // const ExpPasswd = /^[A-Za-z0-9]{8,20}$/
-    const IsValidPsswd = (passwd) => {
-        secure = true
-        let ExpPasswd = [/.{7,}/, /[a-z]/, /[A-Z]/, /[0-9]/, /[^\\d\\w]/]
-        console.log("passwd ", ExpPasswd)
-        for (let elem of ExpPasswd) {
-            if (!elem.test(passwd)) {
-                secure = false
-                break
-            }
-        }
-        return secure
-    }
+    const ExpPasswd = /^(?=(.*[a-z]))(?=(.*[A-Z]))(?=(.*[0-9]))(?=(.*[^a-zA-Z0-9]))(.{7,})$/
+
+
+    const InvalidEmail = "invalid email!! enter a valid email"
+    const InvalidName = "invalid name!! enter a valid name"
+    const InvalidPsswd = "invalid password!! enter a valid password"
+    const NotMatch = "password confirmation doesn't match!!"
+
     const Error = (elem, errorMssg) => {
         elem.textContent = errorMssg
         elem.style.color = "red"
@@ -102,30 +98,28 @@
         ErrMessageEmail.textContent = ""
         ErrMessagePasswd.textContent = ""
         ErrMessageConfirmPasswd.textContent = ""
+        Err.textContent = ""
         switch (true) {
             case (!ExpName.test(username.value)):
                 console.log("test ", ExpName.test(username.value), username.value)
-                Error(ErrMessageName, "invalid Name!! enter a valid name")
+                Error(ErrMessageName, InvalidName)
                 break
             case (!ExpEmail.test(email.value)):
-                Error(ErrMessageEmail, "invalid e,ail!! enter a valid email")
+                Error(ErrMessageEmail, InvalidEmail)
                 break
-            case (!IsValidPsswd(password.value)):
-                Error(ErrMessagePasswd, "invalid password!! enter a valid password")
-                break
-            case (!IsValidPsswd(confirmPassword.value)):
-                Error(ErrMessageConfirmPasswd, "invalid password!! enter a valid password")
+            case (!ExpPasswd.test(password.value)) || (!ExpPasswd.test(confirmPassword.value)):
+                Error(ErrMessagePasswd, InvalidPsswd)
                 break
             case (password.value !== confirmPassword.value):
                 console.log(password.value, confirmPassword.value)
-                Error(ErrMessageConfirmPasswd, "password confirmation doesn't match!!")
+                Error(ErrMessageConfirmPasswd, NotMatch)
         }
     }
 
     button.addEventListener("click", (event) => {
         event.preventDefault()
         VerifyData()
-
+        Err.textContent = ""
         console.log(username.value, email.value, password.value, confirmPassword.value)
 
         fetch("/register", {
@@ -142,11 +136,18 @@
         })
             .then(response => response.json())
             .then(reply => {
-                console.log("reply => ", reply.REplyMssg)
-                if (reply.REplyMssg == "Sign Done") {
-                    window.location.href = "/login"
+                switch (true) {
+                    case (reply.REplyMssg == "Sign Done"):
+                        window.location.href = "/login"
+                        break
+                    case (reply.REplyMssg == "err"):
+                        Error(Err, "Username or Email already exist!!")
+                        break
+                    case (reply.REplyMssg == "notMatch"):
+                        Error(ErrMessageConfirmPasswd, NotMatch)
                 }
             })
+
     })
 
 </script>

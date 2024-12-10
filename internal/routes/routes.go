@@ -27,8 +27,6 @@ func SetupRoutes(mux *http.ServeMux, authHandler *handlers.AuthHandler, postHand
 	mux.HandleFunc("/dislikeComment/", likeHandler.DisLikeComment)
 	mux.HandleFunc("/filters", postHandler.PostFilter)
 
-	mux.HandleFunc("/checker", authHandler.CheckDoubleLogging)
-
 	http.HandleFunc("/javascript", func(w http.ResponseWriter, r *http.Request) {
 		utils.Error(w, 1)
 	})
