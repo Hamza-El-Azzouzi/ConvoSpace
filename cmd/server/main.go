@@ -13,13 +13,12 @@ import (
 )
 
 func main() {
-	fmt.Println("ll")
 	db, err := database.InitDB("forum.db")
 	if err != nil {
 		log.Fatalf("error in DB : %v", err)
 		return
 	}
-	fmt.Println("mm")
+
 	err = database.RunMigrations(db)
 	if err != nil {
 		fmt.Printf("Error running migrations: %v", err)
@@ -61,7 +60,7 @@ func main() {
 
 	routes.SetupRoutes(mux, authHandler, postHandler, likeHandler, authMiddleware)
 
-	fmt.Println("Starting the forum server...\nWelcome http://localhost:8080/")
+	fmt.Println("Starting the forum server...\nWelcome http://localhost:8082/")
 
-	log.Fatal(http.ListenAndServe("0.0.0.0:8080", nil))
+	log.Fatal(http.ListenAndServe("0.0.0.0:8082", nil))
 }
