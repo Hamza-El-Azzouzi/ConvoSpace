@@ -192,7 +192,7 @@ func (p *PostHandler) CommentSaver(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var commentData struct {
-		Content string `json:"content"`
+		Comment string `json:"content"`
 		PostId  string `json:"postId"`
 	}
 	decoder := json.NewDecoder(r.Body)
@@ -201,21 +201,26 @@ func (p *PostHandler) CommentSaver(w http.ResponseWriter, r *http.Request) {
 		utils.Error(w, http.StatusBadRequest)
 		return
 	}
-	isloged, userId := p.AuthMidlaware.IsUserLoggedIn(w, r)
-	if isloged {
-		err := p.CommentService.SaveComment(userId.ID, commentData.PostId, commentData.Content)
-		if err != nil {
-			utils.Error(w, http.StatusInternalServerError)
-			return
-		}
-		comment, err := p.CommentService.GetCommentByPost(commentData.PostId)
-		if err != nil {
-			utils.Error(w, http.StatusInternalServerError)
-			return
-		}
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(comment)
+	isLogged, userId := p.AuthMidlaware.IsUserLoggedIn(w, r)
+	if !isLogged {
+		utils.Error(w, http.StatusInternalServerError)
+		return
 	}
+
+	err = p.CommentService.SaveComment(userId.ID, commentData.PostId, commentData.Comment)
+	if err != nil {
+		utils.Error(w, http.StatusInternalServerError)
+		return
+	}
+
+	comment, err := p.CommentService.GetCommentByPost(commentData.PostId)
+	if err != nil {
+		utils.Error(w, http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(comment)
 }
 
 func (p *PostHandler) PostFilter(w http.ResponseWriter, r *http.Request) {

@@ -13,15 +13,24 @@ type CommentRepositorie struct {
 
 // save the comment in the data base and return error
 func (c *CommentRepositorie) Create(comment *models.Comment) error {
+	query := "INSERT INTO comments (id, user_id, post_id, content, created_at) VALUES (?, ?, ?, ?, ?)"
+	prp, prepareErr := c.DB.Prepare(query)
+	if prepareErr != nil {
+		return prepareErr
+	}
+	defer prp.Close()
 	comment.Content = html.EscapeString(comment.Content)
-	_, err := c.DB.Exec("INSERT INTO comments (id, user_id, post_id, content, created_at) VALUES (?, ?, ?, ?, ?)",
+	_, execErr := prp.Exec(
 		comment.ID,
 		comment.UserID,
 		comment.PostID,
 		comment.Content,
 		comment.CreatedAt,
 	)
-	return err
+	if execErr != nil {
+		return execErr
+	}
+	return nil
 }
 
 // Execute the SQL query to retrieve comments and their associated data
@@ -48,28 +57,28 @@ func (c *CommentRepositorie) GetCommentByPost(postID string) ([]models.CommentDe
 	ORDER BY
 	 comments.created_at DESC;
 	`
-	var comments []models.CommentDetails
-	rows, err := c.DB.Query(querySelect, postID)
-	if err != nil {
-		return nil, err
+	rows, queryErr := c.DB.Query(querySelect, postID)
+	if queryErr != nil {
+		return nil, queryErr
 	}
 	defer rows.Close()
+	var comments []models.CommentDetails
 	for rows.Next() {
-		var comment models.CommentDetails
-		err := rows.Scan(
-			&comment.CommentID,
-			&comment.Content,
-			&comment.CreatedAt,
-			&comment.UserID,
-			&comment.Username,
-			&comment.LikeCountComment,
-			&comment.DisLikeCountComment,
+		var currentComment models.CommentDetails
+		scanErr := rows.Scan(
+			&currentComment.CommentID,
+			&currentComment.Content,
+			&currentComment.CreatedAt,
+			&currentComment.UserID,
+			&currentComment.Username,
+			&currentComment.LikeCountComment,
+			&currentComment.DisLikeCountComment,
 		)
-		if err != nil {
-			return nil, err
+		if scanErr != nil {
+			return nil, scanErr
 		}
-		comment.FormattedDate = comment.CreatedAt.Format("01/02/2006, 3:04:05 PM")
-		comments = append(comments, comment)
+		currentComment.FormattedDate = currentComment.CreatedAt.Format("01/02/2006, 3:04:05 PM")
+		comments = append(comments, currentComment)
 	}
-	return comments, err
+	return comments, nil
 }

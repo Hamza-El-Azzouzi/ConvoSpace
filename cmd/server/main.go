@@ -13,11 +13,13 @@ import (
 )
 
 func main() {
+	fmt.Println("ll")
 	db, err := database.InitDB("forum.db")
 	if err != nil {
 		log.Fatalf("error in DB : %v", err)
 		return
 	}
+	fmt.Println("mm")
 	err = database.RunMigrations(db)
 	if err != nil {
 		fmt.Printf("Error running migrations: %v", err)
