@@ -15,8 +15,7 @@ type AuthMiddleware struct {
 
 const (
 	ExpEmail = `^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`
-	// ExpPasswd = `^[A-Za-z0-9]{8,20}$`
-	ExpName = `^[a-zA-Z0-9_]{3,20}$`
+	ExpName  = `^[a-zA-Z0-9_.]{3,20}$`
 )
 
 // check if the user is logged retunr true/false & userData || nil
@@ -25,17 +24,19 @@ func (h *AuthMiddleware) IsUserLoggedIn(w http.ResponseWriter, r *http.Request) 
 	if err != nil {
 		return false, nil
 	}
-	// fmt.Println("CHECK Cookie", cookie, cookie.Value)
+
 	sessionId := cookie.Value
 	userBySession, err := h.SessionService.GetUserService(sessionId)
 	if err != nil {
 		// fmt.Println("expired session or not exist")
 		return false, nil
 	}
+
 	userById, err := h.AuthService.UserRepo.FindUser(userBySession, "byId")
 	if err != nil || userById == nil {
 		return false, nil
 	}
+
 	return true, userById
 }
 
@@ -56,7 +57,7 @@ func (h *AuthMiddleware) IsmatchPassword(password string, confirmPassword string
 
 func (h *AuthMiddleware) IsValidPassword(password string) bool {
 	secure := true
-	ExpPasswd := []string{".{7,}", "[a-z]", "[A-Z]", "[0-9]", "[^\\d\\w]"}
+	ExpPasswd := []string{".{8,20}", "[a-z]", "[A-Z]", "[0-9]", "[^\\d\\w]"}
 	for _, test := range ExpPasswd {
 		isValid, _ := regexp.MatchString(test, password)
 		if !isValid {

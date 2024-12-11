@@ -6,38 +6,55 @@ const button = document.querySelector("input[type='submit']")
 
 const ErrMessageName = document.getElementById("nameErr")
 const ErrMessageEmail = document.getElementById("emailErr")
-const ErrMessagePasswd = document.getElementById("passwdErr")
+const ErrMessagePasswd1st = document.getElementById("passwdErr1st")
+const ErrMessagePasswd = document.getElementById("passwdErr2nd")
 const ErrMessageConfirmPasswd = document.getElementById('confirmPasswdErr')
 const Err = document.getElementById("otherErr")
 
-const ExpName = /^[a-zA-Z0-9_]{3,20}$/
+const ExpName = /^[a-zA-Z0-9_.]{3,20}$/
 const ExpEmail = /^[a-zA-Z0-9._+-=]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
-const ExpPasswd = /^(?=(.*[a-z]))(?=(.*[A-Z]))(?=(.*[0-9]))(?=(.*[^a-zA-Z0-9]))(.{7,})$/
+const ExpPasswd = /^(?=(.*[a-z]))(?=(.*[A-Z]))(?=(.*[0-9]))(?=(.*[^a-zA-Z0-9]))(.{8,20})$/
 
 
 const InvalidEmail = "invalid email!! enter a valid email"
 const InvalidName = "invalid name!! enter a valid name"
-const InvalidPsswd = "invalid password!! enter a valid password"
+const Invalid = "invalid password!!"
 const NotMatch = "password confirmation doesn't match!!"
 
+const InvalidPsswd = () => {
+    ErrMessagePasswd1st.innerHTML = `<h4 style="text-align: center">--------Password Requirements--------</h4>
+    <ul>
+        <li>At least one <strong>lowercase letter</strong> (a-z)</li>
+        <li>At least one <strong>uppercase letter</strong> (A-Z)</li>
+        <li>At least one <strong>digit</strong> (0-9)</li>
+        <li>At least one <strong>special character</strong> (anything not a letter or a digit)</li>
+        <li>Password must be at least <strong>8 characters long</strong></li>
+    </ul>`
+    ErrMessagePasswd1st.style.textAlign = "left"
+    ErrMessagePasswd1st.style.color = "red"
+    ErrMessagePasswd1st.style.marginTop = "0px"
+}
 const Error = (elem, errorMssg) => {
     elem.textContent = errorMssg
     elem.style.color = "red"
     elem.style.fontSize = "12px"
+    elem.style.marginTop = "0px"
 }
 // const ResetErrorTags = () => {
 
 // }
 const VerifyData = () => {
     let exist = false
+
     ErrMessageName.textContent = ""
     ErrMessageEmail.textContent = ""
     ErrMessagePasswd.textContent = ""
     ErrMessageConfirmPasswd.textContent = ""
+    ErrMessagePasswd1st.textContent = ""
     Err.textContent = ""
+
     switch (true) {
         case (!ExpName.test(username.value)):
-            console.log("test ", ExpName.test(username.value), username.value, username.value.length)
             Error(ErrMessageName, InvalidName)
             exist = true
             break
@@ -45,12 +62,15 @@ const VerifyData = () => {
             Error(ErrMessageEmail, InvalidEmail)
             exist = true
             break
-        case (!ExpPasswd.test(password.value)) || (!ExpPasswd.test(confirmPassword.value)):
-            Error(ErrMessagePasswd, InvalidPsswd)
+        case (!ExpPasswd.test(password.value)):
+            InvalidPsswd("passwdErr1st")
+            exist = true
+            break
+        case (!ExpPasswd.test(confirmPassword.value)):
+            Error(ErrMessagePasswd, Invalid)
             exist = true
             break
         case (password.value !== confirmPassword.value):
-            console.log(password.value, confirmPassword.value)
             Error(ErrMessageConfirmPasswd, NotMatch)
             exist = true
     }
@@ -59,10 +79,9 @@ const VerifyData = () => {
 
 button.addEventListener("click", (event) => {
     event.preventDefault()
-    console.log("verify ", VerifyData())
+
     if (!VerifyData()) {
         Err.textContent = ""
-        console.log(username.value, email.value, password.value, confirmPassword.value)
 
         fetch("/register", {
             headers: {
@@ -79,7 +98,10 @@ button.addEventListener("click", (event) => {
             .then(response => response.json())
             .then(reply => {
                 switch (true) {
-                    case (reply.REplyMssg == "Sign Done"):
+                    case (reply.REplyMssg == "session"):
+                        Error(Err, "you already have an active session")
+                        break
+                    case (reply.REplyMssg == "Done"):
                         window.location.href = "/login"
                         break
                     case (reply.REplyMssg == "err"):

@@ -2,7 +2,6 @@ package services
 
 import (
 	"fmt"
-	"time"
 
 	"forum/internal/models"
 	"forum/internal/repositories"
@@ -54,16 +53,12 @@ func (a *AuthService) Login(email, password string) (*models.User, error) {
 	if userByEmail == nil || err != nil {
 		return nil, fmt.Errorf("in email")
 	}
-	t := time.Now()
+
 	err = bcrypt.CompareHashAndPassword([]byte(userByEmail.PasswordHash), []byte(password))
-	fmt.Println(time.Since(t))
 	if err != nil {
 		return nil, err
 	}
-	// check := CheckPasswordHash(password, userByEmail.PasswordHash)
-	// if !check {
-	// 	return nil, fmt.Errorf("in password")
-	// }
+
 	return userByEmail, nil
 }
 
