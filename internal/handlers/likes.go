@@ -11,8 +11,8 @@ import (
 )
 
 type LikeHandler struct {
-	LikeService   *services.LikeService
-	AuthService   *services.AuthService
+	LikeService *services.LikeService
+	// AuthService   *services.AuthService
 	AuthMidlaware *middleware.AuthMiddleware
 }
 
@@ -37,19 +37,15 @@ func (l *LikeHandler) react(w http.ResponseWriter, r *http.Request, liked, typeO
 		utils.Error(w, http.StatusMethodNotAllowed)
 		return
 	}
-
 	postid := r.URL.Path
 	POSTid := strings.Split(postid, "/")
-
 	if len(POSTid) != 3 {
 		utils.Error(w, http.StatusNotFound)
 		return
 	}
-
 	ID := POSTid[2]
-
-	logedd, user := l.AuthMidlaware.IsUserLoggedIn(w, r)
-	if logedd {
+	logeddUser, user := l.AuthMidlaware.IsUserLoggedIn(w, r)
+	if logeddUser {
 		if liked == "post" {
 			err := l.LikeService.Create(user.ID, ID, "", typeOfReact, liked)
 			if err != nil {
@@ -68,8 +64,12 @@ func (l *LikeHandler) react(w http.ResponseWriter, r *http.Request, liked, typeO
 			utils.Error(w, http.StatusInternalServerError)
 			return
 		}
+		err = json.NewEncoder(w).Encode(data)
+		if err != nil {
+			utils.Error(w, http.StatusInternalServerError)
+			return
+		}
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(data)
 	} else {
 		utils.Error(w, http.StatusForbidden)
 	}

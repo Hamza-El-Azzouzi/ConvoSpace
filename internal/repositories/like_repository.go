@@ -21,8 +21,7 @@ func (l *LikeReposetorie) CreateLike(like *models.Like, liked string) error {
 	} else {
 		id = like.CommentID
 	}
-	row := l.DB.QueryRow("SELECT id, react_type FROM likes WHERE "+liked+"_id = ?  AND user_id = ?",
-		id, like.UserID)
+	row := l.DB.QueryRow("SELECT id, react_type FROM likes WHERE "+liked+"_id = ?  AND user_id = ?", id, like.UserID)
 	switch err := row.Scan(&existingreactionID, &reaction); err {
 	case sql.ErrNoRows:
 	case nil:
@@ -43,12 +42,12 @@ func (l *LikeReposetorie) CreateLike(like *models.Like, liked string) error {
 		return err
 	}
 	_, err := l.DB.Exec(
-		"INSERT INTO likes (id, user_id, post_id, comment_id, react_type) VALUES (?, ?, ?, ?, ?)",
-		like.ID, like.UserID, like.PostID, like.CommentID, like.ReactType,
+		"INSERT INTO likes (id, user_id, post_id, comment_id, react_type) VALUES (?, ?, ?, ?, ?)", like.ID, like.UserID, like.PostID, like.CommentID, like.ReactType,
 	)
 	if err != nil {
 		return err
 	}
+
 	return nil
 }
 
@@ -63,6 +62,7 @@ func (l *LikeReposetorie) GetLikes(Id, liked string) (any, error) {
 	if errcountdislike != nil {
 		return nil, errcountdislike
 	}
+
 	data := map[string]any{
 		"id":      Id,
 		"like":    like,

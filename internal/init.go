@@ -70,7 +70,7 @@ func InitHandlers(authService *services.AuthService,
 	}
 	likeHandler := &handlers.LikeHandler{
 		LikeService:   likeService,
-		AuthService:   authService,
+	//	AuthService:   authService,
 		AuthMidlaware: authMiddleware,
 	}
 

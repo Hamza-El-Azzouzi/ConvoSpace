@@ -18,6 +18,7 @@ func main() {
 		log.Fatalf("error in DB : %v", err)
 		return
 	}
+
 	err = database.RunMigrations(db)
 	if err != nil {
 		fmt.Printf("Error running migrations: %v", err)
@@ -29,7 +30,7 @@ func main() {
 		fmt.Printf("error inserting default categories: %v", err)
 		return
 	}
-
+	
 	defer db.Close()
 
 	userRepo, categoryRepo, postRepo, commentRepo, likeRepo, sessionRepo := internal.InitRepositories(db)
