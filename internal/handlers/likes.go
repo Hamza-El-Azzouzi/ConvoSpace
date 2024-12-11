@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"strings"
+	"sync"
 
 	"forum/internal/middleware"
 	"forum/internal/services"
@@ -14,7 +15,9 @@ type LikeHandler struct {
 	LikeService *services.LikeService
 	// AuthService   *services.AuthService
 	AuthMidlaware *middleware.AuthMiddleware
+	mutex sync.Mutex
 }
+
 
 func (l *LikeHandler) LikePost(w http.ResponseWriter, r *http.Request) {
 	l.react(w, r, "post", "like")
@@ -33,6 +36,7 @@ func (l *LikeHandler) DisLikeComment(w http.ResponseWriter, r *http.Request) {
 }
 
 func (l *LikeHandler) react(w http.ResponseWriter, r *http.Request, liked, typeOfReact string) {
+	l.mutex.Lock()
 	if r.Method != http.MethodPost {
 		utils.Error(w, http.StatusMethodNotAllowed)
 		return
@@ -73,4 +77,5 @@ func (l *LikeHandler) react(w http.ResponseWriter, r *http.Request, liked, typeO
 	} else {
 		utils.Error(w, http.StatusForbidden)
 	}
+	l.mutex.Unlock()
 }

@@ -22,15 +22,15 @@ func (l *LikeService) GetLikes(ID, liked string) (any, error) {
 }
 
 func (l *LikeService) Create(userID uuid.UUID, postID, commentID string, typeOfReact, liked string) error {
-	likeID, err := uuid.NewV4()  
+	likeID, err := uuid.NewV4()
 	if err != nil {
 		return fmt.Errorf("failed to generate UUID: %v", err)
 	}
 	var postIDPtr, commentIDPtr *string
-	if postID != ""{
+	if postID != "" {
 		postIDPtr = &postID
 	}
-	if commentID != ""{
+	if commentID != "" {
 		commentIDPtr = &commentID
 	}
 	like := &models.Like{
@@ -38,12 +38,14 @@ func (l *LikeService) Create(userID uuid.UUID, postID, commentID string, typeOfR
 		UserID:    userID,
 		PostID:    postIDPtr,
 		CommentID: commentIDPtr,
-		ReactType: typeOfReact, 
+		ReactType: typeOfReact,
 	}
+
 	if liked == "post" {
 		l.LikeRepo.CreateLike(like, "post")
 	} else {
 		l.LikeRepo.CreateLike(like, "comment")
 	}
+
 	return nil
 }
