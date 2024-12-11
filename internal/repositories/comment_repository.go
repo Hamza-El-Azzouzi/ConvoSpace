@@ -37,8 +37,8 @@ func (c *CommentRepositorie) GetCommentByPost(postID string) ([]models.CommentDe
 	 comments.created_at,
 	 users.id AS user_id,
 	 users.username,
-	 (SELECT COUNT(*) FROM likes WHERE likes.comments_id = comments.id AND likes.react_type = 'like') AS LikeCount
-	 (SELECT COUNT(*) FROM likes WHERE likes.comments_id = comments.id AND likes.react_type = 'dislike') AS DisLikeCount
+	 (SELECT COUNT(*) FROM likes WHERE likes.comment_id = comments.id AND likes.react_type = 'like') AS LikeCount,
+	 (SELECT COUNT(*) FROM likes WHERE likes.comment_id = comments.id AND likes.react_type = 'dislike') AS DisLikeCount
 	FROM 
 	 comments
 	JOIN
@@ -46,7 +46,7 @@ func (c *CommentRepositorie) GetCommentByPost(postID string) ([]models.CommentDe
 	WHERE
 	 comments.post_id = ?
 	ORDER BY
-	 comments.created_at DESC
+	 comments.created_at DESC;
 	`
 	var comments []models.CommentDetails
 	rows, err := c.DB.Query(querySelect, postID)
@@ -58,8 +58,8 @@ func (c *CommentRepositorie) GetCommentByPost(postID string) ([]models.CommentDe
 		var comment models.CommentDetails
 		err := rows.Scan(
 			&comment.CommentID,
-			&comment.PostIDcomment,
 			&comment.Content,
+			&comment.CreatedAt,
 			&comment.UserID,
 			&comment.Username,
 			&comment.LikeCountComment,
