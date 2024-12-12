@@ -14,11 +14,6 @@ type CommentService struct {
 	CommentRepo *repositories.CommentRepositorie
 }
 
-var (
-	NotFoundPostId = errors.New("not found post id")
-	EmptyComment   = errors.New("empty comment")
-)
-
 // get the data from the handler and create a ID with uuid then
 // call the method from the repository
 func (c *CommentService) SaveComment(userID uuid.UUID, postID, content string) error {
@@ -34,6 +29,10 @@ func (c *CommentService) SaveComment(userID uuid.UUID, postID, content string) e
 
 // get all comments about a post that just got a new comment by calling the methode in repository
 func (c *CommentService) GetCommentByPost(postID string) ([]models.CommentDetails, error) {
+	var (
+		NotFoundPostId = errors.New("not found post id")
+		EmptyComment   = errors.New("empty comment")
+	)
 	if postID == "" {
 		return nil, NotFoundPostId
 	}
