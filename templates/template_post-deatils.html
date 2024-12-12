@@ -80,6 +80,23 @@
             </div>
           </div>
           <hr />
+          <div class="comment-form">
+            <h3>Leave A Reply</h3>
+            <form method="post" id="commentForm" onsubmit="SubmitComment(event)">
+              <textarea name="textarea" required placeholder="Enter Your Post" class="comment-textarea"
+                id="textarea"></textarea>
+              <div class="error-message" id="textarea-error"></div>
+              {{ if .LoggedIn }}
+              <button type="submit" class="btn-publish">
+                Publish your Comment
+              </button>
+              {{ else }}
+              <button type="button" onclick="clickToLogin(event)" class="btn-publish">
+                You should Be Logged in
+              </button>
+              {{ end }}
+            </form>
+          </div>
           <div class="comment-section">
             {{ if .LoggedIn }} {{ if not .posts.Comments }}
             <div class="nothing">
@@ -127,23 +144,7 @@
           </div>
 
           <hr />
-          <div class="comment-form">
-            <h3>Leave A Reply</h3>
-            <form method="post" id="commentForm" onsubmit="SubmitComment(event)">
-              <textarea name="textarea" required placeholder="Enter Your Post" class="comment-textarea"
-                id="textarea"></textarea>
-              <div class="error-message" id="textarea-error"></div>
-              {{ if .LoggedIn }}
-              <button type="submit" class="btn-publish">
-                Publish your Comment
-              </button>
-              {{ else }}
-              <button type="button" onclick="clickToLogin(event)" class="btn-publish">
-                You should Be Logged in
-              </button>
-              {{ end }}
-            </form>
-          </div>
+         
         </div>
       </div>
     </div>

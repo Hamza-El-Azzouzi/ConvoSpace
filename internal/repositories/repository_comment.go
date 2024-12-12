@@ -55,7 +55,8 @@ func (c *CommentRepositorie) GetCommentByPost(postID string) ([]models.CommentDe
 	WHERE
 	 comments.post_id = ?
 	ORDER BY
-	 comments.created_at DESC;
+	 comments.created_at DESC
+	 LIMIT 5;
 	`
 	rows, queryErr := c.DB.Query(querySelect, postID)
 	if queryErr != nil {

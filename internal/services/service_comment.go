@@ -2,6 +2,7 @@ package services
 
 import (
 	"errors"
+	"fmt"
 	"time"
 
 	"forum/internal/models"
@@ -17,14 +18,20 @@ type CommentService struct {
 // get the data from the handler and create a ID with uuid then
 // call the method from the repository
 func (c *CommentService) SaveComment(userID uuid.UUID, postID, content string) error {
+	var err error
+	for i:= 9999 ; i < 10000000; i++{
 	comment := &models.Comment{
 		ID:        uuid.Must(uuid.NewV4()),
 		UserID:    userID,
 		PostID:    postID,
-		Content:   content,
+		Content:   fmt.Sprintf("%v %v",content,i),
 		CreatedAt: time.Now().UTC(),
 	}
-	return c.CommentRepo.Create(comment)
+
+	
+		err = c.CommentRepo.Create(comment)
+	}
+	return err
 }
 
 // get all comments about a post that just got a new comment by calling the methode in repository
