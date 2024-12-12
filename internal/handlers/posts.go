@@ -48,6 +48,9 @@ func (p *PostHandler) Posts(w http.ResponseWriter, r *http.Request) {
 	}
 	nPagination, err := strconv.Atoi(pagination)
 	if err != err {
+		utils.Error(w,http.StatusBadRequest)
+	}
+	if err != err {
 		utils.Error(w, http.StatusNotFound)
 		return
 	}
@@ -181,41 +184,45 @@ func (p *PostHandler) DetailsPost(w http.ResponseWriter, r *http.Request) {
 	utils.OpenHtml("post-deatils.html", w, data)
 }
 
+// if the user is logged
+// recieve the request from the front end check the http method if not post show error 405
+// then save it to the database and fetch all comments about the post to show them in the detailpost page using json
 func (p *PostHandler) CommentSaver(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		utils.Error(w, http.StatusMethodNotAllowed)
 		return
 	}
 	var commentData struct {
-		Content string `json:"content"`
-		PostID  string `json:"postID"`
+		Comment string `json:"content"`
+		PostId  string `json:"postId"`
 	}
-
-	err := json.NewDecoder(r.Body).Decode(&commentData)
+	decoder := json.NewDecoder(r.Body)
+	err := decoder.Decode(&commentData)
 	defer r.Body.Close()
 	if err != nil {
 		utils.Error(w, http.StatusBadRequest)
 		return
 	}
-
-	// commetContentWithNewLines := strings.ReplaceAll(commentData.Content, "\n", "<br>")
-	isLogged, usermid := p.AuthMidlaware.IsUserLoggedIn(w, r)
-
-	if isLogged {
-		err = p.CommentService.SaveComment(usermid.ID, commentData.PostID, commentData.Content)
-		if err != nil {
-			utils.Error(w, http.StatusInternalServerError)
-			return
-		}
-		comment, err := p.CommentService.GetCommentByPost(commentData.PostID)
-		if err != nil {
-			utils.Error(w, http.StatusInternalServerError)
-			return
-		}
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(comment)
-
+	isLogged, userId := p.AuthMidlaware.IsUserLoggedIn(w, r)
+	if !isLogged {
+		utils.Error(w, http.StatusInternalServerError)
+		return
 	}
+
+	err = p.CommentService.SaveComment(userId.ID, commentData.PostId, commentData.Comment)
+	if err != nil {
+		utils.Error(w, http.StatusInternalServerError)
+		return
+	}
+
+	comment, err := p.CommentService.GetCommentByPost(commentData.PostId)
+	if err != nil {
+		utils.Error(w, http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(comment)
 }
 
 func (p *PostHandler) PostFilter(w http.ResponseWriter, r *http.Request) {

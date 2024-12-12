@@ -1,6 +1,9 @@
 package services
 
 import (
+	"errors"
+	"time"
+
 	"forum/internal/models"
 	"forum/internal/repositories"
 
@@ -11,21 +14,37 @@ type CommentService struct {
 	CommentRepo *repositories.CommentRepositorie
 }
 
+// get the data from the handler and create a ID with uuid then
+// call the method from the repository
 func (c *CommentService) SaveComment(userID uuid.UUID, postID, content string) error {
-	commentID := uuid.Must(uuid.NewV4())
 	comment := &models.Comment{
-		ID: commentID,
-		UserID: userID,
-		PostID: postID,
-		Content: content,
+		ID:        uuid.Must(uuid.NewV4()),
+		UserID:    userID,
+		PostID:    postID,
+		Content:   content,
+		CreatedAt: time.Now().UTC(),
 	}
 	return c.CommentRepo.Create(comment)
 }
 
-func (c *CommentService) GetCommentByPost(postID string) ([]models.CommentDetails,error) {
-	comment , err := c.CommentRepo.GetCommentByPost(postID)
-	if err!= nil{
-		return nil,err
+// get all comments about a post that just got a new comment by calling the methode in repository
+func (c *CommentService) GetCommentByPost(postID string) ([]models.CommentDetails, error) {
+	var (
+		NotFoundPostId = errors.New("not found post id")
+		EmptyComment   = errors.New("empty comment")
+	)
+	if postID == "" {
+		return nil, NotFoundPostId
 	}
-	return comment,nil
+
+	comments, err := c.CommentRepo.GetCommentByPost(postID)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(comments) == 0 {
+		return nil, EmptyComment
+	}
+
+	return comments, nil
 }

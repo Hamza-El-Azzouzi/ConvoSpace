@@ -26,6 +26,7 @@ CREATE TABLE
         created_at TIMESTAMP DEFAULT (DATETIME ('now', 'localtime')),
         FOREIGN KEY (user_id) REFERENCES users (id) ON UPDATE CASCADE ON DELETE CASCADE,
         FOREIGN KEY (post_id) REFERENCES posts (id) ON UPDATE CASCADE ON DELETE CASCADE
+        
     );
 
 CREATE TABLE
@@ -72,7 +73,7 @@ CREATE TABLE
         created_at TIMESTAMP DEFAULT (DATETIME ('now', 'localtime')),
         FOREIGN KEY (user_id) REFERENCES users (id) ON UPDATE CASCADE ON DELETE CASCADE
     );
-
+    
 CREATE INDEX idx_user_id_session ON sessions (user_id);
 
 CREATE INDEX idx_post_categories_post_id ON post_categories (post_id);

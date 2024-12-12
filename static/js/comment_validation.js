@@ -1,78 +1,74 @@
+// get the content of the comment and sendt it to the backend (handler /sendcomment) with a fetch and post methode
+//receive the response as json that contain all the comments of the post and call update function to append them in the html
 function SubmitComment(event) {
-    const pathname = window.location.pathname;
-    const postID = pathname.split('/').pop();
-    let isValid = true;
 
-    document.getElementById('textarea-error').textContent = '';
+    event.preventDefault();
 
-    const textareaInput = document.querySelector('textarea[name="textarea"]');
-    if (!textareaInput.value.trim()) {
+    const path = window.location.pathname;
+    const currentPostId = path.substring(path.lastIndexOf('/') + 1);
+    const textarea = document.querySelector('.comment-textarea');
+
+    if (textarea.value.trim() === "") {
         document.getElementById('textarea-error').textContent = 'Comment is required.';
-        isValid = false;
-    }
-    
-    if (!isValid) {
-        event.preventDefault();
         return
     }
-    event.preventDefault();
-    const formData = textareaInput.value;
-      
-    fetch("/sendcomment", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ content: formData, postID: postID }),
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`Failed to submit the comment.`);
+    const currentValue = textarea.value
+
+    async function fetchData() {
+
+        try {
+            const response = await fetch('/sendcomment', {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ content: currentValue, postId: currentPostId })
+            })
+            if (!response.ok) {
+                throw new Error('http error')
+            }
+            textarea.value = ''
+            const update = await response.json()
+            UpdateComment(update)
+        } catch (error) {
+            console.error('There was a problem in fetch :', error);
         }
-        return response.json();
-      })
-      .then((comments) => {
-        UpdateComment(comments);
-        textarea.value = "";
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
-  }
-  function UpdateComment(comments) {
-    const commentSection = document.querySelector(".comment-section");
-
-    commentSection.innerHTML = "";
-
-    if (comments.length === 0) {
-      commentSection.innerHTML = `
-          <div class="nothing">
-              <p>No comments yet. Be the first to comment!</p>
-          </div>`;
-      return;
     }
+    fetchData()
+}
 
+
+//get the comment section div make it empty then loop over comments and append them to the comment section div
+function UpdateComment(comments) {
+    const commentSection = document.querySelector(".comment-section");
+    commentSection.innerHTML = "";
+    if (comments.length === 0) {
+        const noCommentsDiv = document.createElement('div');
+        noCommentsDiv.className = 'nothing';
+        noCommentsDiv.innerHTML = '<p>No comments yet. Be the first to comment!</p>';
+        commentSection.appendChild(noCommentsDiv);
+        return;
+    }
+    
     comments.forEach((comment) => {
-      const commentElement = document.createElement("div");
-      commentElement.className = "comment";
-      commentElement.innerHTML = `
+        const { Username = "Anonymous", FormattedDate, Content, CommentID, LikeCountComment, DisLikeCountComment } = comment
+        const commentElement = document.createElement("div");
+        commentElement.className = "comment";
+        commentElement.innerHTML = `
           <div class="comment-header">
-              <h6>${comment.Username || "Anonymous"}</h6>
-              <i class="fa fa-clock-o">${
-                comment.FormattedDate
-              }</i>
+              <h6>${Username}</h6>
+              <i class="fa fa-clock-o">${FormattedDate}</i>
           </div>
-          <div class="comment-body"><pre>${comment.Content}</pre></div>
+          <div class="comment-body"><pre>${Content}</pre></div>
           <div class="comment-footer">
-              <button class="button like" onclick="handleLikeDislike('${comment.CommentID}', 'likeComment', event)">
-                  <span id='${comment.CommentID}-likecomment' >👍${comment.LikeCountComment}</span>
+              <button class="button like" onclick="handleLikeDislike('${CommentID}', 'likeComment', event)">
+                  <span id='${CommentID}-likecomment' >👍${LikeCountComment}</span>
               </button>
-               <button class="button like" onclick="handleLikeDislike('${comment.CommentID}', 'dislikeComment', event)">
-                  <span id='${comment.CommentID}-dislikecomment' >👎${comment.DisLikeCountComment
-      }</span>
+               <button class="button like" onclick="handleLikeDislike('${CommentID}', 'dislikeComment', event)">
+                  <span id='${CommentID}-dislikecomment' >👎${DisLikeCountComment}</span>
               </button>
           </div>
       `;
-      commentSection.appendChild(commentElement);
+        commentSection.appendChild(commentElement);
     });
-  }
+}
