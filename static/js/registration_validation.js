@@ -104,8 +104,11 @@ button.addEventListener("click", (event) => {
                     case (reply.REplyMssg == "Done"):
                         window.location.href = "/login"
                         break
-                    case (reply.REplyMssg == "err"):
-                        Error(Err, "Username or Email already exist!!")
+                    case (reply.REplyMssg == "email"):
+                        Error(ErrMessageEmail, "Email already exist!!")
+                        break
+                    case (reply.REplyMssg == "user"):
+                        Error(ErrMessageName, "Username already exist!!")
                         break
                     case (reply.REplyMssg == "notMatch"):
                         Error(ErrMessageConfirmPasswd, NotMatch)

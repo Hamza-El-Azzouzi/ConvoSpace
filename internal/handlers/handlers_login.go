@@ -30,9 +30,11 @@ func (h *AuthHandler) LoginHandle(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		utils.OpenHtml("templates_login.html", w, nil)
+		return
 	case r.Method == http.MethodPost:
 		var info LoginData
 		err := json.NewDecoder(r.Body).Decode(&info)
+		defer r.Body.Close()
 		if err != nil {
 			utils.Error(w, http.StatusBadRequest)
 			return

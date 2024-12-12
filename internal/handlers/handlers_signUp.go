@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"net/http"
+	"strings"
 
 	"forum/internal/middleware"
 	"forum/internal/services"
@@ -35,6 +36,7 @@ func (h *AuthHandler) RegisterHandle(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		utils.OpenHtml("templates_signUp.html", w, nil)
+		return
 	case r.Method == http.MethodPost:
 		if ActiveUser {
 			sendResponse(w, "session")
@@ -42,6 +44,7 @@ func (h *AuthHandler) RegisterHandle(w http.ResponseWriter, r *http.Request) {
 		}
 		var info SignUpData
 		err := json.NewDecoder(r.Body).Decode(&info)
+		defer r.Body.Close()
 		if err != nil {
 			utils.Error(w, http.StatusBadRequest)
 		}
@@ -51,12 +54,19 @@ func (h *AuthHandler) RegisterHandle(w http.ResponseWriter, r *http.Request) {
 			!h.AuthMidlaware.IsValidPassword(info.ConfirmPasswd) ||
 			!h.AuthMidlaware.IsmatchPassword(info.Passwd, info.ConfirmPasswd) {
 			utils.Error(w, http.StatusBadRequest)
+			return
 		}
 		userExist := h.AuthService.Register(info.Username, info.Email, info.Passwd)
 		if userExist != nil {
-			sendResponse(w, "err")
-		} else {
-			sendResponse(w, "Done")
+			switch true {
+			case userExist.Error() == "email":
+				sendResponse(w, "email")
+				return
+			case strings.Contains(userExist.Error(), "username"):
+				sendResponse(w, "user")
+				return
+			}
 		}
+		sendResponse(w, "Done")
 	}
 }
