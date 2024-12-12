@@ -26,7 +26,6 @@ func RunMigrations(db *sql.DB) error {
 	}
 
 	basePath := utils.GetPath()
-
 	migrationSQL, err := os.ReadFile(basePath + "internal/database/migrations/001_initial_schema.sql")
 	if err != nil {
 		return err

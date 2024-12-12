@@ -12,8 +12,8 @@ func SetupRoutes(mux *http.ServeMux, authHandler *handlers.AuthHandler, postHand
 	mux.HandleFunc("/static/", utils.SetupStaticFilesHandlers)
 
 	mux.HandleFunc("/logout", authHandler.LogoutHandle)
-	mux.HandleFunc("/login", authHandler.LoginHandle)
 	mux.HandleFunc("/register", authHandler.RegisterHandle)
+	mux.HandleFunc("/login", authHandler.LoginHandle)
 
 	mux.HandleFunc("/", postHandler.Home)
 	mux.HandleFunc("/Posts/", postHandler.Posts)
@@ -26,8 +26,6 @@ func SetupRoutes(mux *http.ServeMux, authHandler *handlers.AuthHandler, postHand
 	mux.HandleFunc("/likeComment/", likeHandler.LikeComment)
 	mux.HandleFunc("/dislikeComment/", likeHandler.DisLikeComment)
 	mux.HandleFunc("/filters", postHandler.PostFilter)
-
-	mux.HandleFunc("/checker", authHandler.CheckDoubleLogging)
 
 	http.HandleFunc("/javascript", func(w http.ResponseWriter, r *http.Request) {
 		utils.Error(w, 1)

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="language" content="English">
+    <title>Forum | Sign Up</title>
+    <link rel="icon" type="image/png" href="/static/img/forum.png">
+    <link rel="stylesheet" href="/static/css/css_signUp.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+    <noscript>
+        <meta http-equiv="refresh" content="0;url=/javascript">
+    </noscript>
+</head>
+
+<body>
+    <div class="top">
+        <h1><span style="color: blue;">01</span>-<img src="/static/img/letter-f.png"
+                style="width: 35px; height: auto; vertical-align: text-top;">orum
+        </h1>
+    </div>
+    <form class="singUpForm">
+        <div class="signUp">
+            <h1>Create an account</h1>
+            <p id="otherErr"></p>
+            <div>
+                <label>USERNAME <span style="color: red;">*</span></label>
+                <input type="text" placeholder="Enter your name..." name="username" required>
+                <p id="nameErr"></p>
+            </div>
+            <div>
+                <label>EMAIL <span style="color: red;">*</span></label>
+                <input type="email" placeholder="Enter your email address..." name="email" required>
+                <p id="emailErr"></p>
+            </div>
+            <div>
+                <label>PASSWORD <span style="color: red;">*</span></label>
+                <input type="password" placeholder="Enter your password..." name="passwd" required>
+                <p id="passwdErr"></p>
+            </div>
+            <div>
+                <label>CONFIRM PASSWORD <span style="color: red;">*</span></label>
+                <input type="password" placeholder="Confirm your password..." name="confirmPasswd" required>
+                <p id="confirmPasswdErr"></p>
+            </div>
+            <input type="submit" value="Sign Up">
+        </div>
+        <div class="info">
+            <span>Already registered?
+                <a href="/login">Login here <span style="font-size: 20px;font-weight: bolder;">→</span></a>
+            </span>
+        </div>
+    </form>
+</body>
+<script src="/static/js/registration_validation.js"></script>
+
+
+</html>
