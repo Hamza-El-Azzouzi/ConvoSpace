@@ -2,8 +2,8 @@ package handlers
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
+	"strings"
 
 	"forum/internal/middleware"
 	"forum/internal/services"
@@ -29,16 +29,22 @@ type SignUpReply struct {
 
 func (h *AuthHandler) RegisterHandle(w http.ResponseWriter, r *http.Request) {
 	ActiveUser, _ := h.AuthMidlaware.IsUserLoggedIn(w, r)
-	if ActiveUser {
-		http.Redirect(w, r, "/", http.StatusSeeOther)
-		return
-	}
 	switch true {
 	case r.Method == http.MethodGet:
+		if ActiveUser {
+			http.Redirect(w, r, "/", http.StatusSeeOther)
+			return
+		}
 		utils.OpenHtml("templates_signUp.html", w, nil)
+		return
 	case r.Method == http.MethodPost:
+		if ActiveUser {
+			sendResponse(w, "session")
+			return
+		}
 		var info SignUpData
 		err := json.NewDecoder(r.Body).Decode(&info)
+		defer r.Body.Close()
 		if err != nil {
 			utils.Error(w, http.StatusBadRequest)
 		}
@@ -47,15 +53,20 @@ func (h *AuthHandler) RegisterHandle(w http.ResponseWriter, r *http.Request) {
 			!h.AuthMidlaware.IsValidPassword(info.Passwd) ||
 			!h.AuthMidlaware.IsValidPassword(info.ConfirmPasswd) ||
 			!h.AuthMidlaware.IsmatchPassword(info.Passwd, info.ConfirmPasswd) {
-			fmt.Println("test", h.AuthMidlaware.IsValidName(info.Username))
 			utils.Error(w, http.StatusBadRequest)
-		} else {
-			userExist := h.AuthService.Register(info.Username, info.Email, info.Passwd)
-			if userExist != nil {
-				sendResponse(w, "err")
-			} else {
-				sendResponse(w, "Sign Done")
+			return
+		}
+		userExist := h.AuthService.Register(info.Username, info.Email, info.Passwd)
+		if userExist != nil {
+			switch true {
+			case userExist.Error() == "email":
+				sendResponse(w, "email")
+				return
+			case strings.Contains(userExist.Error(), "username"):
+				sendResponse(w, "user")
+				return
 			}
 		}
+		sendResponse(w, "Done")
 	}
 }

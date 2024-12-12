@@ -3,56 +3,71 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="A place to exchange knowledge, get inspired, and explore new perspectives">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="language" content="English">
     <title>Forum | Sign Up</title>
     <link rel="icon" type="image/png" href="/static/img/forum.png">
-    <link rel="stylesheet" href="/static/css/css_signUp.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+    <link rel="stylesheet" href="/static/css/css_auth.css">
     <noscript>
         <meta http-equiv="refresh" content="0;url=/javascript">
     </noscript>
+
 </head>
 
 <body>
+
     <div class="top">
-        <h1><span style="color: blue;">01</span>-<img src="/static/img/letter-f.png"
-                style="width: 35px; height: auto; vertical-align: text-top;">orum
+        <h1><a href="/"> <span style="color: blue;">01</span>-<img src="/static/img/letter-f.png" alt="01-Forum logo"
+                    style="width: 35px; height: auto; vertical-align: text-top;">orum</a>
         </h1>
     </div>
+
     <form class="singUpForm">
-        <div class="signUp">
+
+        <section class="signUp">
             <h1>Create an account</h1>
             <p id="otherErr"></p>
+
             <div>
-                <label>USERNAME <span style="color: red;">*</span></label>
+                <label for="username">USERNAME <span style="color: red;">*</span></label>
                 <input type="text" placeholder="Enter your name..." name="username" required>
                 <p id="nameErr"></p>
             </div>
+
             <div>
-                <label>EMAIL <span style="color: red;">*</span></label>
+                <label for="email">EMAIL <span style="color: red;">*</span></label>
                 <input type="email" placeholder="Enter your email address..." name="email" required>
                 <p id="emailErr"></p>
             </div>
+
             <div>
-                <label>PASSWORD <span style="color: red;">*</span></label>
+                <label for="passwd">PASSWORD <span style="color: red;">*</span></label>
                 <input type="password" placeholder="Enter your password..." name="passwd" required>
-                <p id="passwdErr"></p>
+                <p id="passwdErr1st"></p>
             </div>
+
             <div>
-                <label>CONFIRM PASSWORD <span style="color: red;">*</span></label>
+                <label for="confirmPasswd">CONFIRM PASSWORD <span style="color: red;">*</span></label>
                 <input type="password" placeholder="Confirm your password..." name="confirmPasswd" required>
+                <p id="passwdErr2nd"></p>
                 <p id="confirmPasswdErr"></p>
             </div>
-            <input type="submit" value="Sign Up">
-        </div>
-        <div class="info">
-            <span>Already registered?
+
+            <input type="submit" value="Continue">
+
+        </section>
+
+        <section class="info">
+            <span>Already have an account?
                 <a href="/login">Login here <span style="font-size: 20px;font-weight: bolder;">→</span></a>
             </span>
-        </div>
+        </section>
+
     </form>
+
 </body>
 <script src="/static/js/registration_validation.js"></script>
-
 
 </html>

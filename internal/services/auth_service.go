@@ -2,7 +2,6 @@ package services
 
 import (
 	"fmt"
-	"time"
 
 	"forum/internal/models"
 	"forum/internal/repositories"
@@ -15,11 +14,6 @@ type AuthService struct {
 	UserRepo *repositories.UserRepository
 }
 
-// func CheckPasswordHash(password, hash string) bool {
-// 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
-// 	return err == nil
-// }
-
 func HashPassword(psswd string) (string, error) {
 	bytes, err := bcrypt.GenerateFromPassword([]byte(psswd), bcrypt.DefaultCost)
 	return string(bytes), err
@@ -28,9 +22,11 @@ func HashPassword(psswd string) (string, error) {
 // check username&email already exists if not hash the password and send all data  to userRepo
 func (a *AuthService) Register(username, email, password string) error {
 	checkByEmail, err := a.UserRepo.FindUser(email, "byEmail")
-	// specify the error if username already exists or the email
-	if checkByEmail != nil || err != nil {
-		return fmt.Errorf("user already exist")
+	if checkByEmail != nil {
+		return fmt.Errorf("email")
+	}
+	if err != nil {
+		return fmt.Errorf("user")
 	}
 
 	hash, err := HashPassword(password)
@@ -54,16 +50,12 @@ func (a *AuthService) Login(email, password string) (*models.User, error) {
 	if userByEmail == nil || err != nil {
 		return nil, fmt.Errorf("in email")
 	}
-	t := time.Now()
+
 	err = bcrypt.CompareHashAndPassword([]byte(userByEmail.PasswordHash), []byte(password))
-	fmt.Println(time.Since(t))
 	if err != nil {
 		return nil, err
 	}
-	// check := CheckPasswordHash(password, userByEmail.PasswordHash)
-	// if !check {
-	// 	return nil, fmt.Errorf("in password")
-	// }
+
 	return userByEmail, nil
 }
 

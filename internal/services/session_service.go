@@ -2,7 +2,6 @@ package services
 
 import (
 	"database/sql"
-	"fmt"
 	"time"
 
 	"forum/internal/repositories"
@@ -20,7 +19,6 @@ func (s *SessionService) DeleteSession(sessionID string) error {
 
 func (s *SessionService) CreateSession(sessionID string, expiration time.Time, userID uuid.UUID) error {
 	err := s.SessionRepo.CheckUserAlreadyLogged(userID)
-	fmt.Println("test04")
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return s.SessionRepo.Createession(sessionID, expiration, userID)
