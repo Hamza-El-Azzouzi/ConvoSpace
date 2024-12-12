@@ -7,7 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link href="/static/css/css_style.css" rel="stylesheet" type="text/css" />
   <title>01-Forum - Post Details</title>
-  <link rel="icon" type="image/png" href="/static/img/forum.png" />
+  <link rel="icon" type="image/png" href="/static/img/img_forum.png" />
   <noscript>
     <meta http-equiv="refresh" content="0;url=/javascript">
   </noscript>
@@ -103,7 +103,9 @@
             </div>
             {{ end }} {{ end }} {{ else }} {{ if not .posts.Comments }}
             <div class="no-comments">
-              <p>No comments yet. Be the first to comment!</p>
+              <div class="nothing">
+                <p>No comments yet. Be the first to comment!</p>
+              </div>
             </div>
             {{ else }} {{ range .posts.Comments }}
             <div class="comment">
@@ -151,8 +153,8 @@
     <div class="container"></div>
   </section>
 </body>
-<script src="/static/js/comment_validation.js"></script>
-<script src="/static/js/script.js"></script>
-<script src="/static/js/main.js"></script>
+<script src="/static/js/js_comment_validation.js"></script>
+<script src="/static/js/js_script.js"></script>
+<script src="/static/js/js_main.js"></script>
 
 </html>

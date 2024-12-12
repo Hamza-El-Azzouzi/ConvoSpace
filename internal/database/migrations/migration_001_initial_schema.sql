@@ -1,8 +1,8 @@
 CREATE TABLE
     users (
         id TEXT PRIMARY KEY,
-        username TEXT NOT NULL UNIQUE,
-        email TEXT NOT NULL UNIQUE,
+        username VARCHAR(50) NOT NULL UNIQUE,
+        email VARCHAR(255) NOT NULL UNIQUE,
         password_hash TEXT NOT NULL,
         created_at TIMESTAMP DEFAULT (DATETIME ('now', 'localtime'))
     );
@@ -11,7 +11,7 @@ CREATE TABLE
     posts (
         id TEXT PRIMARY KEY,
         user_id TEXT NOT NULL,
-        title TEXT NOT NULL,
+        title VARCHAR(255) NOT NULL,
         content TEXT NOT NULL,
         created_at TIMESTAMP DEFAULT (DATETIME ('now', 'localtime')),
         FOREIGN KEY (user_id) REFERENCES users (id) ON UPDATE CASCADE ON DELETE CASCADE
@@ -30,7 +30,7 @@ CREATE TABLE
     );
 
 CREATE TABLE
-    categories (id TEXT PRIMARY KEY, name TEXT NOT NULL UNIQUE);
+    categories (id TEXT PRIMARY KEY, name VARCHAR(150) NOT NULL UNIQUE);
 
 CREATE TABLE
     post_categories (
@@ -75,11 +75,7 @@ CREATE TABLE
     );
     
 CREATE INDEX idx_user_id_session ON sessions (user_id);
-
 CREATE INDEX idx_post_categories_post_id ON post_categories (post_id);
-
 CREATE INDEX idx_post_categories_category_id ON post_categories (category_id);
-
 CREATE INDEX idx_likes_post_id ON likes (post_id);
-
 CREATE INDEX idx_likes_comment_id ON likes (comment_id);

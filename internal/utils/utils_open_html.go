@@ -24,7 +24,7 @@ func GetPath() string {
 
 func OpenHtml(fileName string, w http.ResponseWriter, data any) {
 	basePath := GetPath()
-	temp, err := template.ParseFiles(basePath + "templates/" + fileName)
+	temp, err := template.ParseFiles(basePath + "templates/template_" + fileName)
 	if err != nil {
 		Error(w, http.StatusInternalServerError)
 		return

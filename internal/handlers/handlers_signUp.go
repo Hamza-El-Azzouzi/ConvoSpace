@@ -35,7 +35,7 @@ func (h *AuthHandler) RegisterHandle(w http.ResponseWriter, r *http.Request) {
 			http.Redirect(w, r, "/", http.StatusSeeOther)
 			return
 		}
-		utils.OpenHtml("templates_signUp.html", w, nil)
+		utils.OpenHtml("signUp.html", w, nil)
 		return
 	case r.Method == http.MethodPost:
 		if ActiveUser {

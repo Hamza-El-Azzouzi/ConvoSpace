@@ -13,7 +13,7 @@ import (
 )
 
 func main() {
-	db, err := database.InitDB("forum.db")
+	db, err := database.InitDB("server_forum.db")
 	if err != nil {
 		log.Fatalf("error in DB : %v", err)
 		return
@@ -62,5 +62,5 @@ func main() {
 
 	fmt.Println("Starting the forum server...\nWelcome http://localhost:8082/")
 
-	log.Fatal(http.ListenAndServe("0.0.0.0:8082", nil))
+	log.Fatal(http.ListenAndServe(":8080", nil))
 }

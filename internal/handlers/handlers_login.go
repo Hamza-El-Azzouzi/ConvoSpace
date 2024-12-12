@@ -29,7 +29,7 @@ func (h *AuthHandler) LoginHandle(w http.ResponseWriter, r *http.Request) {
 			http.Redirect(w, r, "/", http.StatusSeeOther)
 			return
 		}
-		utils.OpenHtml("templates_login.html", w, nil)
+		utils.OpenHtml("login.html", w, nil)
 		return
 	case r.Method == http.MethodPost:
 		var info LoginData

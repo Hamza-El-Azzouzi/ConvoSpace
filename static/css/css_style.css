@@ -24,8 +24,8 @@ form {
 }
 
 h1 {
-    /* font-size: 80px; */
-    color: black;
+    font-size: 80px;
+    color:#3498db;
     margin-bottom: 10px;
     animation: fadeInDown 0.5s;
 }

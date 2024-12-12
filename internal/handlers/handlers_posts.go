@@ -136,7 +136,7 @@ func (p *PostHandler) PostSaver(w http.ResponseWriter, r *http.Request) {
 		data["Username"] = usermid.Username
 		err = p.PostService.PostSave(usermid.ID, title, subject, categories)
 		if err != nil {
-			utils.Error(w, http.StatusInternalServerError)
+			utils.Error(w, http.StatusBadRequest)
 		} else {
 			http.Redirect(w, r, "/", http.StatusSeeOther)
 		}
