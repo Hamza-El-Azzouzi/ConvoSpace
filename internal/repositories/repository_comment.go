@@ -33,12 +33,7 @@ func (c *CommentRepositorie) Create(comment *models.Comment) error {
 	return nil
 }
 
-// Execute the SQL query to retrieve comments and their associated data
-// The query fetches comment details, user details, and counts of likes and dislikes
-// Iterate through the rows returned by the query
-// Map the row data to the CommentDetails struct
-// Format the comment creation date into a user-friendly string "01/02/2006, 3:04:05 PM"
-func (c *CommentRepositorie) GetCommentByPost(postID string) ([]models.CommentDetails, error) {
+func (c *CommentRepositorie) GetCommentByPost(postID string, pagination int) ([]models.CommentDetails, error) {
 	querySelect := `
 	SELECT
 	 comments.id AS comment_id,
@@ -56,9 +51,9 @@ func (c *CommentRepositorie) GetCommentByPost(postID string) ([]models.CommentDe
 	 comments.post_id = ?
 	ORDER BY
 	 comments.created_at DESC
-	 LIMIT 5;
-	`
-	rows, queryErr := c.DB.Query(querySelect, postID)
+	 LIMIT 5 OFFSET ?;`
+
+	rows, queryErr := c.DB.Query(querySelect, postID, pagination)
 	if queryErr != nil {
 		return nil, queryErr
 	}

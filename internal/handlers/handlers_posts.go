@@ -48,7 +48,7 @@ func (p *PostHandler) Posts(w http.ResponseWriter, r *http.Request) {
 	}
 	nPagination, err := strconv.Atoi(pagination)
 	if err != err {
-		utils.Error(w,http.StatusBadRequest)
+		utils.Error(w, http.StatusBadRequest)
 	}
 	if err != err {
 		utils.Error(w, http.StatusNotFound)
@@ -164,12 +164,18 @@ func (p *PostHandler) DetailsPost(w http.ResponseWriter, r *http.Request) {
 	}
 	posts, err := p.PostService.GetPost(postID)
 	if err != nil || posts.PostID == uuid.Nil {
-		utils.Error(w, http.StatusNotFound)
+		utils.Error(w, http.StatusInternalServerError)
+		return
+	}
+	comment, err := p.CommentService.GetCommentByPost(postID, 0)
+	if err != nil {
+		utils.Error(w, http.StatusInternalServerError)
 		return
 	}
 	data := map[string]any{
 		"LoggedIn": false,
 		"posts":    posts,
+		"comment":  comment,
 	}
 
 	isLogged, usermid := p.AuthMidlaware.IsUserLoggedIn(w, r)
@@ -196,6 +202,7 @@ func (p *PostHandler) CommentSaver(w http.ResponseWriter, r *http.Request) {
 		Comment string `json:"content"`
 		PostId  string `json:"postId"`
 	}
+
 	decoder := json.NewDecoder(r.Body)
 	err := decoder.Decode(&commentData)
 	defer r.Body.Close()
@@ -214,8 +221,7 @@ func (p *PostHandler) CommentSaver(w http.ResponseWriter, r *http.Request) {
 		utils.Error(w, http.StatusInternalServerError)
 		return
 	}
-
-	comment, err := p.CommentService.GetCommentByPost(commentData.PostId)
+	comment, err := p.CommentService.GetCommentByPost(commentData.PostId, 0)
 	if err != nil {
 		utils.Error(w, http.StatusInternalServerError)
 		return
@@ -275,4 +281,27 @@ func (p *PostHandler) PostFilter(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(data)
+}
+
+func (p *PostHandler) CommentGetter(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		utils.Error(w, http.StatusMethodNotAllowed)
+		return
+	}
+	var err error
+	postID := r.URL.Query().Get("postId")
+	pagination := r.URL.Query().Get("offset")
+	nPagination, err := strconv.Atoi(pagination)
+	if err != nil {
+		utils.Error(w, http.StatusBadRequest)
+		return
+	}
+	comment, err := p.CommentService.GetCommentByPost(postID, nPagination)
+	if err != nil {
+		utils.Error(w, http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(comment)
 }

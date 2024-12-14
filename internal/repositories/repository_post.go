@@ -1,11 +1,10 @@
 package repositories
 
-import (									
+import (
 	"database/sql"
 	"fmt"
 	"html"
 	"strings"
-	"time"
 
 	"forum/internal/models"
 
@@ -43,23 +42,37 @@ func (r *PostRepository) AllPosts(pagination int) ([]models.PostWithUser, error)
 		users.id AS user_id,
 		users.username,
 		REPLACE(IFNULL(GROUP_CONCAT(DISTINCT categories.name), ''), ',', ' | ') AS category_names,
-		(SELECT COUNT(*) FROM comments WHERE comments.post_id = posts.id) AS comment_count,
+		CASE 
+   			WHEN comment_counts.comment_count > 100 THEN '+100'
+    		ELSE IFNULL(CAST(comment_counts.comment_count AS TEXT), '0')
+		END AS comment_count,
 		(SELECT COUNT(*) FROM likes WHERE likes.post_id = posts.id AND likes.react_type = "like") AS likes_count,
 		(SELECT COUNT(*) FROM likes WHERE likes.post_id = posts.id AND likes.react_type = "dislike") AS dislike_count,
 		total_posts.total_count
 		FROM 
-			posts
+   			posts
 		JOIN 
 			users ON posts.user_id = users.id
 		LEFT JOIN 
 			post_categories ON posts.id = post_categories.post_id
 		LEFT JOIN 
 			categories ON post_categories.category_id = categories.id
+		LEFT JOIN 
+			(SELECT post_id, COUNT(*) AS comment_count FROM comments GROUP BY post_id) AS comment_counts
+			ON posts.id = comment_counts.post_id
+		LEFT JOIN 
+			(SELECT post_id, COUNT(*) AS likes_count FROM likes WHERE react_type = 'like' GROUP BY post_id) AS like_counts
+			ON posts.id = like_counts.post_id
+		LEFT JOIN 
+			(SELECT post_id, COUNT(*) AS dislike_count FROM likes WHERE react_type = 'dislike' GROUP BY post_id) AS dislike_counts
+			ON posts.id = dislike_counts.post_id
 		CROSS JOIN 
-    		(SELECT COUNT(*) AS total_count FROM posts) AS total_posts
+			(SELECT COUNT(*) AS total_count FROM posts) AS total_posts
 		GROUP BY 
 			posts.id
-		ORDER BY posts.created_at DESC LIMIT 5 OFFSET ?;`
+		ORDER BY 
+			posts.created_at DESC 
+		LIMIT 5 OFFSET ?;`
 	rows, err := r.DB.Query(query, pagination)
 	if err != nil {
 		fmt.Println(err)
@@ -98,7 +111,8 @@ func (r *PostRepository) AllPosts(pagination int) ([]models.PostWithUser, error)
 	return posts, nil
 }
 
-func (r *PostRepository) GetPostById(PostId string) (models.PostDetails, error) {
+func (r *PostRepository) GetPostById(PostId string) (models.PostWithUser, error) {
+	var post models.PostWithUser
 	query := `SELECT 
 	    posts.id AS post_id,
 	    posts.title,
@@ -109,14 +123,7 @@ func (r *PostRepository) GetPostById(PostId string) (models.PostDetails, error) 
 	    REPLACE(IFNULL(GROUP_CONCAT(DISTINCT categories.name), ''), ',', ' | ') AS category_names,
 
 		(SELECT COUNT(*) FROM likes WHERE likes.post_id = posts.id AND likes.react_type = "like") AS likes_count,
-		(SELECT COUNT(*) FROM likes WHERE likes.post_id = posts.id AND likes.react_type = "dislike") AS dislike_count,
-	    comments.id AS comment_id,
-	    comments.content AS comment_content,
-	    comments.created_at AS comment_created_at,
-	    comment_user.id AS comment_user_id,
-	    comment_user.username AS comment_username,
-		(SELECT COUNT(*) FROM likes WHERE likes.comment_id = comments.id AND likes.react_type = "like") AS comment_likes_count,
-	    (SELECT COUNT(*) FROM likes WHERE likes.comment_id = comments.id AND likes.react_type = "dislike") AS comment_dislike_count
+		(SELECT COUNT(*) FROM likes WHERE likes.post_id = posts.id AND likes.react_type = "dislike") AS dislike_count
 		FROM 
 			posts
 		JOIN 
@@ -125,111 +132,24 @@ func (r *PostRepository) GetPostById(PostId string) (models.PostDetails, error) 
 			post_categories ON posts.id = post_categories.post_id
 		LEFT JOIN 
 			categories ON post_categories.category_id = categories.id
-		LEFT JOIN 
-			comments ON posts.id = comments.post_id
-		LEFT JOIN 
-			users AS comment_user ON comments.user_id = comment_user.id
 		WHERE 
-			posts.id = ?
-		GROUP BY 
-			comments.id
-		ORDER BY 
-			comments.created_at DESC;`
+			posts.id = ?`
 
-	rows, err := r.DB.Query(query, PostId)
+	err := r.DB.QueryRow(query, PostId).Scan(
+		&post.PostID,
+		&post.Title,
+		&post.Content,
+		&post.CreatedAt,
+		&post.UserID,
+		&post.Username,
+		&post.CategoryName,
+		&post.LikeCount,
+		&post.DisLikeCount,
+	)
 	if err != nil {
-		return models.PostDetails{}, fmt.Errorf("error f query : %v", err)
+		return models.PostWithUser{}, fmt.Errorf("error f query : %v", err)
 	}
-	defer rows.Close()
-
-	var postDetails models.PostDetails
-	postDetails.Comments = []models.CommentDetails{}
-
-	for rows.Next() {
-		var (
-			postID              uuid.UUID
-			title               string
-			content             string
-			createdAt           time.Time
-			userID              uuid.UUID
-			username            string
-			categoryNames       string
-			likeCount           int
-			disLikeCount        int
-			commentID           sql.NullString
-			commentContent      sql.NullString
-			commentCreated      sql.NullTime
-			commentUserID       sql.NullString
-			commentUsername     sql.NullString
-			commentLikesCount   sql.NullInt64
-			commentDislikeCount sql.NullInt64
-		)
-
-		err = rows.Scan(
-			&postID,
-			&title,
-			&content,
-			&createdAt,
-			&userID,
-			&username,
-			&categoryNames,
-			&likeCount,
-			&disLikeCount,
-			&commentID,
-			&commentContent,
-			&commentCreated,
-			&commentUserID,
-			&commentUsername,
-			&commentLikesCount,
-			&commentDislikeCount,
-		)
-		if err != nil {
-			return models.PostDetails{}, fmt.Errorf("error f row scan : %v", err)
-		}
-
-		if postDetails.PostID == uuid.Nil {
-			postDetails = models.PostDetails{
-				PostID:        postID,
-				Title:         title,
-				Content:       content,
-				CreatedAt:     createdAt,
-				UserID:        userID,
-				Username:      username,
-				FormattedDate: createdAt.Format("01/02/2006, 3:04:05 PM"),
-				CategoryNames: categoryNames,
-				LikeCount:     likeCount,
-				DisLikeCount:  disLikeCount,
-			}
-		}
-
-		if commentID.Valid {
-			parsedCommentID, err := uuid.FromString(commentID.String)
-			if err != nil {
-				return models.PostDetails{}, fmt.Errorf("error f parse com id : %v", err)
-			}
-
-			parsedUserIDComment, err := uuid.FromString(commentUserID.String)
-			if err != nil {
-				return models.PostDetails{}, fmt.Errorf("error f parse : %v", err)
-			}
-			comment := models.CommentDetails{
-				CommentID:           parsedCommentID,
-				Content:             commentContent.String,
-				CreatedAt:           commentCreated.Time,
-				UserID:              parsedUserIDComment,
-				Username:            commentUsername.String,
-				FormattedDate:       commentCreated.Time.Format("01/02/2006, 3:04:05 PM"),
-				LikeCountComment:    commentLikesCount.Int64,
-				DisLikeCountComment: commentDislikeCount.Int64,
-			}
-			postDetails.Comments = append(postDetails.Comments, comment)
-		}
-	}
-	err = rows.Err()
-	if err != nil {
-		return models.PostDetails{}, fmt.Errorf("error f row.errr : %v", err)
-	}
-	return postDetails, nil
+	return post, nil
 }
 
 func (r *PostRepository) FilterPost(filterby, category string, userID uuid.UUID, pagination int) ([]models.PostWithUser, error) {

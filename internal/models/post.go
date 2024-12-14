@@ -31,7 +31,7 @@ type PostWithUser struct {
 	CommentCount  int
 	LikeCount     int
 	DisLikeCount  int
-	TotalCount    int
+	TotalCount    string
 }
 
 type PostDetails struct {

@@ -1,5 +1,6 @@
-// get the content of the comment and sendt it to the backend (handler /sendcomment) with a fetch and post methode
-//receive the response as json that contain all the comments of the post and call update function to append them in the html
+let commentOffset = 1;
+const commentsPerPage = 5;
+const btn = document.querySelector('.load-more-btn'); 
 function SubmitComment(event) {
 
     event.preventDefault();
@@ -15,21 +16,22 @@ function SubmitComment(event) {
     const currentValue = textarea.value
 
     async function fetchData() {
-
         try {
             const response = await fetch('/sendcomment', {
                 method: "POST",
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ content: currentValue, postId: currentPostId })
+                body: JSON.stringify({ content: currentValue, postId: currentPostId})
             })
             if (!response.ok) {
                 throw new Error('http error')
             }
+            
             textarea.value = ''
             const update = await response.json()
-            UpdateComment(update)
+            console.log(btn)
+            UpdateComment(update, false)
         } catch (error) {
             console.error('There was a problem in fetch :', error);
         }
@@ -37,21 +39,26 @@ function SubmitComment(event) {
     fetchData()
 }
 
-
-//get the comment section div make it empty then loop over comments and append them to the comment section div
-function UpdateComment(comments) {
+function UpdateComment(comments, append = false) {
     const commentSection = document.querySelector(".comment-section");
-    commentSection.innerHTML = "";
-    if (comments.length === 0) {
+  
+   console.log(btn)
+    if (!append) {
+        commentSection.innerHTML = ""; 
+    }
+
+    if (comments.length === 0 && !append) {
+        console.log(btn)
         const noCommentsDiv = document.createElement('div');
         noCommentsDiv.className = 'nothing';
         noCommentsDiv.innerHTML = '<p>No comments yet. Be the first to comment!</p>';
+        document.querySelector('.load-more-btn').style.display = 'none'; 
         commentSection.appendChild(noCommentsDiv);
         return;
     }
-    
+
     comments.forEach((comment) => {
-        const { Username = "Anonymous", FormattedDate, Content, CommentID, LikeCountComment, DisLikeCountComment } = comment
+        const { Username = "Anonymous", FormattedDate, Content, CommentID, LikeCountComment, DisLikeCountComment } = comment;
         const commentElement = document.createElement("div");
         commentElement.className = "comment";
         commentElement.innerHTML = `
@@ -62,13 +69,44 @@ function UpdateComment(comments) {
           <div class="comment-body"><pre>${Content}</pre></div>
           <div class="comment-footer">
               <button class="button like" onclick="handleLikeDislike('${CommentID}', 'likeComment', event)">
-                  <span id='${CommentID}-likecomment' >👍${LikeCountComment}</span>
+                  <span id='${CommentID}-likecomment'>👍${LikeCountComment}</span>
               </button>
                <button class="button like" onclick="handleLikeDislike('${CommentID}', 'dislikeComment', event)">
-                  <span id='${CommentID}-dislikecomment' >👎${DisLikeCountComment}</span>
+                  <span id='${CommentID}-dislikecomment'>👎${DisLikeCountComment}</span>
               </button>
           </div>
       `;
         commentSection.appendChild(commentElement);
     });
+}
+async function loadMore() {
+    const postID = window.location.href.split("/")[4];
+    const queryParams = new URLSearchParams({
+        postId: postID,
+        offset: commentOffset * commentsPerPage,
+    });
+    console.log(queryParams)
+    try {
+        const response = await fetch(`/comment?${queryParams}`);
+        if (!response.ok) {
+            throw new Error('Failed to load more comments');
+        }
+
+        const newComments = await response.json();
+
+        console.log(newComments)
+
+        if (newComments.length < commentsPerPage) {
+            btn.style.display = 'none'; // Hide button if no more comments
+        }
+
+        UpdateComment(newComments, true);
+
+        commentOffset += 1;
+    } catch (error) {
+        console.error('Error fetching more comments:', error);
+    }
+}
+if(btn){
+    btn.addEventListener('click', loadMore);
 }

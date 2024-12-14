@@ -48,10 +48,10 @@ func (p *PostService) AllPosts(pagination int) ([]models.PostWithUser, error) {
 	return posts, nil
 }
 
-func (p *PostService) GetPost(PostID string) (models.PostDetails, error) {
+func (p *PostService) GetPost(PostID string) (models.PostWithUser, error) {
 	posts, err := p.PostRepo.GetPostById(PostID)
 	if err != nil {
-		return models.PostDetails{}, fmt.Errorf("error Kayn f one Post service : %v", err)
+		return models.PostWithUser{}, fmt.Errorf("error Kayn f one Post service : %v", err)
 	}
 	return posts, nil
 }
