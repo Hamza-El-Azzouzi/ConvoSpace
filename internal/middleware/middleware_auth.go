@@ -18,7 +18,6 @@ const (
 	ExpName  = `^[a-zA-Z0-9_.]{3,20}$`
 )
 
-// check if the user is logged retunr true/false & userData || nil
 func (h *AuthMiddleware) IsUserLoggedIn(w http.ResponseWriter, r *http.Request) (bool, *models.User) {
 	cookie, err := r.Cookie("sessionId")
 	if err != nil {
@@ -65,6 +64,5 @@ func (h *AuthMiddleware) IsValidPassword(password string) bool {
 			break
 		}
 	}
-
 	return secure
 }

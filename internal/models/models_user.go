@@ -18,3 +18,7 @@ type UserSession struct {
 	ID     uuid.UUID
 	USerID uuid.UUID
 }
+
+type LoginReply struct {
+	REplyMssg string
+}

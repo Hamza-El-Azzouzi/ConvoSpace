@@ -10,7 +10,6 @@ type UserRepository struct {
 	DB *sql.DB
 }
 
-// create a user in register form used in register service
 func (r *UserRepository) Create(user *models.User) error {
 	query := `INSERT INTO users (id, username, email, password_hash) VALUES (?,?,?,?)`
 	_, err := r.DB.Exec(query, user.ID, user.Username, user.Email, user.PasswordHash)

@@ -13,8 +13,6 @@ type CommentService struct {
 	CommentRepo *repositories.CommentRepositorie
 }
 
-// get the data from the handler and create a ID with uuid then
-// call the method from the repository
 func (c *CommentService) SaveComment(userID uuid.UUID, postID, content string) error {
 	comment := &models.Comment{
 		ID:        uuid.Must(uuid.NewV4()),
@@ -26,7 +24,6 @@ func (c *CommentService) SaveComment(userID uuid.UUID, postID, content string) e
 	return c.CommentRepo.Create(comment)
 }
 
-// get all comments about a post that just got a new comment by calling the methode in repository
 func (c *CommentService) GetCommentByPost(postID string, pagination int) ([]models.CommentDetails, error) {
 	comment, err := c.CommentRepo.GetCommentByPost(postID, pagination)
 	if err != nil {

@@ -68,12 +68,12 @@ func (l *LikeHandler) react(w http.ResponseWriter, r *http.Request, liked, typeO
 			utils.Error(w, http.StatusInternalServerError)
 			return
 		}
+		w.Header().Set("Content-Type", "application/json")
 		err = json.NewEncoder(w).Encode(data)
 		if err != nil {
 			utils.Error(w, http.StatusInternalServerError)
 			return
 		}
-		w.Header().Set("Content-Type", "application/json")
 	} else {
 		utils.Error(w, http.StatusForbidden)
 	}

@@ -164,12 +164,12 @@ func (p *PostHandler) DetailsPost(w http.ResponseWriter, r *http.Request) {
 	}
 	posts, err := p.PostService.GetPost(postID)
 	if err != nil || posts.PostID == uuid.Nil {
-		utils.Error(w, http.StatusInternalServerError)
+		utils.Error(w, http.StatusNotFound)
 		return
 	}
 	comment, err := p.CommentService.GetCommentByPost(postID, 0)
 	if err != nil {
-		utils.Error(w, http.StatusInternalServerError)
+		utils.Error(w, http.StatusNotFound)
 		return
 	}
 	data := map[string]any{
@@ -190,22 +190,18 @@ func (p *PostHandler) DetailsPost(w http.ResponseWriter, r *http.Request) {
 	utils.OpenHtml("post-deatils.html", w, data)
 }
 
-// if the user is logged
-// recieve the request from the front end check the http method if not post show error 405
-// then save it to the database and fetch all comments about the post to show them in the detailpost page using json
 func (p *PostHandler) CommentSaver(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		utils.Error(w, http.StatusMethodNotAllowed)
 		return
 	}
-	var commentData struct {
-		Comment string `json:"content"`
-		PostId  string `json:"postId"`
-	}
+	var commentData models.CommentData
 
 	decoder := json.NewDecoder(r.Body)
 	err := decoder.Decode(&commentData)
+	
 	defer r.Body.Close()
+
 	if err != nil {
 		utils.Error(w, http.StatusBadRequest)
 		return

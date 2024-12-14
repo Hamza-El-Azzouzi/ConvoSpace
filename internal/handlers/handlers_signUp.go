@@ -21,10 +21,6 @@ type SignUpData struct {
 	Passwd        string `json:"password"`
 	Email         string `json:"email"`
 	ConfirmPasswd string `json:"confirmPassword"`
-	// ErrMessage string
-}
-type SignUpReply struct {
-	REplyMssg string
 }
 
 func (h *AuthHandler) RegisterHandle(w http.ResponseWriter, r *http.Request) {

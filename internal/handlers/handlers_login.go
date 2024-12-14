@@ -6,6 +6,7 @@ import (
 	"strings"
 	"time"
 
+	"forum/internal/models"
 	"forum/internal/utils"
 
 	"github.com/gofrs/uuid/v5"
@@ -14,12 +15,9 @@ import (
 type LoginData struct {
 	Email  string `json:"email"`
 	Passwd string `json:"password"`
-	// ErrMessage string
 }
 
-type LoginReply struct {
-	REplyMssg string
-}
+
 
 func (h *AuthHandler) LoginHandle(w http.ResponseWriter, r *http.Request) {
 	ActiveUser, _ := h.AuthMidlaware.IsUserLoggedIn(w, r)
@@ -74,7 +72,7 @@ func sendResponse(w http.ResponseWriter, reply string) {
 		w.WriteHeader(http.StatusBadRequest)
 	}
 
-	response := &LoginReply{
+	response := &models.LoginReply{
 		REplyMssg: reply,
 	}
 

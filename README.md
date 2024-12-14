@@ -75,9 +75,6 @@ forum/
 
 ## Database Schema
 
-<p>
-  <img src="mermaid-diagram-2024-11-16-113936.png" alt="Database Schema" width="800">
-</p>
 The application uses SQLite with the following main tables:
 - Users
 - sessions
@@ -104,7 +101,7 @@ The application uses SQLite with the following main tables:
 - `POST /dislike/{id}` - Dislike post
 
 ### Comments
-
+- `GET /comment` - List comment
 - `POST /sendcomment/{id}` - Add comment
 - `POST /likeComment/{id}` - Like comment
 - `POST /dislikeComment/{id}` - Dislike comment
@@ -147,10 +144,6 @@ docker run -p 8080:8080 forum
 3. Commit your changes (`git commit -m 'Add some amazing feature'`)
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
 
 ## Acknowledgments
 

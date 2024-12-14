@@ -28,10 +28,10 @@ type PostWithUser struct {
 	Username      string
 	FormattedDate string
 	CategoryName  string
-	CommentCount  int
+	CommentCount  string
 	LikeCount     int
 	DisLikeCount  int
-	TotalCount    string
+	TotalCount    int
 }
 
 type PostDetails struct {
@@ -59,4 +59,8 @@ type CommentDetails struct {
 	FormattedDate       string
 	LikeCountComment    int64
 	DisLikeCountComment int64
+}
+type CommentData struct {
+	Comment string `json:"content"`
+	PostId  string `json:"postId"`
 }

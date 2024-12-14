@@ -60,7 +60,7 @@ func main() {
 
 	routes.SetupRoutes(mux, authHandler, postHandler, likeHandler, authMiddleware)
 
-	fmt.Println("Starting the forum server...\nWelcome http://localhost:8082/")
+	fmt.Println("Starting the forum server...\nWelcome http://localhost:8080/")
 
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }

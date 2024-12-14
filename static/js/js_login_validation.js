@@ -21,8 +21,6 @@ const Error = (elem, errorMssg) => {
 const VerifyData = () => {
     ErrMessageEmail.textContent = ""
     ErrMessagePasswd.textContent = ""
-    // Err.textContent = ""
-
     switch (true) {
         case (!ExpEmail.test(email.value)):
             Error(ErrMessageEmail, InvalidEmail)

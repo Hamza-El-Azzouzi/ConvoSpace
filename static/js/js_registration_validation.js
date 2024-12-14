@@ -40,9 +40,6 @@ const Error = (elem, errorMssg) => {
     elem.style.fontSize = "12px"
     elem.style.marginTop = "0px"
 }
-// const ResetErrorTags = () => {
-
-// }
 const VerifyData = () => {
     let exist = false
 

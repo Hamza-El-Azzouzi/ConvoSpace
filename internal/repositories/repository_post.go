@@ -42,13 +42,13 @@ func (r *PostRepository) AllPosts(pagination int) ([]models.PostWithUser, error)
 		users.id AS user_id,
 		users.username,
 		REPLACE(IFNULL(GROUP_CONCAT(DISTINCT categories.name), ''), ',', ' | ') AS category_names,
-		CASE 
+		CASE
    			WHEN comment_counts.comment_count > 100 THEN '+100'
     		ELSE IFNULL(CAST(comment_counts.comment_count AS TEXT), '0')
 		END AS comment_count,
 		(SELECT COUNT(*) FROM likes WHERE likes.post_id = posts.id AND likes.react_type = "like") AS likes_count,
 		(SELECT COUNT(*) FROM likes WHERE likes.post_id = posts.id AND likes.react_type = "dislike") AS dislike_count,
-		total_posts.total_count
+		COUNT(*) OVER() AS total_count
 		FROM 
    			posts
 		JOIN 
@@ -60,14 +60,6 @@ func (r *PostRepository) AllPosts(pagination int) ([]models.PostWithUser, error)
 		LEFT JOIN 
 			(SELECT post_id, COUNT(*) AS comment_count FROM comments GROUP BY post_id) AS comment_counts
 			ON posts.id = comment_counts.post_id
-		LEFT JOIN 
-			(SELECT post_id, COUNT(*) AS likes_count FROM likes WHERE react_type = 'like' GROUP BY post_id) AS like_counts
-			ON posts.id = like_counts.post_id
-		LEFT JOIN 
-			(SELECT post_id, COUNT(*) AS dislike_count FROM likes WHERE react_type = 'dislike' GROUP BY post_id) AS dislike_counts
-			ON posts.id = dislike_counts.post_id
-		CROSS JOIN 
-			(SELECT COUNT(*) AS total_count FROM posts) AS total_posts
 		GROUP BY 
 			posts.id
 		ORDER BY 
@@ -121,7 +113,6 @@ func (r *PostRepository) GetPostById(PostId string) (models.PostWithUser, error)
 	    post_user.id AS post_user_id,
 	    post_user.username AS post_username,
 	    REPLACE(IFNULL(GROUP_CONCAT(DISTINCT categories.name), ''), ',', ' | ') AS category_names,
-
 		(SELECT COUNT(*) FROM likes WHERE likes.post_id = posts.id AND likes.react_type = "like") AS likes_count,
 		(SELECT COUNT(*) FROM likes WHERE likes.post_id = posts.id AND likes.react_type = "dislike") AS dislike_count
 		FROM 

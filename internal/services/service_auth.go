@@ -19,7 +19,6 @@ func HashPassword(psswd string) (string, error) {
 	return string(bytes), err
 }
 
-// check username&email already exists if not hash the password and send all data  to userRepo
 func (a *AuthService) Register(username, email, password string) error {
 	checkByEmail, err := a.UserRepo.FindUser(email, "byEmail")
 	if checkByEmail != nil {
@@ -44,7 +43,6 @@ func (a *AuthService) Register(username, email, password string) error {
 	return err
 }
 
-// get the user by email email compare the psawords
 func (a *AuthService) Login(email, password string) (*models.User, error) {
 	userByEmail, err := a.UserRepo.FindUser(email, "byEmail")
 	if userByEmail == nil || err != nil {
@@ -59,7 +57,6 @@ func (a *AuthService) Login(email, password string) (*models.User, error) {
 	return userByEmail, nil
 }
 
-// get a user data by a session ID given as paramtere
 func (a *AuthService) GetUserBySessionID(sessionID string) (*models.User, error) {
 	user, err := a.UserRepo.GetUserBySessionID(sessionID)
 	if err != nil {
