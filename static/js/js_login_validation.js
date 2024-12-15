@@ -4,7 +4,6 @@ const password = document.querySelector("input[name='passwd']")
 const submitBtn = document.querySelector("input[type='submit']")
 const ErrMessageEmail = document.getElementById("emailErr")
 const ErrMessagePasswd = document.getElementById("passwdErr")
-// const Err = document.getElementById("otherErr")
 
 const InvalidEmail = "invalid email!! enter a valid email"
 const InvalidPsswd = "invalid password!! enter a valid password"

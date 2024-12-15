@@ -27,7 +27,6 @@ func (h *AuthMiddleware) IsUserLoggedIn(w http.ResponseWriter, r *http.Request) 
 	sessionId := cookie.Value
 	userBySession, err := h.SessionService.GetUserService(sessionId)
 	if err != nil {
-		// fmt.Println("expired session or not exist")
 		return false, nil
 	}
 

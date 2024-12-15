@@ -95,7 +95,6 @@ func SetCookies(w http.ResponseWriter, name, value string, expires time.Time) {
 	http.SetCookie(w, cookie)
 }
 
-// LogoutHandle func expire the cookies time and delete sessionId from the session table
 func (h *AuthHandler) LogoutHandle(w http.ResponseWriter, r *http.Request) {
 	activeUser, _ := h.AuthMidlaware.IsUserLoggedIn(w, r)
 	if !activeUser {

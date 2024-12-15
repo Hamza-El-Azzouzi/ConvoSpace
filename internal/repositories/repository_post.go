@@ -144,7 +144,6 @@ func (r *PostRepository) GetPostById(PostId string) (models.PostWithUser, error)
 }
 
 func (r *PostRepository) FilterPost(filterby, category string, userID uuid.UUID, pagination int) ([]models.PostWithUser, error) {
-	// Base Query
 	baseQuery := `
 		SELECT 
 			posts.id AS post_id,
@@ -169,7 +168,6 @@ func (r *PostRepository) FilterPost(filterby, category string, userID uuid.UUID,
 		LEFT JOIN 
 			likes ON posts.id = likes.post_id`
 
-	// Query Components
 	var whereClauses []string
 	args := []any{}
 	if filterby == "created" {

@@ -30,7 +30,6 @@ function SubmitComment(event) {
             
             textarea.value = ''
             const update = await response.json()
-            console.log(btn)
             UpdateComment(update, false)
         } catch (error) {
             console.error('There was a problem in fetch :', error);
@@ -41,14 +40,11 @@ function SubmitComment(event) {
 
 function UpdateComment(comments, append = false) {
     const commentSection = document.querySelector(".comment-section");
-  
-   console.log(btn)
     if (!append) {
         commentSection.innerHTML = ""; 
     }
 
     if (comments.length === 0 && !append) {
-        console.log(btn)
         const noCommentsDiv = document.createElement('div');
         noCommentsDiv.className = 'nothing';
         noCommentsDiv.innerHTML = '<p>No comments yet. Be the first to comment!</p>';
@@ -85,7 +81,6 @@ async function loadMore() {
         postId: postID,
         offset: commentOffset * commentsPerPage,
     });
-    console.log(queryParams)
     try {
         const response = await fetch(`/comment?${queryParams}`);
         if (!response.ok) {
@@ -94,10 +89,8 @@ async function loadMore() {
 
         const newComments = await response.json();
 
-        console.log(newComments)
-
         if (newComments.length < commentsPerPage) {
-            btn.style.display = 'none'; // Hide button if no more comments
+            btn.style.display = 'none'; 
         }
 
         UpdateComment(newComments, true);

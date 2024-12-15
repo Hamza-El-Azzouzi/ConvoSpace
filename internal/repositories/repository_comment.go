@@ -11,7 +11,6 @@ type CommentRepositorie struct {
 	DB *sql.DB
 }
 
-// save the comment in the data base and return error
 func (c *CommentRepositorie) Create(comment *models.Comment) error {
 	query := "INSERT INTO comments (id, user_id, post_id, content) VALUES (?, ?, ?, ?)"
 	prp, prepareErr := c.DB.Prepare(query)
