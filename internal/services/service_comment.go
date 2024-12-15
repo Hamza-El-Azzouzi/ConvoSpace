@@ -1,8 +1,6 @@
 package services
 
 import (
-	"time"
-
 	"forum/internal/models"
 	"forum/internal/repositories"
 
@@ -15,11 +13,10 @@ type CommentService struct {
 
 func (c *CommentService) SaveComment(userID uuid.UUID, postID, content string) error {
 	comment := &models.Comment{
-		ID:        uuid.Must(uuid.NewV4()),
-		UserID:    userID,
-		PostID:    postID,
-		Content:   content,
-		CreatedAt: time.Now().UTC(),
+		ID:      uuid.Must(uuid.NewV4()),
+		UserID:  userID,
+		PostID:  postID,
+		Content: content,
 	}
 	return c.CommentRepo.Create(comment)
 }
