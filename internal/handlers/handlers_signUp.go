@@ -42,14 +42,13 @@ func (h *AuthHandler) RegisterHandle(w http.ResponseWriter, r *http.Request) {
 		err := json.NewDecoder(r.Body).Decode(&info)
 		defer r.Body.Close()
 		if err != nil {
-			utils.Error(w, http.StatusBadRequest)
+			w.WriteHeader(http.StatusBadRequest)
 		}
 		if !h.AuthMidlaware.IsValidEmail(info.Email) ||
 			!h.AuthMidlaware.IsValidName(info.Username) ||
 			!h.AuthMidlaware.IsValidPassword(info.Passwd) ||
-			!h.AuthMidlaware.IsValidPassword(info.ConfirmPasswd) ||
 			!h.AuthMidlaware.IsmatchPassword(info.Passwd, info.ConfirmPasswd) {
-			utils.Error(w, http.StatusBadRequest)
+			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
 		userExist := h.AuthService.Register(info.Username, info.Email, info.Passwd)
@@ -61,9 +60,13 @@ func (h *AuthHandler) RegisterHandle(w http.ResponseWriter, r *http.Request) {
 			case strings.Contains(userExist.Error(), "username"):
 				sendResponse(w, "user")
 				return
+			default:
+				sendResponse(w, "passwd")
 			}
 		}
 		sendResponse(w, "Done")
-		//add default case 
+		// add default case
+	default:
+		utils.Error(w, http.StatusMethodNotAllowed)
 	}
 }

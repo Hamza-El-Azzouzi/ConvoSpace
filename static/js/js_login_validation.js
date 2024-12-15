@@ -8,7 +8,7 @@ const ErrMessagePasswd = document.getElementById("passwdErr")
 const InvalidEmail = "invalid email!! enter a valid email"
 const InvalidPsswd = "invalid password!! enter a valid password"
 
-const ExpEmail = /^[a-zA-Z0-9._+-=]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+const ExpEmail = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
 const ExpPasswd = /^(?=(.*[a-z]))(?=(.*[A-Z]))(?=(.*[0-9]))(?=(.*[^a-zA-Z0-9]))(.{8,20})$/
 
 const Error = (elem, errorMssg) => {

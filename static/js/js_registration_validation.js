@@ -7,7 +7,6 @@ const button = document.querySelector("input[type='submit']")
 const ErrMessageName = document.getElementById("nameErr")
 const ErrMessageEmail = document.getElementById("emailErr")
 const ErrMessagePasswd1st = document.getElementById("passwdErr1st")
-const ErrMessagePasswd = document.getElementById("passwdErr2nd")
 const ErrMessageConfirmPasswd = document.getElementById('confirmPasswdErr')
 const Err = document.getElementById("otherErr")
 
@@ -18,7 +17,6 @@ const ExpPasswd = /^(?=(.*[a-z]))(?=(.*[A-Z]))(?=(.*[0-9]))(?=(.*[^a-zA-Z0-9]))(
 
 const InvalidEmail = "invalid email!! enter a valid email"
 const InvalidName = "invalid name!! enter a valid name"
-const Invalid = "invalid password!!"
 const NotMatch = "password confirmation doesn't match!!"
 
 const InvalidPsswd = () => {
@@ -45,7 +43,6 @@ const VerifyData = () => {
 
     ErrMessageName.textContent = ""
     ErrMessageEmail.textContent = ""
-    ErrMessagePasswd.textContent = ""
     ErrMessageConfirmPasswd.textContent = ""
     ErrMessagePasswd1st.textContent = ""
     Err.textContent = ""
@@ -61,10 +58,6 @@ const VerifyData = () => {
             break
         case (!ExpPasswd.test(password.value)):
             InvalidPsswd("passwdErr1st")
-            exist = true
-            break
-        case (!ExpPasswd.test(confirmPassword.value)):
-            Error(ErrMessagePasswd, Invalid)
             exist = true
             break
         case (password.value !== confirmPassword.value):
@@ -106,6 +99,9 @@ button.addEventListener("click", (event) => {
                         break
                     case (reply.REplyMssg == "user"):
                         Error(ErrMessageName, "Username already exist!!")
+                        break
+                    case (reply.REplyMssg == "passwd"):
+                        Error(ErrMessagePasswd1st, "Too long password!!")
                         break
                     case (reply.REplyMssg == "notMatch"):
                         Error(ErrMessageConfirmPasswd, NotMatch)
