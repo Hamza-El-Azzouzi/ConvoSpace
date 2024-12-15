@@ -64,5 +64,6 @@ func (h *AuthHandler) RegisterHandle(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 		sendResponse(w, "Done")
+		//add default case 
 	}
 }

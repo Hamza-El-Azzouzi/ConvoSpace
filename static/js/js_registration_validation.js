@@ -12,7 +12,7 @@ const ErrMessageConfirmPasswd = document.getElementById('confirmPasswdErr')
 const Err = document.getElementById("otherErr")
 
 const ExpName = /^[a-zA-Z0-9_.]{3,20}$/
-const ExpEmail = /^[a-zA-Z0-9._+-=]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+const ExpEmail = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
 const ExpPasswd = /^(?=(.*[a-z]))(?=(.*[A-Z]))(?=(.*[0-9]))(?=(.*[^a-zA-Z0-9]))(.{8,20})$/
 
 

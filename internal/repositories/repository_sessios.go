@@ -17,13 +17,11 @@ func (s *SessionsRepositorie) DeletSession(sessionID string) error {
 	return err
 }
 
-
 func (s *SessionsRepositorie) Createession(sessionID string, expiration time.Time, userID uuid.UUID) error {
 	query := `INSERT INTO sessions (session_id, user_id, expires_at) VALUES (?, ?, ?)`
 	_, err := s.DB.Exec(query, sessionID, userID, expiration)
 	return err
 }
-
 
 func (s *SessionsRepositorie) UpdateSession(sessionID string, expiration time.Time, userID uuid.UUID) error {
 	query := `	UPDATE sessions SET session_id= ?, expires_at=? WHERE user_id= ?`
@@ -45,9 +43,7 @@ func (s *SessionsRepositorie) GetUser(sessionID string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	if err == sql.ErrNoRows {
-		return "", err
-	}
+
 	return userId, nil
 }
 

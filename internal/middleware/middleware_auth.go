@@ -14,7 +14,7 @@ type AuthMiddleware struct {
 }
 
 const (
-	ExpEmail = `^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`
+	ExpEmail = `^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`
 	ExpName  = `^[a-zA-Z0-9_.]{3,20}$`
 )
 
@@ -54,14 +54,12 @@ func (h *AuthMiddleware) IsmatchPassword(password string, confirmPassword string
 }
 
 func (h *AuthMiddleware) IsValidPassword(password string) bool {
-	secure := true
 	ExpPasswd := []string{".{8,20}", "[a-z]", "[A-Z]", "[0-9]", "[^\\d\\w]"}
 	for _, test := range ExpPasswd {
 		isValid, _ := regexp.MatchString(test, password)
 		if !isValid {
-			secure = false
-			break
+			return false
 		}
 	}
-	return secure
+	return true
 }

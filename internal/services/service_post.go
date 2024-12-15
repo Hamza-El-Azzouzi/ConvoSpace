@@ -11,7 +11,7 @@ import (
 
 type PostService struct {
 	PostRepo     *repositories.PostRepository
-	CategotyRepo *repositories.CategoryRepository
+	CategoryRepo *repositories.CategoryRepository
 }
 
 func (p *PostService) PostSave(userId uuid.UUID, title, content string, category []string) error {

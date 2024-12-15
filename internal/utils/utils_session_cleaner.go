@@ -13,7 +13,7 @@ type Cleaner struct {
 
 func (c *Cleaner) CleanupExpiredSessions() {
 	for {
-		time.Sleep(1 * time.Minute)
+		time.Sleep(time.Minute)
 		time := time.Now()
 		err := c.SessionService.DeleteSessionByDate(time)
 		if err != nil {

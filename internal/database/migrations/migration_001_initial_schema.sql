@@ -74,8 +74,8 @@ CREATE TABLE
         FOREIGN KEY (user_id) REFERENCES users (id) ON UPDATE CASCADE ON DELETE CASCADE
     );
     
-CREATE INDEX idx_user_id_session ON sessions (user_id);
 CREATE INDEX idx_post_categories_post_id ON post_categories (post_id);
+CREATE INDEX idx_comments_post_id ON comments (post_id);
 CREATE INDEX idx_post_categories_category_id ON post_categories (category_id);
 CREATE INDEX idx_likes_post_id ON likes (post_id);
 CREATE INDEX idx_likes_comment_id ON likes (comment_id);
