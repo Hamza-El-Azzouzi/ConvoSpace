@@ -18,18 +18,20 @@ type PostRepository struct {
 func (r *PostRepository) Create(post *models.Post) error {
 	post.Content = html.EscapeString(post.Content)
 	post.Title = html.EscapeString(post.Title)
-	_, err := r.DB.Exec(
-		"INSERT INTO posts (ID, user_id, Title, Content) VALUES (?, ?, ?, ?)",
-		post.ID, post.UserID, post.Title, post.Content,
-	)
+	preparedQuery,err:= r.DB.Prepare("INSERT INTO posts (ID, user_id, Title, Content) VALUES (?, ?, ?, ?)")
+	if err != nil{
+		return err
+	}
+	_, err = preparedQuery.Exec(post.ID, post.UserID, post.Title, post.Content)
 	return err
 }
 
 func (r *PostRepository) PostCatgorie(postCategorie *models.PostCategory) error {
-	_, err := r.DB.Exec(
-		"INSERT INTO post_categories (post_id, category_id) VALUES (?, ?)",
-		postCategorie.PostID, postCategorie.CategoryID,
-	)
+	preparedQuery,err:= r.DB.Prepare("INSERT INTO post_categories (post_id, category_id) VALUES (?, ?)")
+	if err != nil{
+		return err
+	}
+	_, err =preparedQuery.Exec(postCategorie.PostID, postCategorie.CategoryID)
 	return err
 }
 

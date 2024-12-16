@@ -61,18 +61,10 @@ func (h *AuthHandler) RegisterHandle(w http.ResponseWriter, r *http.Request) {
 				sendResponse(w, "user")
 				return
 			default:
-<<<<<<< HEAD
-				sendResponse(w, "password")
-			}
-		}
-		sendResponse(w, "Done")
-=======
 				sendResponse(w, "passwd")
 			}
 		}
 		sendResponse(w, "Done")
-		// add default case
->>>>>>> ae52f3b57173b0649e2f850a435f7266201bbee8
 	default:
 		utils.Error(w, http.StatusMethodNotAllowed)
 	}

@@ -11,8 +11,11 @@ type UserRepository struct {
 }
 
 func (r *UserRepository) Create(user *models.User) error {
-	query := `INSERT INTO users (id, username, email, password_hash) VALUES (?,?,?,?)`
-	_, err := r.DB.Exec(query, user.ID, user.Username, user.Email, user.PasswordHash)
+	preparedQuery,err := r.DB.Prepare(`INSERT INTO users (id, username, email, password_hash) VALUES (?,?,?,?)`)
+	if err != nil{
+		return err
+	}
+	_, err = preparedQuery.Exec(user.ID, user.Username, user.Email, user.PasswordHash)
 	return err
 }
 

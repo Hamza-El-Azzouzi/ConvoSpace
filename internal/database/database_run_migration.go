@@ -83,7 +83,11 @@ func InsertDefaultCategories(db *sql.DB) error {
 		}
 
 		if exists == 0 {
-			_, err := db.Exec("INSERT INTO categories (ID , name) VALUES (?,?)", ID, category)
+			preparedQuery,err := db.Prepare("INSERT INTO categories (ID , name) VALUES (?,?)")
+			if err != nil {
+				return fmt.Errorf("error preparing category %s: %v", category, err)
+			}
+			_, err = preparedQuery.Exec(ID, category)
 			if err != nil {
 				return fmt.Errorf("error inserting category %s: %v", category, err)
 			}

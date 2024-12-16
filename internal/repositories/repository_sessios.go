@@ -12,26 +12,39 @@ type SessionsRepositorie struct {
 }
 
 func (s *SessionsRepositorie) DeletSession(sessionID string) error {
-	query := `DELETE FROM sessions WHERE session_id = ?`
-	_, err := s.DB.Exec(query, sessionID)
+	preparedQuery, err := s.DB.Prepare(`DELETE FROM sessions WHERE session_id = ?`)
+	if err != nil {
+		return nil
+	}
+	
+	_, err = preparedQuery.Exec(sessionID)
 	return err
 }
 
 func (s *SessionsRepositorie) Createession(sessionID string, expiration time.Time, userID uuid.UUID) error {
-	query := `INSERT INTO sessions (session_id, user_id, expires_at) VALUES (?, ?, ?)`
-	_, err := s.DB.Exec(query, sessionID, userID, expiration)
+	preparedQuery, err := s.DB.Prepare(`INSERT INTO sessions (session_id, user_id, expires_at) VALUES (?, ?, ?)`)
+	if err != nil {
+		return nil
+	}
+	_, err = preparedQuery.Exec(sessionID, userID, expiration)
 	return err
 }
 
 func (s *SessionsRepositorie) UpdateSession(sessionID string, expiration time.Time, userID uuid.UUID) error {
-	query := `	UPDATE sessions SET session_id= ?, expires_at=? WHERE user_id= ?`
-	_, err := s.DB.Exec(query, sessionID, expiration, userID)
+	preparedQuery, err := s.DB.Prepare(`UPDATE sessions SET session_id= ?, expires_at=? WHERE user_id= ?`)
+	if err != nil {
+		return nil
+	}
+	_, err = preparedQuery.Exec(sessionID, expiration, userID)
 	return err
 }
 
 func (s *SessionsRepositorie) DeleteSessionByDate(time time.Time) error {
-	query := `DELETE FROM sessions WHERE expires_at < ?`
-	_, err := s.DB.Exec(query, time)
+	preparedQuery, err := s.DB.Prepare(`DELETE FROM sessions WHERE expires_at < ?`)
+	if err != nil {
+		return nil
+	}
+	_, err = preparedQuery.Exec(time)
 	return err
 }
 
@@ -49,9 +62,7 @@ func (s *SessionsRepositorie) GetUser(sessionID string) (string, error) {
 
 func (s *SessionsRepositorie) CheckUserAlreadyLogged(UserID uuid.UUID) error {
 	var sessionID string
-	query := `SELECT session_id
-	 FROM sessions
-	WHERE  user_id = ?`
+	query := `SELECT session_id FROM sessions WHERE  user_id = ?`
 	row := s.DB.QueryRow(query, UserID)
 	err := row.Scan(&sessionID)
 	if err != nil {

@@ -32,7 +32,11 @@ func (l *LikeReposetorie) CreateLike(like *models.Like, liked string) error {
 			}
 			return nil
 		} else {
-			_, err := l.DB.Exec("UPDATE likes SET react_type = ? WHERE id = ?", like.ReactType, existingreactionID)
+			preparedQuery, err := l.DB.Prepare("UPDATE likes SET react_type = ? WHERE id = ?")
+			if err != nil {
+				return err
+			}
+			_, err = preparedQuery.Exec(like.ReactType, existingreactionID)
 			if err != nil {
 				return err
 			}
@@ -41,9 +45,11 @@ func (l *LikeReposetorie) CreateLike(like *models.Like, liked string) error {
 	default:
 		return err
 	}
-	_, err := l.DB.Exec(
-		"INSERT INTO likes (id, user_id, post_id, comment_id, react_type) VALUES (?, ?, ?, ?, ?)", like.ID, like.UserID, like.PostID, like.CommentID, like.ReactType,
-	)
+	preparedQuery, err := l.DB.Prepare("INSERT INTO likes (id, user_id, post_id, comment_id, react_type) VALUES (?, ?, ?, ?, ?)")
+	if err != nil {
+		return err
+	}
+	_, err = preparedQuery.Exec(like.ID, like.UserID, like.PostID, like.CommentID, like.ReactType)
 	if err != nil {
 		return err
 	}
