@@ -196,7 +196,7 @@ func (r *PostRepository) FilterPost(filterby, category string, userID uuid.UUID,
 		whereClauses = append(whereClauses, "posts.user_id = ?")
 		args = append(args, userID)
 	} else if filterby == "liked" {
-		whereClauses = append(whereClauses, "likes.user_id = ? AND likes.comment_id IS NULL")
+		whereClauses = append(whereClauses, `react_type = "like" AND likes.user_id = ? AND likes.comment_id IS NULL`)
 		args = append(args, userID)
 	}
 
