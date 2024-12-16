@@ -1,15 +1,12 @@
 # Build stage
 FROM golang:1.22.3-alpine as builder
 
-# Enable CGO and set environment variables for Alpine
-ENV CGO_ENABLED=1 \
-    GOOS=linux \
-    GOARCH=amd64
+# Enable CGO for SQLite
+ENV CGO_ENABLED=1
 
 # Install build tools and SQLite dependencies
 RUN apk add --no-cache gcc musl-dev sqlite-dev
 
-# Set the working directory
 WORKDIR /app
 
 # Copy Go modules and install dependencies
@@ -23,7 +20,8 @@ COPY . .
 RUN go build -o main cmd/server/main.go
 
 # Run stage
-FROM alpine:latest
+# Use a specific version for reproducibility
+FROM alpine:3.18 
 
 # Install SQLite runtime dependencies
 RUN apk add --no-cache sqlite-libs
@@ -36,8 +34,8 @@ COPY internal/database/migrations /app/internal/database/migrations
 COPY templates /app/templates
 COPY static /app/static
 
-# Expose the application port
-EXPOSE 8082
+# Expose the application port (optional)
+EXPOSE 8080
 
 # Run the application
 CMD ["/app/main"]
