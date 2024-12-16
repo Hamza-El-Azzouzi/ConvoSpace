@@ -17,8 +17,6 @@ type LoginData struct {
 	Passwd string `json:"password"`
 }
 
-
-
 func (h *AuthHandler) LoginHandle(w http.ResponseWriter, r *http.Request) {
 	ActiveUser, _ := h.AuthMidlaware.IsUserLoggedIn(w, r)
 	switch true {
@@ -61,7 +59,8 @@ func (h *AuthHandler) LoginHandle(w http.ResponseWriter, r *http.Request) {
 		}
 		SetCookies(w, "sessionId", sessionId, sessionExpires)
 		sendResponse(w, "Done")
-
+	default:
+		utils.Error(w, http.StatusMethodNotAllowed)
 	}
 }
 
