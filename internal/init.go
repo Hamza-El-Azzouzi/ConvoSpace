@@ -49,7 +49,7 @@ func InitHandlers(authService *services.AuthService,
 	categoryService *services.CategoryService,
 	commentService *services.CommentService,
 	likeService *services.LikeService,
-	sessionRepo *services.SessionService,
+	sessionService *services.SessionService,
 	authMiddleware *middleware.AuthMiddleware) (*handlers.AuthHandler,
 	*handlers.PostHandler,
 	*handlers.LikeHandler,
@@ -57,7 +57,7 @@ func InitHandlers(authService *services.AuthService,
 	authHandler := &handlers.AuthHandler{
 		AuthService:    authService,
 		AuthMidlaware:  authMiddleware,
-		SessionService: sessionRepo,
+		SessionService: sessionService,
 	}
 	postHandler := &handlers.PostHandler{
 		AuthService:     authService,
