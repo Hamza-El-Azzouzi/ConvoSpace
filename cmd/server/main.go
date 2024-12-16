@@ -21,13 +21,13 @@ func main() {
 
 	err = database.RunMigrations(db)
 	if err != nil {
-		fmt.Printf("Error running migrations: %v", err)
+		log.Fatalf("Error running migrations: %v", err)
 		return
 	}
 
 	err = database.InsertDefaultCategories(db)
 	if err != nil {
-		fmt.Printf("error inserting default categories: %v", err)
+		log.Fatalf("error inserting default categories: %v", err)
 		return
 	}
 	
