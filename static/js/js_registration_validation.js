@@ -63,10 +63,6 @@ const VerifyData = () => {
             InvalidPsswd("passwdErr1st")
             exist = true
             break
-        case (!ExpPasswd.test(confirmPassword.value)):
-            Error(ErrMessagePasswd, Invalid)
-            exist = true
-            break
         case (password.value !== confirmPassword.value):
             Error(ErrMessageConfirmPasswd, NotMatch)
             exist = true
@@ -109,6 +105,9 @@ button.addEventListener("click", (event) => {
                         break
                     case (reply.REplyMssg == "notMatch"):
                         Error(ErrMessageConfirmPasswd, NotMatch)
+                        break
+                    case  (reply.REplyMssg == "password"):
+                        Error(ErrMessagePasswd, "password too long!")
                 }
             })
     }
