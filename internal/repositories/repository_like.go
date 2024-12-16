@@ -26,7 +26,11 @@ func (l *LikeReposetorie) CreateLike(like *models.Like, liked string) error {
 	case sql.ErrNoRows:
 	case nil:
 		if reaction == like.ReactType {
-			_, err := l.DB.Exec("DELETE FROM likes WHERE id = ? AND user_id = ? ", existingreactionID, like.UserID)
+			preparedQuery, err := l.DB.Prepare("DELETE FROM likes WHERE id = ? AND user_id = ? ")
+			if err != nil {
+				return err
+			}
+			_, err = preparedQuery.Exec(existingreactionID, like.UserID)
 			if err != nil {
 				return err
 			}

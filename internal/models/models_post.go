@@ -34,21 +34,6 @@ type PostWithUser struct {
 	TotalCount    int
 }
 
-type PostDetails struct {
-	PostID        uuid.UUID
-	Title         string
-	Content       string
-	CreatedAt     time.Time
-	UserID        uuid.UUID
-	Username      string
-	FormattedDate string
-	CategoryNames string
-	CommentCount  int
-	LikeCount     int
-	DisLikeCount  int
-	Comments      []CommentDetails
-}
-
 type CommentDetails struct {
 	CommentID           uuid.UUID
 	PostIDcomment       uuid.UUID

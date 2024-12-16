@@ -31,6 +31,20 @@ func (c *CommentRepositorie) Create(comment *models.Comment) error {
 	return nil
 }
 
+func (c *CommentRepositorie) CommentExist(commentID string) bool {
+	var num int
+	query := `SELECT COUNT(*) FROM comments WHERE id = ?`
+	row := c.DB.QueryRow(query, commentID)
+	err := row.Scan(&num)
+	if err != nil {
+		return false
+	}
+	if num == 1 {
+		return true
+	}
+	return false
+}
+
 func (c *CommentRepositorie) GetCommentByPost(postID string, pagination int) ([]models.CommentDetails, error) {
 	querySelect := `
 	SELECT

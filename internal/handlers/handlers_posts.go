@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
@@ -251,6 +252,7 @@ func (p *PostHandler) PostFilter(w http.ResponseWriter, r *http.Request) {
 	if filterby != "" {
 		posts, err = p.PostService.FilterPost(filterby, categorie, usermid.ID, nPagination)
 		if err != nil {
+			fmt.Println(err.Error())
 			utils.Error(w, http.StatusInternalServerError)
 			return
 		}

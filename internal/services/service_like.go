@@ -10,7 +10,9 @@ import (
 )
 
 type LikeService struct {
-	LikeRepo *repositories.LikeReposetorie
+	LikeRepo    *repositories.LikeReposetorie
+	PostRepo    *repositories.PostRepository
+	CommentRepo *repositories.CommentRepositorie
 }
 
 func (l *LikeService) GetLikes(ID, liked string) (any, error) {
@@ -42,9 +44,17 @@ func (l *LikeService) Create(userID uuid.UUID, postID, commentID string, typeOfR
 	}
 
 	if liked == "post" {
-		l.LikeRepo.CreateLike(like, "post")
+		if l.PostRepo.PostExist(postID) {
+			l.LikeRepo.CreateLike(like, "post")
+		} else {
+			return fmt.Errorf("post does not exist")
+		}
 	} else {
-		l.LikeRepo.CreateLike(like, "comment")
+		if l.CommentRepo.CommentExist(commentID) {
+			l.LikeRepo.CreateLike(like, "comment")
+		} else {
+			return fmt.Errorf("comment does not exist")
+		}
 	}
 
 	return nil
