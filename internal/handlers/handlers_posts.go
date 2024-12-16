@@ -209,13 +209,13 @@ func (p *PostHandler) CommentSaver(w http.ResponseWriter, r *http.Request) {
 	}
 	isLogged, userId := p.AuthMidlaware.IsUserLoggedIn(w, r)
 	if !isLogged {
-		utils.Error(w, http.StatusInternalServerError)
+		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
 	err = p.CommentService.SaveComment(userId.ID, commentData.PostId, commentData.Comment)
 	if err != nil {
-		utils.Error(w, http.StatusInternalServerError)
+		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 	comment, err := p.CommentService.GetCommentByPost(commentData.PostId, 0)
