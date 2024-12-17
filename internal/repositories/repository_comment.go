@@ -54,7 +54,8 @@ func (c *CommentRepositorie) GetCommentByPost(postID string, pagination int) ([]
 	 users.id AS user_id,
 	 users.username,
 	 (SELECT COUNT(*) FROM likes WHERE likes.comment_id = comments.id AND likes.react_type = 'like') AS LikeCount,
-	 (SELECT COUNT(*) FROM likes WHERE likes.comment_id = comments.id AND likes.react_type = 'dislike') AS DisLikeCount
+	 (SELECT COUNT(*) FROM likes WHERE likes.comment_id = comments.id AND likes.react_type = 'dislike') AS DisLikeCount,
+	 COUNT(*) OVER() AS total_count
 	FROM 
 	 comments
 	JOIN
@@ -81,6 +82,7 @@ func (c *CommentRepositorie) GetCommentByPost(postID string, pagination int) ([]
 			&currentComment.Username,
 			&currentComment.LikeCountComment,
 			&currentComment.DisLikeCountComment,
+			&currentComment.TotalCount,
 		)
 		if scanErr != nil {
 			return nil, scanErr
