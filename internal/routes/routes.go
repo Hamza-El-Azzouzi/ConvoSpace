@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"fmt"
 	"net/http"
 
 	"forum/internal/handlers"
@@ -33,6 +34,12 @@ func SetupRoutes(mux *http.ServeMux, authHandler *handlers.AuthHandler, postHand
 	mux.HandleFunc("/filters", postHandler.PostFilter)
 
 	mux.HandleFunc("/javascript", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Println(r.Header.Get("Referer"))
+		if r.Header.Get("Referer") == ""{
+			fmt.Println(r.Header.Get("Referer"))
+			utils.Error(w, http.StatusNotFound)
+			return
+		}
 		utils.Error(w, 1)
 	})
 
