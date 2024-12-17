@@ -21,7 +21,7 @@ function SubmitComment(event) {
 
   if (textarea.value.trim() === "") {
     document.getElementById("textarea-error").textContent =
-      "Comment is required.";
+      "Comment is empty.";
     return;
   }
   const currentValue = textarea.value;
@@ -65,7 +65,6 @@ function UpdateComment(comments, append = false) {
     return;
   }
 
-  console.log();
   if (comments.length === 5 && comments[0].TotalCount > 5) {
     btn.style.display = "inline-block";
   }

@@ -1,7 +1,6 @@
 let currentPage = 0;
 const postsPerPage = 5;
 
-
 function fetchData(page) {
   const offset = page * postsPerPage;
   fetch(`/Posts/${offset}`)
@@ -13,7 +12,7 @@ function fetchData(page) {
       populatePosts(data.LoggedIn, data.posts);
       updateUserSection(data.LoggedIn, data.Username);
       updateFilterPostsSection(data.LoggedIn);
-      if (data.posts) {
+      if (data.posts[0].TotalCount > 5) {
         const totalPosts = data.posts.length > 0 ? data.posts[0].TotalCount : 0;
         updatePaginationControls(totalPosts, currentPage);
       }
@@ -113,8 +112,9 @@ function populatePosts(loggedIn, posts) {
                   <span>${post.CategoryName}</span>
                 </div>
                 <div class="right-section">
-                  ${loggedIn
-            ? `
+                  ${
+                    loggedIn
+                      ? `
                         <button class="button like" onclick="handleLikeDislike('${post.PostID}', 'like', event)">
                           <span id='${post.PostID}-like'>👍${post.LikeCount}</span>
                         </button>
@@ -122,7 +122,7 @@ function populatePosts(loggedIn, posts) {
                           <span id='${post.PostID}-dislike'>👎${post.DisLikeCount}</span>
                         </button>
                         `
-            : `
+                      : `
                         <button class="button like">
                           <span id='${post.PostID}-like'>👍${post.LikeCount}</span>
                         </button>
@@ -130,26 +130,28 @@ function populatePosts(loggedIn, posts) {
                           <span id='${post.PostID}-dislike'>👎${post.DisLikeCount}</span>
                         </button>
                         `
-          }
+                  }
                 </div>
               </div>
               <div class="ques-type302">
                 <a href="detailsPost/${post.PostID}">
-                  <button class="comment-button">${post.CommentCount
-          } Comments</button>
+                  <button class="comment-button">${
+                    post.CommentCount
+                  } Comments</button>
                 </a>
               </div>
             </div>
           </div>`
       )
       .join("");
-
-    main.innerHTML += `
+    if (posts[0].TotalCount > 5) {
+      main.innerHTML += `
       <div class="pagination">
         <button id="prev-btn" class="button" onclick="Previous()">Previous</button>
         <span id="page-info"></span>
         <button id="next-btn" class="button next-btn" onclick="Next()">Next</button>
       </div>`;
+    }
   } else {
     main.innerHTML = `<div class="no-results">No Results Found.</div>`;
   }
@@ -174,12 +176,7 @@ function handleLikeDislike(id, action) {
       return response.json();
     })
     .then((data) => {
-      updatePostLikeDislikeCount(
-        data.id,
-        data.like,
-        data.dislike,
-        type
-      );
+      updatePostLikeDislikeCount(data.id, data.like, data.dislike, type);
     })
     .catch((error) => {
       console.error("Error:", error);
@@ -188,10 +185,7 @@ function handleLikeDislike(id, action) {
 
 function updatePostLikeDislikeCount(id, likeCount, dislikeCount, type) {
   if (type === "comment") {
-
-    const likeSpan = document.querySelector(
-      `#${CSS.escape(id)}-likecomment`
-    );
+    const likeSpan = document.querySelector(`#${CSS.escape(id)}-likecomment`);
     const dislikeSpan = document.querySelector(
       `#${CSS.escape(id)}-dislikecomment`
     );
@@ -199,9 +193,7 @@ function updatePostLikeDislikeCount(id, likeCount, dislikeCount, type) {
     if (dislikeSpan) dislikeSpan.textContent = `👎${dislikeCount}`;
   } else {
     const likeSpan = document.querySelector(`#${CSS.escape(id)}-like`);
-    const dislikeSpan = document.querySelector(
-      `#${CSS.escape(id)}-dislike`
-    );
+    const dislikeSpan = document.querySelector(`#${CSS.escape(id)}-dislike`);
     if (likeSpan) likeSpan.textContent = `👍${likeCount}`;
     if (dislikeSpan) dislikeSpan.textContent = `👎${dislikeCount}`;
   }

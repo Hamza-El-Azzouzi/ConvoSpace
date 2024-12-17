@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -49,7 +48,6 @@ func SetupStaticFilesHandlers(w http.ResponseWriter, r *http.Request) {
 	defer func() {
 		err := recover()
 		if err != nil {
-			fmt.Println(err)
 			Error(w, http.StatusNotFound)
 		}
 	}()

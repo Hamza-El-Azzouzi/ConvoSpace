@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
@@ -128,6 +127,7 @@ func (p *PostHandler) PostSaver(w http.ResponseWriter, r *http.Request) {
 		utils.Error(w, http.StatusBadRequest)
 		return
 	}
+	
 	isLogged, usermid := p.AuthMidlaware.IsUserLoggedIn(w, r)
 	if isLogged {
 		data["LoggedIn"] = isLogged
@@ -195,7 +195,7 @@ func (p *PostHandler) CommentSaver(w http.ResponseWriter, r *http.Request) {
 
 	decoder := json.NewDecoder(r.Body)
 	err := decoder.Decode(&commentData)
-	
+
 	defer r.Body.Close()
 
 	if err != nil {
@@ -207,7 +207,11 @@ func (p *PostHandler) CommentSaver(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-
+	commentData.Comment = strings.TrimSpace(commentData.Comment)
+	if commentData.Comment == ""{
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
 	err = p.CommentService.SaveComment(userId.ID, commentData.PostId, commentData.Comment)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
@@ -247,7 +251,6 @@ func (p *PostHandler) PostFilter(w http.ResponseWriter, r *http.Request) {
 	if filterby != "" {
 		posts, err = p.PostService.FilterPost(filterby, categorie, usermid.ID, nPagination)
 		if err != nil {
-			fmt.Println(err.Error())
 			utils.Error(w, http.StatusInternalServerError)
 			return
 		}
