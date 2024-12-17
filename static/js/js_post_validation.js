@@ -9,6 +9,10 @@ document.getElementById('postForm').addEventListener('submit', function (event) 
 
 
     const titleInput = document.querySelector('input[name="title"]');
+    if (titleInput.value.length > 250) {
+        document.getElementById('title-error').textContent = 'Maximum 255 characters.';
+        isValid = false;
+    }
     if (!titleInput.value.trim()) {
         document.getElementById('title-error').textContent = 'Title is required.';
         isValid = false;
@@ -21,10 +25,16 @@ document.getElementById('postForm').addEventListener('submit', function (event) 
     }
 
     const textareaInput = document.querySelector('textarea[name="textarea"]');
+    if (textareaInput.value.length > 10000) {
+        document.getElementById('textarea-error').textContent = "Maximum 10000 characters.";
+        isValid = false;
+    }
     if (!textareaInput.value.trim()) {
         document.getElementById('textarea-error').textContent = 'Description is required.';
         isValid = false;
     }
+    
+   
 
     if (!isValid) {
         event.preventDefault();

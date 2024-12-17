@@ -127,6 +127,10 @@ func (p *PostHandler) PostSaver(w http.ResponseWriter, r *http.Request) {
 		utils.Error(w, http.StatusBadRequest)
 		return
 	}
+	if len(title) > 250 || len(subject) > 10000 {
+		utils.Error(w, http.StatusBadRequest)
+		return
+	}
 	
 	isLogged, usermid := p.AuthMidlaware.IsUserLoggedIn(w, r)
 	if isLogged {
@@ -208,7 +212,7 @@ func (p *PostHandler) CommentSaver(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	commentData.Comment = strings.TrimSpace(commentData.Comment)
-	if commentData.Comment == ""{
+	if commentData.Comment == "" || len(commentData.Comment) > 10000{
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}

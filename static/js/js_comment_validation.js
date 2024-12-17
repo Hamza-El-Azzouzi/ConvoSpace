@@ -24,6 +24,12 @@ function SubmitComment(event) {
       "Comment is empty.";
     return;
   }
+  console.log(textarea.value.length)
+  if (textarea.value.length > 10000) {
+    document.getElementById("textarea-error").textContent =
+      "Maximum 10000 characters.";
+    return;
+  }
   const currentValue = textarea.value;
 
   async function fetchData() {
