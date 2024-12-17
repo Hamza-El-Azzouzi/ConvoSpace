@@ -32,7 +32,7 @@ func (h *AuthHandler) LoginHandle(w http.ResponseWriter, r *http.Request) {
 		err := json.NewDecoder(r.Body).Decode(&info)
 		defer r.Body.Close()
 		if err != nil {
-			utils.Error(w, http.StatusBadRequest)
+			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
 		if !h.AuthMidlaware.IsValidEmail(info.Email) || !h.AuthMidlaware.IsValidPassword(info.Passwd) {
@@ -46,7 +46,7 @@ func (h *AuthHandler) LoginHandle(w http.ResponseWriter, r *http.Request) {
 				sendResponse(w, "email")
 				return
 			case strings.Contains(err.Error(), "password"):
-				sendResponse(w, "passdw")
+				sendResponse(w, "passwd")
 				return
 			}
 		}

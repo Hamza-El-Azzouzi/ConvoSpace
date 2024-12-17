@@ -47,10 +47,7 @@ func (p *PostHandler) Posts(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	nPagination, err := strconv.Atoi(pagination)
-	if err != err {
-		utils.Error(w, http.StatusBadRequest)
-	}
-	if err != err {
+	if err != nil {
 		utils.Error(w, http.StatusNotFound)
 		return
 	}
@@ -143,8 +140,6 @@ func (p *PostHandler) PostSaver(w http.ResponseWriter, r *http.Request) {
 	} else {
 		data["LoggedIn"] = isLogged
 	}
-
-	utils.OpenHtml("index.html", w, data)
 }
 
 func (p *PostHandler) DetailsPost(w http.ResponseWriter, r *http.Request) {

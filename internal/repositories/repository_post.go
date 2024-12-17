@@ -69,7 +69,6 @@ func (r *PostRepository) AllPosts(pagination int) ([]models.PostWithUser, error)
 		LIMIT 5 OFFSET ?;`
 	rows, err := r.DB.Query(query, pagination)
 	if err != nil {
-		fmt.Println(err)
 		return nil, fmt.Errorf("error querying posts with user info: %v", err)
 	}
 	defer rows.Close()
@@ -91,7 +90,6 @@ func (r *PostRepository) AllPosts(pagination int) ([]models.PostWithUser, error)
 			&post.TotalCount,
 		)
 		if err != nil {
-			fmt.Println(err)
 			return nil, fmt.Errorf("error scanning post with user info: %v", err)
 		}
 		post.FormattedDate = post.CreatedAt.Format("01/02/2006, 3:04:05 PM")

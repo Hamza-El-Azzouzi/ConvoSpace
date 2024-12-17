@@ -77,7 +77,7 @@ function updatePaginationControls(totalPages,currentPage) {
 
 document.body.addEventListener("change", debounce(handleFilterChange, 200));
 
-const updateData = (data,LoggedInP) => {
+const xupdateData = (data,LoggedInP) => {
     const mainDiv = document.getElementById("main");
     mainDiv.innerHTML = "";
 

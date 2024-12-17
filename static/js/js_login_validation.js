@@ -53,7 +53,7 @@ submitBtn.addEventListener("click", (event) => {
                 case (reply.REplyMssg == "email"):
                     Error(ErrMessageEmail, "email not found!!, create an account")
                     break
-                case (reply.REplyMssg == "passdw"):
+                case (reply.REplyMssg == "passwd"):
                     Error(ErrMessagePasswd, "incorrect Password!!, TRy again")
             }
         })
