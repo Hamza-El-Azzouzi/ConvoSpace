@@ -41,7 +41,11 @@ func RunMigrations(db *sql.DB) error {
 
 		_, err = db.Exec(stmt)
 		if err != nil {
-			return err
+			if strings.Contains(err.Error(),"already exists"){
+				continue
+			}else{
+				return err
+			}
 		}
 	}
 
