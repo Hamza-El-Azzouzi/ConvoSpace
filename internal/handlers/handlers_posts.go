@@ -131,7 +131,7 @@ func (p *PostHandler) PostSaver(w http.ResponseWriter, r *http.Request) {
 		utils.Error(w, http.StatusBadRequest)
 		return
 	}
-	
+
 	isLogged, usermid := p.AuthMidlaware.IsUserLoggedIn(w, r)
 	if isLogged {
 		data["LoggedIn"] = isLogged
@@ -212,7 +212,7 @@ func (p *PostHandler) CommentSaver(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	commentData.Comment = strings.TrimSpace(commentData.Comment)
-	if commentData.Comment == "" || len(commentData.Comment) > 10000{
+	if commentData.Comment == "" || len(commentData.Comment) > 10000 {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -255,6 +255,7 @@ func (p *PostHandler) PostFilter(w http.ResponseWriter, r *http.Request) {
 	if filterby != "" {
 		posts, err = p.PostService.FilterPost(filterby, categorie, usermid.ID, nPagination)
 		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
 			utils.Error(w, http.StatusInternalServerError)
 			return
 		}
@@ -262,12 +263,11 @@ func (p *PostHandler) PostFilter(w http.ResponseWriter, r *http.Request) {
 	} else {
 		posts, err = p.PostService.FilterPost(filterby, categorie, uuid.Nil, nPagination)
 		if err != nil {
-			utils.Error(w, http.StatusInternalServerError)
+			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
 
 	}
-
 	data := map[string]any{
 		"LoggedIn": false,
 		"posts":    posts,

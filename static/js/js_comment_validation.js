@@ -71,7 +71,7 @@ function UpdateComment(comments, append = false) {
     return;
   }
 
-  if (comments.length === 5 && comments[0].TotalCount > 5) {
+  if (comments && comments.length === 5 && comments[0].TotalCount > 5) {
     btn.style.display = "inline-block";
   }
 

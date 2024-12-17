@@ -34,3 +34,16 @@ func (r *CategoryRepository) GetAllCategories() ([]models.Category, error) {
 
 	return categories, nil
 }
+func (r *CategoryRepository) CheckCategorie(categorie string) bool{
+	var num int
+	query := `SELECT COUNT(*) FROM categories WHERE id = ?`
+	row := r.DB.QueryRow(query, categorie)
+	err := row.Scan(&num)
+	if err != nil {
+		return false
+	}
+	if num == 1 {
+		return true
+	}
+	return false
+}

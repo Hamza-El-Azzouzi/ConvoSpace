@@ -39,7 +39,7 @@ function handleFilterChange() {
     .then((response) => response.json())
     .then((data) => {
       updateData(data.posts, data.LoggedIn);
-      if (data.posts[0].TotalCount > 5) {
+      if ( data.posts && data.posts[0].TotalCount > 5) {
         const totalPosts = data.posts.length > 0 ? data.posts[0].TotalCount : 0;
         updatePaginationControls(totalPosts, filterCurentPage);
       }

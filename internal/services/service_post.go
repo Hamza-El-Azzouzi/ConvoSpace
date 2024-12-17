@@ -24,13 +24,18 @@ func (p *PostService) PostSave(userId uuid.UUID, title, content string, category
 			Content: content,
 		}
 		for _, id := range category {
-			postCategory := &models.PostCategory{
-				PostID:     postId,
-				CategoryID: id,
-			}
-			err := p.PostRepo.PostCatgorie(postCategory)
-			if err != nil {
-				return fmt.Errorf("error F categorie : %v ", err)
+			if p.CategoryRepo.CheckCategorie(id){
+				postCategory := &models.PostCategory{
+					PostID:     postId,
+					CategoryID: id,
+				}
+	
+				err := p.PostRepo.PostCatgorie(postCategory)
+				if err != nil {
+					return fmt.Errorf("error F categorie : %v ", err)
+				}
+			}else{
+				return fmt.Errorf("categorie not found")
 			}
 		}
 	
@@ -57,5 +62,8 @@ func (p *PostService) GetPost(PostID string) (models.PostWithUser, error) {
 }
 
 func (p *PostService) FilterPost(filterby, categorie string, userID uuid.UUID , pagination int) ([]models.PostWithUser, error) {
+	if !p.CategoryRepo.CheckCategorie(categorie) && categorie != ""{
+		return nil,fmt.Errorf("categorie Not Found")
+	}
 	return p.PostRepo.FilterPost(filterby, categorie, userID, pagination)
 }
