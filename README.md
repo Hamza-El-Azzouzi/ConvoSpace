@@ -74,7 +74,9 @@ forum/
    ```
 
 ## Database Schema
-
+<p>
+  <img src="schema.png" alt="Database Schema" width="800">
+</p>
 The application uses SQLite with the following main tables:
 - Users
 - sessions
