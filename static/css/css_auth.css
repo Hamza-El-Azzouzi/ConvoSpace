@@ -22,6 +22,16 @@ body {
     color: black;
 }
 
+.top h1 a span{
+    color: blue;
+}
+
+.top h1 a img{
+    width: 35px;
+    height: auto;
+    vertical-align: text-top;
+}
+
 .top h1 a:hover, .top h1 a:focus{
     text-decoration: none;
 }
@@ -48,7 +58,6 @@ body {
     display: block;
     text-align: center;
     color: #666;
-    /* margin-bottom: 20px; */
 }
 
 .singUpForm label,
@@ -58,6 +67,11 @@ body {
     margin-bottom: 5px;
     font-weight: bold;
     font-size: 13px;
+}
+
+.singUpForm label span,
+.loginForm label span{
+    color: red;
 }
 
 .singUpForm input[type="text"],
@@ -103,6 +117,11 @@ body {
     margin-top: 15px;
     font-size: 14px;
     color: #666;
+}
+
+.info a span{
+    font-size: 20px;
+    font-weight: bolder;
 }
 
 .info a {

@@ -104,6 +104,16 @@ input[type="checkbox"]:checked::before {
     padding: 0 20px;
 }
 
+.top h1 a span{
+    color: blue;
+}
+
+.top h1 a img{
+    width: 57px;
+    height: auto;
+    vertical-align: middle;
+}
+
 .top-bar {
     background: #2c3e50;
     padding: 12px 0;

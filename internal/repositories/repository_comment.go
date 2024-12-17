@@ -31,6 +31,20 @@ func (c *CommentRepositorie) Create(comment *models.Comment) error {
 	return nil
 }
 
+func (c *CommentRepositorie) CommentExist(commentID string) bool {
+	var num int
+	query := `SELECT COUNT(*) FROM comments WHERE id = ?`
+	row := c.DB.QueryRow(query, commentID)
+	err := row.Scan(&num)
+	if err != nil {
+		return false
+	}
+	if num == 1 {
+		return true
+	}
+	return false
+}
+
 func (c *CommentRepositorie) GetCommentByPost(postID string, pagination int) ([]models.CommentDetails, error) {
 	querySelect := `
 	SELECT
@@ -40,7 +54,8 @@ func (c *CommentRepositorie) GetCommentByPost(postID string, pagination int) ([]
 	 users.id AS user_id,
 	 users.username,
 	 (SELECT COUNT(*) FROM likes WHERE likes.comment_id = comments.id AND likes.react_type = 'like') AS LikeCount,
-	 (SELECT COUNT(*) FROM likes WHERE likes.comment_id = comments.id AND likes.react_type = 'dislike') AS DisLikeCount
+	 (SELECT COUNT(*) FROM likes WHERE likes.comment_id = comments.id AND likes.react_type = 'dislike') AS DisLikeCount,
+	 COUNT(*) OVER() AS total_count
 	FROM 
 	 comments
 	JOIN
@@ -67,6 +82,7 @@ func (c *CommentRepositorie) GetCommentByPost(postID string, pagination int) ([]
 			&currentComment.Username,
 			&currentComment.LikeCountComment,
 			&currentComment.DisLikeCountComment,
+			&currentComment.TotalCount,
 		)
 		if scanErr != nil {
 			return nil, scanErr

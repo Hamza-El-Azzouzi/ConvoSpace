@@ -107,7 +107,7 @@ button.addEventListener("click", (event) => {
                         Error(ErrMessageConfirmPasswd, NotMatch)
                         break
                     case  (reply.REplyMssg == "password"):
-                        Error(ErrMessagePasswd, "password too long!")
+                        Error(ErrMessagePasswd1st, "password too long!")
                 }
             })
     }

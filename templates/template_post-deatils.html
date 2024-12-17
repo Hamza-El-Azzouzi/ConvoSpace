@@ -124,7 +124,7 @@
                   onclick="clickToLogin(event)"
                   class="btn-publish"
                 >
-                  You should Be Logged in
+                  You should Be Logged inbtn.classList.add("button")
                 </button>
                 {{ end }}
               </form>
@@ -189,7 +189,7 @@
               {{ end }} {{ end }} {{ end }}
             </div>
             <hr>
-            {{ if .comment }}
+            {{ if and (.comment) (gt (index .comment 0).TotalCount 5)}}
             <button class="button load-more-btn">Load More...</button>
             {{ end }}
           </div>

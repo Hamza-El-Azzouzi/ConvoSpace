@@ -12,11 +12,10 @@ import (
 )
 
 type LikeHandler struct {
-	LikeService *services.LikeService
+	LikeService   *services.LikeService
 	AuthMidlaware *middleware.AuthMiddleware
-	mutex sync.Mutex
+	mutex         sync.Mutex
 }
-
 
 func (l *LikeHandler) LikePost(w http.ResponseWriter, r *http.Request) {
 	l.react(w, r, "post", "like")
@@ -52,13 +51,13 @@ func (l *LikeHandler) react(w http.ResponseWriter, r *http.Request, liked, typeO
 		if liked == "post" {
 			err := l.LikeService.Create(user.ID, ID, "", typeOfReact, liked)
 			if err != nil {
-				utils.Error(w, http.StatusInternalServerError)
+				w.WriteHeader(http.StatusBadRequest)
 				return
 			}
 		} else {
 			err := l.LikeService.Create(user.ID, "", ID, typeOfReact, liked)
 			if err != nil {
-				utils.Error(w, http.StatusInternalServerError)
+				w.WriteHeader(http.StatusBadRequest)
 				return
 			}
 		}
