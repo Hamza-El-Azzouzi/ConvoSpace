@@ -73,7 +73,7 @@ func (l *LikeHandler) react(w http.ResponseWriter, r *http.Request, liked, typeO
 			return
 		}
 	} else {
-		utils.Error(w, http.StatusForbidden)
+		w.WriteHeader(http.StatusForbidden)
 	}
 	l.mutex.Unlock()
 }

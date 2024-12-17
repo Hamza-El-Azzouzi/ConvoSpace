@@ -111,9 +111,6 @@ func (p *PostHandler) PostSaver(w http.ResponseWriter, r *http.Request) {
 		utils.Error(w, http.StatusMethodNotAllowed)
 		return
 	}
-	data := map[string]any{
-		"LoggedIn": false,
-	}
 	err := r.ParseForm()
 	if err != nil {
 		utils.Error(w, http.StatusInternalServerError)
@@ -134,8 +131,6 @@ func (p *PostHandler) PostSaver(w http.ResponseWriter, r *http.Request) {
 
 	isLogged, usermid := p.AuthMidlaware.IsUserLoggedIn(w, r)
 	if isLogged {
-		data["LoggedIn"] = isLogged
-		data["Username"] = usermid.Username
 		err = p.PostService.PostSave(usermid.ID, title, subject, categories)
 		if err != nil {
 			utils.Error(w, http.StatusBadRequest)
@@ -143,7 +138,7 @@ func (p *PostHandler) PostSaver(w http.ResponseWriter, r *http.Request) {
 			http.Redirect(w, r, "/", http.StatusSeeOther)
 		}
 	} else {
-		data["LoggedIn"] = isLogged
+		utils.Error(w,http.StatusForbidden)
 	}
 }
 
@@ -208,7 +203,7 @@ func (p *PostHandler) CommentSaver(w http.ResponseWriter, r *http.Request) {
 	}
 	isLogged, userId := p.AuthMidlaware.IsUserLoggedIn(w, r)
 	if !isLogged {
-		w.WriteHeader(http.StatusBadRequest)
+		w.WriteHeader(http.StatusForbidden)
 		return
 	}
 	commentData.Comment = strings.TrimSpace(commentData.Comment)
