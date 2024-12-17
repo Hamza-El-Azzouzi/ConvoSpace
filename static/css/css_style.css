@@ -44,6 +44,12 @@ p {
     animation: fadeInUp 0.9s;
 }
 
+pre {
+    white-space: pre-line;
+    line-height: 1.5;
+    font-size: 0.89rem;
+}
+
 hr {
     border: none;
     height: 1px;
@@ -397,7 +403,7 @@ label:hover .custom-checkbox {
 }
 
 .comment-header h6 {
-    font-size: 0.95em;
+    font-size: 1.2rem;
     color: #2c3e50;
     font-weight: 600;
 }
