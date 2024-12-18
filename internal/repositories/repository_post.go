@@ -137,6 +137,7 @@ func (r *PostRepository) GetPostById(PostId string) (models.PostWithUser, error)
 		&post.LikeCount,
 		&post.DisLikeCount,
 	)
+	post.FormattedDate = post.CreatedAt.Format("01/02/2006, 3:04:05 PM")
 	if err != nil {
 		return models.PostWithUser{}, fmt.Errorf("error f query : %v", err)
 	}
@@ -178,7 +179,7 @@ func (r *PostRepository) FilterPost(filterby, category string, userID uuid.UUID,
 			posts
 		JOIN 
 			users ON posts.user_id = users.id
-		LEFT JOIN 
+		LEFT JOIN width: 80%;
 			post_categories ON posts.id = post_categories.post_id
 		LEFT JOIN 
 			categories ON post_categories.category_id = categories.id
