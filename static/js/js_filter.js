@@ -112,7 +112,7 @@ const updateData = (data, LoggedInP) => {
                     }' target="_blank" id="title">${post.Title}</a></h3>
                 </div>
                 <div class="ques-details10018">
-                    <p id="content">${post.Content}</p>
+                     <pre>${post.Content}</pre>
                 </div>
                 <hr>
                 <div class="ques-icon-info3293">

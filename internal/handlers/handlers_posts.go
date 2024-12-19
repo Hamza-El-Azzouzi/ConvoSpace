@@ -138,7 +138,7 @@ func (p *PostHandler) PostSaver(w http.ResponseWriter, r *http.Request) {
 			http.Redirect(w, r, "/", http.StatusSeeOther)
 		}
 	} else {
-		utils.Error(w,http.StatusForbidden)
+		utils.Error(w, http.StatusForbidden)
 	}
 }
 

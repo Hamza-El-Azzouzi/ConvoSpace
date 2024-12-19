@@ -179,7 +179,7 @@ func (r *PostRepository) FilterPost(filterby, category string, userID uuid.UUID,
 			posts
 		JOIN 
 			users ON posts.user_id = users.id
-		LEFT JOIN width: 80%;
+		LEFT JOIN
 			post_categories ON posts.id = post_categories.post_id
 		LEFT JOIN 
 			categories ON post_categories.category_id = categories.id
