@@ -2,6 +2,7 @@ package services
 
 import (
 	"fmt"
+	"strings"
 
 	"forum/internal/models"
 	"forum/internal/repositories"
@@ -20,6 +21,8 @@ func HashPassword(psswd string) (string, error) {
 }
 
 func (a *AuthService) Register(username, email, password string) error {
+	email = strings.ToLower(email)
+	username = strings.ToLower(username)
 	checkByEmail, err := a.UserRepo.FindUser(email, "byEmail")
 	if checkByEmail != nil {
 		return fmt.Errorf("email")
@@ -44,6 +47,7 @@ func (a *AuthService) Register(username, email, password string) error {
 }
 
 func (a *AuthService) Login(email, password string) (*models.User, error) {
+	email = strings.ToLower(email)
 	userByEmail, err := a.UserRepo.FindUser(email, "byEmail")
 	if userByEmail == nil || err != nil {
 		return nil, fmt.Errorf("in email")
