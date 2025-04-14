@@ -44,9 +44,9 @@
             <div class="question-type2033">
                 <h4>Ask Question</h4>
                 <hr>
-                <form action="/createPost" method="post" id="postForm">
+                <form action="/createPost" method="post" id="postForm" enctype="multipart/form-data">
                     <div class="input-group300">
-                        <input type="text" name="title" required class="namein309"
+                        <input type="text" name="title"  class="namein309"
                             placeholder="Write Your Question Title">
                         <div class="error-message" id="title-error"></div>
                     </div>
@@ -65,11 +65,15 @@
                     </div>
 
                     <div class="input-group300">
-                        <textarea name="textarea" id="textarea" class="passin309" rows="5" required
+                        <textarea name="textarea" id="textarea" class="passin309" rows="5" 
                             placeholder="Describe your question in detail"></textarea>
                         <div class="error-message" id="textarea-error"></div>
                     </div>
-
+                    <div class="image-upload-container">
+                        <label for="imageUpload" class="image-upload-label">Upload Image</label>
+                        <input type="file" id="imageUpload" name="imageUpload"  />
+                        <img id="imagePreview" class="image-preview" src="#" alt="Image Preview" style="display: none;" />
+                    </div>
                     <div class="button0239-item">
                         {{ if .LoggedIn }}
                         <button type="submit" class="userlogin320">Publish your Question</button>
@@ -88,8 +92,8 @@
         </div>
     </section>
 
- <script src="/static/js/js_post_validation.js"></script>
- <script src="/static/js/js_main.js"></script>
+    <script src="/static/js/js_post_validation.js"></script>
+    <script src="/static/js/js_main.js"></script>
 </body>
 
 </html>

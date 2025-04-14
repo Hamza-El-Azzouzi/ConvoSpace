@@ -105,16 +105,17 @@ function populatePosts(loggedIn, posts) {
               <div class="right-description893">
                 <h3><a href="detailsPost/${post.PostID}">${post.Title}</a></h3>
                 <pre>${post.Content}</pre>
-                <hr>
+                <img class = "post-image" src="/uploads/${post.ImagePost}" alt="Post Image">
+                <hrImagePost
                 <div class="ques-icon-info3293">
                   <span>${post.Username}</span>
-                  <span>${post.FormattedDate}</span>
+                  <span>${post.FormattedDate}</span>image_post
                   <span>${post.CategoryName}</span>
+
                 </div>
                 <div class="right-section">
-                  ${
-                    loggedIn
-                      ? `
+                  ${loggedIn
+            ? `
                         <button class="button like" onclick="handleLikeDislike('${post.PostID}', 'like', event)">
                           <span id='${post.PostID}-like'>👍${post.LikeCount}</span>
                         </button>
@@ -122,7 +123,7 @@ function populatePosts(loggedIn, posts) {
                           <span id='${post.PostID}-dislike'>👎${post.DisLikeCount}</span>
                         </button>
                         `
-                      : `
+            : `
                         <button class="button like">
                           <span id='${post.PostID}-like'>👍${post.LikeCount}</span>
                         </button>
@@ -130,14 +131,13 @@ function populatePosts(loggedIn, posts) {
                           <span id='${post.PostID}-dislike'>👎${post.DisLikeCount}</span>
                         </button>
                         `
-                  }
+          }
                 </div>
               </div>
               <div class="ques-type302">
                 <a href="detailsPost/${post.PostID}">
-                  <button class="comment-button">${
-                    post.CommentCount
-                  } Comments</button>
+                  <button class="comment-button">${post.CommentCount
+          } Comments</button>
                 </a>
               </div>
             </div>

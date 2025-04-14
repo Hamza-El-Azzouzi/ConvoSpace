@@ -12,6 +12,7 @@ type Post struct {
 	Title     string
 	Content   string
 	CreatedAt time.Time
+	ImagePost string
 }
 
 type PostCategory struct {
@@ -23,6 +24,7 @@ type PostWithUser struct {
 	PostID        uuid.UUID
 	Title         string
 	Content       string
+	ImagePost     string
 	CreatedAt     time.Time
 	UserID        uuid.UUID
 	Username      string

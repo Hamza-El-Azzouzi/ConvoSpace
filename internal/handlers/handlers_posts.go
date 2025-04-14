@@ -2,7 +2,11 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
+	"io"
 	"net/http"
+	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 
@@ -52,6 +56,7 @@ func (p *PostHandler) Posts(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	posts, err := p.PostService.AllPosts(nPagination)
+	fmt.Println(err)
 	if err != nil {
 		utils.Error(w, http.StatusInternalServerError)
 		return
@@ -111,28 +116,102 @@ func (p *PostHandler) PostSaver(w http.ResponseWriter, r *http.Request) {
 		utils.Error(w, http.StatusMethodNotAllowed)
 		return
 	}
-	err := r.ParseForm()
+	err := r.ParseMultipartForm(20 * 1024 * 1024)
 	if err != nil {
 		utils.Error(w, http.StatusInternalServerError)
 		return
 	}
-	title := r.Form.Get("title")
+	title := r.FormValue("title")
+	subject := r.FormValue("textarea")
 	categories := r.Form["category"]
-	subject := r.Form.Get("textarea")
+	// subject := r.Form.Get("textarea")
+	file, fileHeader, err := r.FormFile("imageUpload")
+	fmt.Println(fileHeader.Header.Get("Content-Type"))
+	fmt.Println(err)
+	if title == "" || subject == "" || len(categories) == 0 || err != nil {
+		fmt.Println(title, subject, categories, file)
+		if err != nil {
+			fmt.Println("reader err", err)
+		}
 
-	if title == "" || subject == "" || len(categories) == 0 {
 		utils.Error(w, http.StatusBadRequest)
 		return
 	}
+	fmt.Println(title, subject, categories, file)
 	if len(title) > 250 || len(subject) > 10000 {
+		fmt.Println("1")
 		utils.Error(w, http.StatusBadRequest)
 		return
 	}
+	var imageName string
+	if file != nil {
+		fmt.Println("enter")
+		defer file.Close()
 
+		// Validate file size (limit to 0.5MB)
+		if fileHeader.Size > 20*1024*1024 {
+			fmt.Println("size")
+			utils.Error(w, http.StatusBadRequest)
+			return
+		}
+
+		// Validate file type
+		allowedTypes := map[string]bool{
+			"image/jpeg": true,
+			"image/png":  true,
+			"image/gif":  true,
+		}
+		contentType := fileHeader.Header.Get("Content-Type")
+		
+		if !allowedTypes[contentType] {
+			
+			utils.Error(w, http.StatusBadRequest)
+			
+			return
+		}
+		imageUUID := uuid.Must(uuid.NewV4()).String()
+
+		var extension string
+		switch contentType {
+		case "image/jpeg":
+			extension = ".jpg"
+		case "image/png":
+			extension = ".png"
+		case "image/gif":
+			extension = ".gif"
+		}
+		imageName = imageUUID + extension
+
+		// Save the file to the server
+		// imagePath := "./uploads/" + imageName
+		uploadDir := "./uploads"
+		if _, err := os.Stat(uploadDir); os.IsNotExist(err) {
+			err := os.MkdirAll(uploadDir, 0o755) // Create the directory with appropriate permissions
+			if err != nil {
+				
+				utils.Error(w, http.StatusInternalServerError)
+				return
+			}
+		}
+		imagePath := filepath.Join(uploadDir, imageName)
+		out, err := utils.CreateFile(imagePath)
+		if err != nil {
+			utils.Error(w, http.StatusInternalServerError)
+			return
+		}
+		defer out.Close()
+
+		_, err = io.Copy(out, file)
+		if err != nil {
+			utils.Error(w, http.StatusInternalServerError)
+			return
+		}
+	}
 	isLogged, usermid := p.AuthMidlaware.IsUserLoggedIn(w, r)
 	if isLogged {
-		err = p.PostService.PostSave(usermid.ID, title, subject, categories)
+		err = p.PostService.PostSave(usermid.ID, title, subject, imageName, categories)
 		if err != nil {
+		
 			utils.Error(w, http.StatusBadRequest)
 		} else {
 			http.Redirect(w, r, "/", http.StatusSeeOther)

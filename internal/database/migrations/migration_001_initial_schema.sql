@@ -13,6 +13,7 @@ CREATE TABLE
         user_id TEXT NOT NULL,
         title VARCHAR(255) NOT NULL,
         content TEXT NOT NULL,
+        image_post TEXT NOT NULL,
         created_at TIMESTAMP DEFAULT (DATETIME ('now', 'localtime')),
         FOREIGN KEY (user_id) REFERENCES users (id) ON UPDATE CASCADE ON DELETE CASCADE
     );

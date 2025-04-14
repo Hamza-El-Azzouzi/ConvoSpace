@@ -18,11 +18,11 @@ type PostRepository struct {
 func (r *PostRepository) Create(post *models.Post) error {
 	post.Content = html.EscapeString(post.Content)
 	post.Title = html.EscapeString(post.Title)
-	preparedQuery, err := r.DB.Prepare("INSERT INTO posts (ID, user_id, Title, Content) VALUES (?, ?, ?, ?)")
+	preparedQuery, err := r.DB.Prepare("INSERT INTO posts (ID, user_id, Title, Content,image_post) VALUES (?, ?, ?, ?,?)")
 	if err != nil {
 		return err
 	}
-	_, err = preparedQuery.Exec(post.ID, post.UserID, post.Title, post.Content)
+	_, err = preparedQuery.Exec(post.ID, post.UserID, post.Title, post.Content, post.ImagePost)
 	return err
 }
 
@@ -40,6 +40,7 @@ func (r *PostRepository) AllPosts(pagination int) ([]models.PostWithUser, error)
 		posts.id AS post_id,
 		posts.title,
 		posts.content,
+		posts.image_post,
 		posts.created_at,
 		users.id AS user_id,
 		users.username,
@@ -80,6 +81,7 @@ func (r *PostRepository) AllPosts(pagination int) ([]models.PostWithUser, error)
 			&post.PostID,
 			&post.Title,
 			&post.Content,
+			&post.ImagePost,
 			&post.CreatedAt,
 			&post.UserID,
 			&post.Username,
@@ -109,6 +111,7 @@ func (r *PostRepository) GetPostById(PostId string) (models.PostWithUser, error)
 	    posts.id AS post_id,
 	    posts.title,
 	    posts.content AS post_content,
+		posts.image_post,
 	    posts.created_at AS post_created_at,
 	    post_user.id AS post_user_id,
 	    post_user.username AS post_username,
@@ -130,6 +133,7 @@ func (r *PostRepository) GetPostById(PostId string) (models.PostWithUser, error)
 		&post.PostID,
 		&post.Title,
 		&post.Content,
+		&post.ImagePost,
 		&post.CreatedAt,
 		&post.UserID,
 		&post.Username,
