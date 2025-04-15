@@ -113,6 +113,7 @@ const updateData = (data, LoggedInP) => {
                 </div>
                 <div class="ques-details10018">
                      <pre>${post.Content}</pre>
+                       ${post.ImagePost && `<img class="post-image" src="/uploads/${post.ImagePost}" alt="Post Image">`}
                 </div>
                 <hr>
                 <div class="ques-icon-info3293">

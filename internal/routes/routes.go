@@ -31,7 +31,14 @@ func SetupRoutes(mux *http.ServeMux, authHandler *handlers.AuthHandler, postHand
 	mux.HandleFunc("/likeComment/", likeHandler.LikeComment)
 	mux.HandleFunc("/dislikeComment/", likeHandler.DisLikeComment)
 	mux.HandleFunc("/filters", postHandler.PostFilter)
-	http.Handle("/uploads/", http.StripPrefix("/uploads/", http.FileServer(http.Dir("./uploads"))))
+	http.Handle("/uploads/", http.StripPrefix("/uploads/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		_, err := http.Dir("./uploads").Open(r.URL.Path)
+		if err != nil {
+			utils.Error(w, http.StatusNotFound)
+			return
+		}
+		http.FileServer(http.Dir("./uploads")).ServeHTTP(w, r)
+	})))
 	mux.HandleFunc("/javascript", func(w http.ResponseWriter, r *http.Request) {
 		if r.Header.Get("Referer") == "" {
 			utils.Error(w, http.StatusNotFound)

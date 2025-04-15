@@ -124,28 +124,22 @@ func (p *PostHandler) PostSaver(w http.ResponseWriter, r *http.Request) {
 	title := r.FormValue("title")
 	subject := r.FormValue("textarea")
 	categories := r.Form["category"]
-	// subject := r.Form.Get("textarea")
 	file, fileHeader, err := r.FormFile("imageUpload")
-	fmt.Println(fileHeader.Header.Get("Content-Type"))
 	fmt.Println(err)
-	if title == "" || subject == "" || len(categories) == 0 || err != nil {
-		fmt.Println(title, subject, categories, file)
-		if err != nil {
-			fmt.Println("reader err", err)
-		}
-
+	if title == "" || len(categories) == 0 {
 		utils.Error(w, http.StatusBadRequest)
 		return
 	}
-	fmt.Println(title, subject, categories, file)
 	if len(title) > 250 || len(subject) > 10000 {
-		fmt.Println("1")
+		utils.Error(w, http.StatusBadRequest)
+		return
+	}
+	if subject == "" && err != nil {
 		utils.Error(w, http.StatusBadRequest)
 		return
 	}
 	var imageName string
-	if file != nil {
-		fmt.Println("enter")
+	if err == nil && file != nil {
 		defer file.Close()
 
 		// Validate file size (limit to 0.5MB)
@@ -159,14 +153,15 @@ func (p *PostHandler) PostSaver(w http.ResponseWriter, r *http.Request) {
 		allowedTypes := map[string]bool{
 			"image/jpeg": true,
 			"image/png":  true,
+			"image/jpg":  true,
 			"image/gif":  true,
 		}
 		contentType := fileHeader.Header.Get("Content-Type")
-		
+
 		if !allowedTypes[contentType] {
-			
+
 			utils.Error(w, http.StatusBadRequest)
-			
+
 			return
 		}
 		imageUUID := uuid.Must(uuid.NewV4()).String()
@@ -188,7 +183,7 @@ func (p *PostHandler) PostSaver(w http.ResponseWriter, r *http.Request) {
 		if _, err := os.Stat(uploadDir); os.IsNotExist(err) {
 			err := os.MkdirAll(uploadDir, 0o755) // Create the directory with appropriate permissions
 			if err != nil {
-				
+
 				utils.Error(w, http.StatusInternalServerError)
 				return
 			}
@@ -209,9 +204,10 @@ func (p *PostHandler) PostSaver(w http.ResponseWriter, r *http.Request) {
 	}
 	isLogged, usermid := p.AuthMidlaware.IsUserLoggedIn(w, r)
 	if isLogged {
+		fmt.Println("image name : ", imageName)
 		err = p.PostService.PostSave(usermid.ID, title, subject, imageName, categories)
+		fmt.Println(err)
 		if err != nil {
-		
 			utils.Error(w, http.StatusBadRequest)
 		} else {
 			http.Redirect(w, r, "/", http.StatusSeeOther)

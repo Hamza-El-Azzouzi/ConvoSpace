@@ -105,11 +105,12 @@ function populatePosts(loggedIn, posts) {
               <div class="right-description893">
                 <h3><a href="detailsPost/${post.PostID}">${post.Title}</a></h3>
                 <pre>${post.Content}</pre>
-                <img class = "post-image" src="/uploads/${post.ImagePost}" alt="Post Image">
-                <hrImagePost
+                ${post.ImagePost && `<img class="post-image" src="/uploads/${post.ImagePost}" alt="Post Image">`}
+               
+                <hr />
                 <div class="ques-icon-info3293">
                   <span>${post.Username}</span>
-                  <span>${post.FormattedDate}</span>image_post
+                  <span>${post.FormattedDate}</span>
                   <span>${post.CategoryName}</span>
 
                 </div>

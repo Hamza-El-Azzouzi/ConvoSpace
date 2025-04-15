@@ -25,25 +25,32 @@ document.getElementById('postForm').addEventListener('submit', function (event) 
     }
 
     const textareaInput = document.querySelector('textarea[name="textarea"]');
+    const imageInput = document.getElementById("imageUpload");
+    const file = imageInput.files[0];
+    if (!textareaInput.value.trim() && !file) {
+        document.getElementById('textarea-error').textContent = 'Either a description or an image is required.';
+        document.getElementById('image-error').textContent = 'Either a description or an image is required.';
+        isValid = false;
+    }
     if (textareaInput.value.length > 10000) {
         document.getElementById('textarea-error').textContent = "Maximum 10000 characters.";
         isValid = false;
     }
-    if (!textareaInput.value.trim()) {
-        document.getElementById('textarea-error').textContent = 'Description is required.';
-        isValid = false;
-    }
-    const imageInput = document.getElementById("imageUpload");
+    // if (!textareaInput.value.trim()) {
+    //     document.getElementById('textarea-error').textContent = 'Description is required.';
+    //     isValid = false;
+    // }
+  
     const maxSize = 20 * 1024 * 1024;
-    const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
-    const file = imageInput.files[0];
+    const allowedTypes = ['image/jpg','image/jpeg', 'image/png', 'image/gif'];
+   
     if (file) {
         if (file.size > maxSize) {
-            document.getElementById('image-error').textContent = 'File size must be less than 0.5MB.';
+            document.getElementById('image-error').textContent = 'File size must be less than 20MB.';
             isValid = false;
         }
         if (!allowedTypes.includes(file.type)) {
-            document.getElementById('image-error').textContent = 'Only JPG, PNG and GIF files are allowed.';
+            document.getElementById('image-error').textContent = 'Only JPG, PNG, JPEG and GIF files are allowed.';
             isValid = false;
         }
     }

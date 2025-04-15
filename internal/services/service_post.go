@@ -18,7 +18,6 @@ type PostService struct {
 
 func (p *PostService) PostSave(userId uuid.UUID, title, content, imageName string, category []string) error {
 	postId := uuid.Must(uuid.NewV4())
-	// image := utils.SaveImage(fileHeader)
 	post := &models.Post{
 		ID:      postId,
 		UserID:  userId,

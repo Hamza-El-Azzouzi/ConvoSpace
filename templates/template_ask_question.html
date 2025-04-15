@@ -46,7 +46,7 @@
                 <hr>
                 <form action="/createPost" method="post" id="postForm" enctype="multipart/form-data">
                     <div class="input-group300">
-                        <input type="text" name="title"  class="namein309"
+                        <input type="text" name="title"  class="namein309" required
                             placeholder="Write Your Question Title">
                         <div class="error-message" id="title-error"></div>
                     </div>
@@ -71,8 +71,9 @@
                     </div>
                     <div class="image-upload-container">
                         <label for="imageUpload" class="image-upload-label">Upload Image</label>
-                        <input type="file" id="imageUpload" name="imageUpload"  />
+                        <input type="file" id="imageUpload" name="imageUpload" accept="image/png, image/jpeg,image/gif,image/jpg"  />
                         <img id="imagePreview" class="image-preview" src="#" alt="Image Preview" style="display: none;" />
+                        <div class="error-message" id="image-error"></div>
                     </div>
                     <div class="button0239-item">
                         {{ if .LoggedIn }}
